@@ -1,0 +1,243 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL") // Optional, but recommended for Supabase
+}
+
+// Enum Role removed for SQLite compatibility. Using String instead.
+// FARMER, RETAILER, ADMIN
+
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("BUYER") // BUYER, FARMER, ADMIN
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  profile        Profile?
+  products       Product[]
+  orders         Order[]        @relation("BuyerOrders")
+  deliveryTasks  Order[]        @relation("DeliveryOrders")
+  groupMembers   GroupMember[]
+  settlements    Settlement[]   @relation("FarmerSettlements")
+  notifications  Notification[]
+  reviews        Review[]
+}
+
+model Profile {
+  id          Int     @id @default(autoincrement())
+  bio         String?
+  location    String?
+  phoneNumber String?
+  farmName    String? // Specific to Farmers
+  businessId  String? // Tax ID etc.
+  
+  userId      Int     @unique
+  user        User    @relation(fields: [userId], references: [id])
+  
+  // Banking Details for Settlements
+  bankName      String?
+  accountNumber String?
+  accountName   String?
+}
+
+model Category {
+  id    Int       @id @default(autoincrement())
+  name  String    @unique
+  products Product[]
+}
+
+model Product {
+  id             Int      @id @default(autoincrement())
+  name           String
+  description    String?
+  price          Decimal
+  unit           String   // e.g., "kg", "bunch", "box"
+  stock          Int      @default(0)
+  categoryName   String?  // Keep for simplicity
+  category       Category? @relation(fields: [categoryName], references: [name])
+  imageUrl       String?
+  
+  // Traceability Fields
+  traceabilityId String   @unique @default(uuid()) // Unique ID for QR code
+  harvestDate    DateTime?
+  
+  farmerId       Int
+  farmer         User     @relation(fields: [farmerId], references: [id])
+  orderItems     OrderItem[]
+  journey        JourneyStep[]
+  groupDeals     GroupDeal[]
+  reviews        Review[]
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model JourneyStep {
+  id          Int      @id @default(autoincrement())
+  stage       String   // e.g., "Harvested", "Quality Check", "Departed Farm"
+  location    String   // e.g., "Ondo Farm", "Lagos Hub"
+  date        DateTime @default(now())
+  description String?
+  
+  productId   Int
+  product     Product  @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id              Int      @id @default(autoincrement())
+  status          String   @default("PENDING") // PENDING, CONFIRMED, SHIPPED, DELIVERED
+  totalAmount     Decimal
+  shippingAddress String?
+  paymentMethod   String?
+  deliveryDate    DateTime?
+  trackingNote    String?
+  
+  buyerId         Int
+  buyer           User     @relation("BuyerOrders", fields: [buyerId], references: [id])
+  
+  deliveryAgentId Int?
+  deliveryAgent   User?    @relation("DeliveryOrders", fields: [deliveryAgentId], references: [id])
+  
+  items           OrderItem[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Decimal // Captured price at time of order
+  
+  settlementId Int?
+  settlement   Settlement? @relation(fields: [settlementId], references: [id])
+}
+
+model Settlement {
+  id              Int      @id @default(autoincrement())
+  farmerId        Int
+  farmer          User     @relation("FarmerSettlements", fields: [farmerId], references: [id])
+  amount          Decimal  // Total sales amount
+  commission      Decimal  // Fammerce commission
+  netAmount       Decimal  // Amount to be paid to farmer (amount - commission)
+  status          String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  reference       String?  @unique
+  settlementDate  DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  items           OrderItem[]
+}
+
+model Recipe {
+  id           Int          @id @default(autoincrement())
+  title        String
+  description  String?
+  instructions String?
+  imageUrl     String?
+  servings     Int          @default(4)
+  mealType     String       @default("LUNCH") // BREAKFAST, LUNCH, DINNER
+  ingredients  Ingredient[]
+}
+
+model Ingredient {
+  id             Int    @id @default(autoincrement())
+  name           String // Display name e.g. "Fresh Tomatoes"
+  productKeyword String // Keyword to search for e.g. "tomato"
+  quantity       Int    // Quantity required e.g. 2 (units dependent on matching product, simplified for MVP)
+  
+  recipeId       Int
+  recipe         Recipe @relation(fields: [recipeId], references: [id])
+}
+
+// Group Buying Models
+model GroupDeal {
+  id              Int      @id @default(autoincrement())
+  title           String   // e.g., "50 Eggs Discount Deal"
+  description     String?
+  discountPrice   Decimal  // e.g., 2000
+  originalPrice   Decimal  // e.g., 2800 (reference)
+  minParticipants Int      @default(4)
+  durationHours   Int      @default(48)
+  imageUrl        String?
+  active          Boolean  @default(true)
+  
+  productId       Int
+  product         Product  @relation(fields: [productId], references: [id])
+  groups          DealGroup[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model DealGroup {
+  id          Int           @id @default(autoincrement())
+  status      String        @default("ACTIVE") // ACTIVE, SUCCESS, EXPIRED, CANCELLED
+  expiresAt   DateTime
+  
+  dealId      Int
+  deal        GroupDeal     @relation(fields: [dealId], references: [id])
+  members     GroupMember[]
+  
+  creatorId   Int
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GroupMember {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  groupId   Int
+  group     DealGroup @relation(fields: [groupId], references: [id])
+  joinedAt  DateTime  @default(now())
+
+  @@unique([userId, groupId])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  type      String   @default("INFO") // INFO, ORDER, SETTLEMENT
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  rating    Int      // 1 - 5
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model GlobalSetting {
+  id    Int     @id @default(autoincrement())
+  key   String  @unique
+  value String
+}
