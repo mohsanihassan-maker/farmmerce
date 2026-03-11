@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { api } from '../api';
+import { supabase } from '../supabase';
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
@@ -16,21 +16,18 @@ export default function ForgotPassword() {
         setLoading(true);
 
         try {
-            const response = await api.post('/auth/forgot-password', { email });
-            const data = await response.json();
+            const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/reset-password`,
+            });
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to request password reset');
-            }
-
-            if (data.resetToken) {
-                localStorage.setItem('last_reset_token', data.resetToken);
+            if (resetError) {
+                throw resetError;
             }
 
             setSuccess(true);
 
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message || 'Failed to request password reset');
         } finally {
             setLoading(false);
         }
@@ -110,26 +107,16 @@ export default function ForgotPassword() {
                             </div>
                             <h2 className="text-2xl font-bold text-white mb-2">Check Your Email</h2>
                             <p className="text-gray-400 mb-8 leading-relaxed">
-                                (Dev Mode: Link below since email isn't sent yet)<br /><br />
-                                We've sent password reset instructions to <strong>{email}</strong>.
+                                We've sent password reset instructions to <strong>{email}</strong>. 
+                                Please check your inbox and your spam folder.
+                                <br /><br />
+                                <span className="text-xs italic">Note: If you haven't received the email after 5 minutes and you had an account before our recent upgrade (March 2026), please <Link to="/register" className="text-brand-light underline">Register again</Link> with the same email to migrate your account.</span>
                             </p>
-
-                            {/* Dev-only link display */}
-                            <div className="mb-8 p-4 bg-brand-light/10 border border-brand-light/20 rounded-xl">
-                                <p className="text-xs text-brand-light font-bold uppercase tracking-widest mb-2">Reset Link (Testing Only)</p>
-                                <a
-                                    href={`/reset-password/${localStorage.getItem('last_reset_token') || 'waiting...'}`}
-                                    className="text-xs text-white break-all hover:underline"
-                                >
-                                    /reset-password/{(localStorage.getItem('last_reset_token') || '...').substring(0, 15)}...
-                                </a>
-                            </div>
 
                             <Link
                                 to="/login"
                                 className="inline-flex items-center text-brand-light font-bold hover:text-white transition-colors"
                             >
-
                                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Login
                             </Link>
                         </div>

@@ -6,6 +6,8 @@ import { Lock, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { API_URL } from '../config';
 
+import { supabase } from '../supabase';
+
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -22,9 +24,22 @@ export default function Login() {
         setLoading(true);
 
         try {
+            // 1. Sign in with Supabase to get the session and enable email features
+            const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
+
+            if (authError) throw authError;
+
+            // 2. Still call our backend to get user role and details if necessary
+            // or just use the token from Supabase in the next call.
             const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authData.session.access_token}`
+                },
                 body: JSON.stringify({ email, password })
             });
 
@@ -35,7 +50,7 @@ export default function Login() {
                 throw new Error(errorMsg);
             }
 
-            login(data.user, data.token);
+            login(data.user, authData.session.access_token);
             navigate('/dashboard');
 
         } catch (err: any) {
@@ -43,7 +58,6 @@ export default function Login() {
         } finally {
             setLoading(false);
         }
-
     };
 
     return (

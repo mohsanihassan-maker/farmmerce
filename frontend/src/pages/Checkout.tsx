@@ -70,7 +70,7 @@ export default function Checkout() {
                     if (payRes.ok) {
                         // Real Paystack Integration using Inline JS
                         const handler = (window as any).PaystackPop.setup({
-                            key: 'pk_test_mock_key', // In a real app, use process.env.VITE_PAYSTACK_PUBLIC_KEY
+                            key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY, 
                             email: user.email,
                             amount: cartTotal * 100, // Convert to Kobo
                             ref: payData.reference,

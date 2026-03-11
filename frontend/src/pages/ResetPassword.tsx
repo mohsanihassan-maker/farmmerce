@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Lock, ArrowRight, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { api } from '../api';
+import { supabase } from '../supabase';
 
 export default function ResetPassword() {
-    const { token } = useParams();
     const navigate = useNavigate();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -13,6 +12,18 @@ export default function ResetPassword() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [verifying, setVerifying] = useState(true);
+
+    useState(() => {
+        const checkSession = async () => {
+            const { data } = await supabase.auth.getSession();
+            if (!data.session) {
+                setError('Invalid or expired reset link. Please request a new one.');
+            }
+            setVerifying(false);
+        };
+        checkSession();
+    });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,11 +42,12 @@ export default function ResetPassword() {
         setLoading(true);
 
         try {
-            const response = await api.post(`/auth/reset-password/${token}`, { password });
-            const data = await response.json();
+            const { error: resetError } = await supabase.auth.updateUser({
+                password: password
+            });
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to reset password');
+            if (resetError) {
+                throw resetError;
             }
 
             setSuccess(true);
@@ -43,7 +55,7 @@ export default function ResetPassword() {
                 navigate('/login');
             }, 3000);
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message || 'Failed to reset password');
         } finally {
             setLoading(false);
         }

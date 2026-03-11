@@ -1,12 +1,13 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
+import axios from 'axios';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 // Paystack Secret Key (Test)
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET || 'sk_test_mock_key';
+const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET;
 
 // POST /api/payments/initialize
 router.post('/initialize', async (req, res) => {
@@ -17,20 +18,35 @@ router.post('/initialize', async (req, res) => {
             return res.status(400).json({ error: 'Missing payment details' });
         }
 
-        // In a real app, you'd call Paystack API here
-        // const response = await axios.post('https://api.paystack.co/transaction/initialize', ...)
+        const response = await axios.post(
+            'https://api.paystack.co/transaction/initialize',
+            {
+                email,
+                amount: Math.round(Number(amount) * 100), // Amount in kobo
+                callback_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/orders`,
+                metadata: {
+                    orderId,
+                    custom_fields: [
+                        {
+                            display_name: "Order ID",
+                            variable_name: "order_id",
+                            value: orderId
+                        }
+                    ]
+                }
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${PAYSTACK_SECRET}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
 
-        // For this demo, we'll return a mock authorization URL and reference
-        const reference = `FAM-${Date.now()}-${orderId}`;
-
-        res.json({
-            authorization_url: 'https://checkout.paystack.com/mock',
-            reference,
-            message: 'Payment initialized'
-        });
-    } catch (error) {
-        console.error('Payment Init Error:', error);
-        res.status(500).json({ error: 'Failed to initialize payment' });
+        res.json(response.data.data);
+    } catch (error: any) {
+        console.error('Payment Init Error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to initialize payment', details: error.response?.data });
     }
 });
 
@@ -39,22 +55,34 @@ router.post('/verify', async (req, res) => {
     try {
         const { reference, orderId } = req.body;
 
-        // In a real app, you'd verify with Paystack
-        // const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, ...)
+        if (!reference || !orderId) {
+            return res.status(400).json({ error: 'Missing verification details' });
+        }
 
-        // Mock success
-        await prisma.order.update({
-            where: { id: Number(orderId) },
-            data: {
-                status: 'CONFIRMED',
-                paymentMethod: 'card'
+        const response = await axios.get(
+            `https://api.paystack.co/transaction/verify/${reference}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${PAYSTACK_SECRET}`
+                }
             }
-        });
+        );
 
-        res.json({ message: 'Payment verified and order updated' });
-    } catch (error) {
-        console.error('Payment Verify Error:', error);
-        res.status(500).json({ error: 'Failed to verify payment' });
+        if (response.data.data.status === 'success') {
+            await prisma.order.update({
+                where: { id: Number(orderId) },
+                data: {
+                    status: 'CONFIRMED',
+                    paymentMethod: 'card'
+                }
+            });
+            res.json({ message: 'Payment verified and order updated' });
+        } else {
+            res.status(400).json({ error: 'Payment verification failed', details: response.data.data });
+        }
+    } catch (error: any) {
+        console.error('Payment Verify Error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to verify payment', details: error.response?.data });
     }
 });
 

@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { supabase } from '../supabase';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface User {
     id: number;
@@ -36,21 +38,39 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check local storage on mount
-        const storedUser = localStorage.getItem('fammerce_user');
-        const storedToken = localStorage.getItem('fammerce_token');
+        // Initial session check
+        const initAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (session) {
+                // We still need the user details from our local storage or DB
+                const storedUser = localStorage.getItem('fammerce_user');
+                if (storedUser) {
+                    setUser(JSON.parse(storedUser));
+                }
+                setToken(session.access_token);
+                localStorage.setItem('fammerce_token', session.access_token);
+            }
+            
+            setLoading(false);
+        };
 
-        if (storedUser && storedToken) {
-            try {
-                setUser(JSON.parse(storedUser));
-                setToken(storedToken);
-            } catch (error) {
-                console.error('Failed to parse stored user', error);
+        initAuth();
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (session) {
+                setToken(session.access_token);
+                localStorage.setItem('fammerce_token', session.access_token);
+            } else {
+                setUser(null);
+                setToken(null);
                 localStorage.removeItem('fammerce_user');
                 localStorage.removeItem('fammerce_token');
             }
-        }
-        setLoading(false);
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
     const login = (userData: User, authToken: string) => {
@@ -60,7 +80,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         localStorage.setItem('fammerce_token', authToken);
     };
 
-    const logout = () => {
+    const logout = async () => {
+        await supabase.auth.signOut();
         setUser(null);
         setToken(null);
         localStorage.removeItem('fammerce_user');

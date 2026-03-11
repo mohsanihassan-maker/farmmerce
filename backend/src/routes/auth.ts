@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import { supabase } from '../utils/supabase';
 
 
 const router = express.Router();
@@ -13,9 +14,27 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
 router.post('/register', async (req, res) => {
     try {
         const { email, password, name, role, phone, address } = req.body;
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+
+        let supabaseUser = null;
+        if (token) {
+            const { data: { user }, error } = await supabase.auth.getUser(token);
+            if (user && !error) {
+                supabaseUser = user;
+            }
+        }
 
         const existingUser = await prisma.user.findUnique({ where: { email } });
+        
         if (existingUser) {
+            if (token && supabaseUser) {
+                const { password: _, ...userWithoutPassword } = existingUser;
+                return res.status(200).json({
+                    message: 'User already exists, linked to registration',
+                    user: userWithoutPassword
+                });
+            }
             return res.status(400).json({ error: 'User already exists' });
         }
 
@@ -39,7 +58,7 @@ router.post('/register', async (req, res) => {
             }
         });
 
-        const token = jwt.sign(
+        const jwtToken = token || jwt.sign(
             { userId: user.id, role: user.role },
             JWT_SECRET,
             { expiresIn: '24h' }
@@ -49,13 +68,13 @@ router.post('/register', async (req, res) => {
 
         res.status(201).json({
             message: 'User registered successfully',
-            token,
+            token: jwtToken,
             user: userWithoutPassword
         });
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Registration failed' });
+    } catch (error: any) {
+        console.error('Registration error:', error);
+        res.status(500).json({ error: 'Registration failed', details: error.message });
     }
 });
 
@@ -63,6 +82,25 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+
+        // If a token is provided, verify it with Supabase first
+        if (token) {
+            const { data: { user: sbUser }, error: sbError } = await supabase.auth.getUser(token);
+            if (sbUser && !sbError) {
+                const user = await prisma.user.findUnique({
+                    where: { email: sbUser.email },
+                    include: { profile: true }
+                });
+                if (user) {
+                    const { password: _, ...userWithoutPassword } = user;
+                    return res.json({ message: 'Login successful via Supabase', token, user: userWithoutPassword });
+                }
+            }
+        }
+
+        // Fallback to traditional login
         const user = await prisma.user.findUnique({
             where: { email },
             include: { profile: true }
@@ -77,30 +115,50 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        const token = jwt.sign(
+        // --- Just-In-Time (JIT) Migration to Supabase ---
+        /* 
+           If the user logged in successfully but isn't in Supabase, we attempt to sign them up.
+           Note: This will trigger a confirmation email if configured in Supabase.
+        */
+        const { data: sbData, error: sbError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: user.name,
+                    role: user.role
+                }
+            }
+        });
+
+        // If signup failed because user exists in SB, we just ignore it.
+        // If it succeeded, they are now "shadow migrated".
+        
+        const newToken = sbData.session?.access_token || jwt.sign(
             { userId: user.id, role: user.role },
             JWT_SECRET,
             { expiresIn: '24h' }
         );
 
-        // Remove password from response
         const { password: _, ...userWithoutPassword } = user;
 
         res.json({
-            message: 'Login successful',
-            token,
-            user: userWithoutPassword
+            message: sbData.session ? 'Login successful and migrated' : 'Login successful',
+            token: newToken,
+            user: userWithoutPassword,
+            migrated: !!sbData.session
         });
     } catch (error: any) {
         console.error('Login error details:', error);
         res.status(500).json({
             error: 'Login failed',
             details: error.message,
-            code: error.code // Include Prisma error codes if any
+            code: error.code
         });
     }
-
 });
+
+import { sendResetPasswordEmail } from '../utils/mailer';
 
 // Forgot Password
 router.post('/forgot-password', async (req, res) => {
@@ -120,15 +178,17 @@ router.post('/forgot-password', async (req, res) => {
             data: { resetToken, resetTokenExpiry }
         });
 
-        // In a real app, send resetToken via email. 
-        // For this demo/MVP, we'll return it in the response (mocking email).
-        console.log(`Password reset link: http://localhost:5173/reset-password/${resetToken}`);
-
-        res.json({
-            message: 'Password reset link generated (In development: token returned below)',
-            resetToken,
-            devNote: 'In a production environment, this would be sent via email.'
-        });
+        // Send real email
+        try {
+            await sendResetPasswordEmail(email, resetToken);
+            res.json({
+                message: 'Password reset link sent to your email.'
+            });
+        } catch (emailError) {
+            console.error('Email sending failed:', emailError);
+            // Even if email fails, we've updated the token, but we should inform the user
+            res.status(500).json({ error: 'Failed to send reset email. Please try again later.' });
+        }
 
     } catch (error) {
         console.error(error);

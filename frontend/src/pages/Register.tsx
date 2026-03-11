@@ -6,6 +6,8 @@ import { Lock, Mail, User, ArrowRight, Sprout, ShoppingCart, Eye, EyeOff } from 
 import { motion } from 'framer-motion';
 import { API_URL } from '../config';
 
+import { supabase } from '../supabase';
+
 export default function Register() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -24,20 +26,43 @@ export default function Register() {
         setLoading(true);
 
         try {
+            // 1. Sign up with Supabase
+            const { data: authData, error: authError } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        full_name: name,
+                        role: role
+                    }
+                }
+            });
+
+            if (authError) throw authError;
+
+            // 2. Call our backend to create the local user record
             const response = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authData.session?.access_token || ''}`
+                },
                 body: JSON.stringify({ name, email, password, role })
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Registration failed');
+                throw new Error(data.error || 'Registration sync failed');
             }
 
-            login(data.user, data.token);
-            navigate('/dashboard');
+            // If Supabase sends confirmation email, session might be null
+            if (authData.session) {
+                login(data.user, authData.session.access_token);
+                navigate('/dashboard');
+            } else {
+                setError('Please check your email for a confirmation link.');
+            }
 
         } catch (err: any) {
             setError(err.message);

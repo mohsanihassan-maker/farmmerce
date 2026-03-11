@@ -36,7 +36,7 @@ function App() {
                 <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
                 <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
                 <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
-                <Route path="/reset-password/:token" element={<PageWrapper><ResetPassword /></PageWrapper>} />
+                <Route path="/reset-password" element={<PageWrapper><ResetPassword /></PageWrapper>} />
 
                 <Route path="/farmer/:id" element={<PageWrapper><FarmerProfile /></PageWrapper>} />
 
