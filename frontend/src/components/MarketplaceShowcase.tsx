@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
 import ProductCard from './ProductCard';
+import { API_URL } from '../config';
 
 export default function MarketplaceShowcase() {
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('http://localhost:3000/api/products')
+        fetch(`${API_URL}/products`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {

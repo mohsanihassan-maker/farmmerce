@@ -25,6 +25,9 @@ import ProfileForm from '../components/ProfileForm';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import { QRCodeCanvas } from 'qrcode.react';
+import { API_URL } from '../config';
+import { api } from '../api';
+
 
 export default function Dashboard() {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -50,38 +53,41 @@ export default function Dashboard() {
 
     const fetchStats = () => {
         if (!user) return;
-        fetch(`http://localhost:3000/api/users/${user.id}/stats`)
+        api.get(`/users/${user.id}/stats`)
             .then(res => res.json())
             .then(data => setStats(data))
             .catch(err => console.error(err));
     };
 
+
     const fetchMyOrders = () => {
         if (!user) return;
-        fetch(`http://localhost:3000/api/orders?buyerId=${user.id}`)
+        api.get(`/orders?buyerId=${user.id}`)
             .then(res => res.json())
             .then(data => setOrders(data))
             .catch(err => console.error(err));
     };
 
+
     const fetchIncomingOrders = () => {
         if (!user) return;
-        fetch(`http://localhost:3000/api/orders?farmerId=${user.id}`)
+        api.get(`/orders?farmerId=${user.id}`)
             .then(res => res.json())
             .then(data => setOrders(data))
             .catch(err => console.error(err));
     };
+
 
     const fetchLogisticsTasks = () => {
         if (!user) return;
         // Fetch available tasks (unassigned)
-        fetch('http://localhost:3000/api/logistics/available')
+        fetch(`${API_URL}/logistics/available`)
             .then(res => res.json())
             .then(data => setAvailableTasks(data))
             .catch(err => console.error(err));
 
         // Fetch assigned tasks (to this agent)
-        fetch(`http://localhost:3000/api/logistics/tasks/${user.id}`)
+        fetch(`${API_URL}/logistics/tasks/${user.id}`)
             .then(res => res.json())
             .then(data => setOrders(data)) // Reusing orders state for assigned tasks
             .catch(err => console.error(err));
@@ -100,7 +106,7 @@ export default function Dashboard() {
             fetchMyOrders();
         }
         if (activeTab === 'products') {
-            fetch('http://localhost:3000/api/products')
+            fetch(`${API_URL}/products`)
                 .then(res => res.json())
                 .catch(err => console.error(err))
                 .then(data => {
@@ -113,61 +119,62 @@ export default function Dashboard() {
             fetchLogisticsTasks();
         }
         if (activeTab === 'admin-users') {
-            fetch('http://localhost:3000/api/admin/users')
+            api.get('/admin/users')
                 .then(res => res.json())
                 .then(data => setAllUsers(data))
                 .catch(err => console.error(err));
         }
         if (activeTab === 'admin-stats') {
-            fetch('http://localhost:3000/api/admin/stats')
+            api.get('/admin/stats')
                 .then(res => res.json())
                 .then(data => setAdminStats(data))
                 .catch(err => console.error(err));
         }
         if (activeTab === 'admin-orders') {
-            fetch('http://localhost:3000/api/admin/orders')
+            api.get('/admin/orders')
                 .then(res => res.json())
                 .then(data => setAllOrders(data))
                 .catch(err => console.error(err));
         }
+
         if (activeTab === 'admin-categories') {
-            fetch('http://localhost:3000/api/categories')
+            fetch(`${API_URL}/categories`)
                 .then(res => res.json())
                 .then(data => setAllCategories(data))
                 .catch(err => console.error(err));
         }
         if (activeTab === 'admin-recipes') {
-            fetch('http://localhost:3000/api/recipes')
+            fetch(`${API_URL}/recipes`)
                 .then(res => res.json())
                 .then(data => setAllRecipes(data))
                 .catch(err => console.error(err));
         }
         if (activeTab === 'admin-settlements' || activeTab === 'settlements') {
             // Fetch pending payouts
-            fetch('http://localhost:3000/api/settlements/pending')
+            fetch(`${API_URL}/settlements/pending`)
                 .then(res => res.json())
                 .then(data => setPendingSettlements(data))
                 .catch(err => console.error(err));
 
             // Fetch history
-            fetch('http://localhost:3000/api/settlements')
+            fetch(`${API_URL}/settlements`)
                 .then(res => res.json())
                 .then(data => setAllSettlements(data))
                 .catch(err => console.error(err));
         }
         if (activeTab === 'group-deals') {
-            fetch('http://localhost:3000/api/group-deals')
+            fetch(`${API_URL}/group-deals`)
                 .then(res => res.json())
                 .then(data => setAllDeals(data))
                 .catch(err => console.error(err));
 
             // Fetch ALL products so admins can create deals for any product
-            fetch('http://localhost:3000/api/products')
+            fetch(`${API_URL}/products`)
                 .then(res => res.json())
                 .then(data => setMyProducts(data));
 
             // Fetch current panel toggle state
-            fetch('http://localhost:3000/api/group-deals/panel-enabled')
+            fetch(`${API_URL}/group-deals/panel-enabled`)
                 .then(res => res.json())
                 .then(data => setPanelEnabled(data.enabled))
                 .catch(err => console.error(err));
@@ -178,7 +185,7 @@ export default function Dashboard() {
         if (!user) return;
         try {
             const productData = { ...data, farmerId: user.id };
-            const response = await fetch('http://localhost:3000/api/products', {
+            const response = await fetch(`${API_URL}/products`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(productData)
@@ -186,7 +193,7 @@ export default function Dashboard() {
             if (response.ok) {
                 alert('Product Created Successfully!');
                 // Refresh products list
-                const refresh = await fetch('http://localhost:3000/api/products').then(res => res.json());
+                const refresh = await fetch(`${API_URL}/products`).then(res => res.json());
                 if (refresh && Array.isArray(refresh)) {
                     setMyProducts(refresh.filter((p: any) => p.farmerId === user.id));
                 }
@@ -277,7 +284,7 @@ export default function Dashboard() {
                                         const stage = formData.get('stage') as string;
                                         const location = formData.get('location') as string;
 
-                                        fetch(`http://localhost:3000/api/products/${selectedQr.id}/journey`, {
+                                        fetch(`${API_URL}/products/${selectedQr.id}/journey`, {
                                             method: 'POST',
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({ stage, location })
@@ -296,7 +303,8 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
-            )}
+            )
+            }
 
             {/* Mobile Sidebar Overlay */}
             <AnimatePresence>
@@ -523,7 +531,7 @@ export default function Dashboard() {
                                                     const updatedOrders = orders.map(o => o.id === order.id ? { ...o, status: newStatus } : o);
                                                     setOrders(updatedOrders);
 
-                                                    fetch(`http://localhost:3000/api/orders/${order.id}/status`, {
+                                                    fetch(`${API_URL}/orders/${order.id}/status`, {
                                                         method: 'PUT',
                                                         headers: { 'Content-Type': 'application/json' },
                                                         body: JSON.stringify({ status: newStatus })
@@ -550,7 +558,7 @@ export default function Dashboard() {
                                                     type="text"
                                                     defaultValue={order.trackingNote || ''}
                                                     onBlur={(e) => {
-                                                        fetch(`http://localhost:3000/api/orders/${order.id}/status`, {
+                                                        fetch(`${API_URL}/orders/${order.id}/status`, {
                                                             method: 'PUT',
                                                             headers: { 'Content-Type': 'application/json' },
                                                             body: JSON.stringify({ trackingNote: e.target.value })
@@ -644,7 +652,7 @@ export default function Dashboard() {
                                                 </div>
                                                 <button
                                                     onClick={() => {
-                                                        fetch(`http://localhost:3000/api/logistics/assign/${task.id}`, {
+                                                        fetch(`${API_URL}/logistics/assign/${task.id}`, {
                                                             method: 'POST',
                                                             headers: { 'Content-Type': 'application/json' },
                                                             body: JSON.stringify({ agentId: user.id })
@@ -683,7 +691,7 @@ export default function Dashboard() {
                                                 <select
                                                     value={task.status}
                                                     onChange={(e) => {
-                                                        fetch(`http://localhost:3000/api/logistics/tasks/${task.id}/status`, {
+                                                        fetch(`${API_URL}/logistics/tasks/${task.id}/status`, {
                                                             method: 'PUT',
                                                             headers: { 'Content-Type': 'application/json' },
                                                             body: JSON.stringify({ status: e.target.value })
@@ -703,7 +711,7 @@ export default function Dashboard() {
                                                 placeholder="Add delivery note..."
                                                 defaultValue={task.trackingNote || ''}
                                                 onBlur={(e) => {
-                                                    fetch(`http://localhost:3000/api/logistics/tasks/${task.id}/status`, {
+                                                    fetch(`${API_URL}/logistics/tasks/${task.id}/status`, {
                                                         method: 'PUT',
                                                         headers: { 'Content-Type': 'application/json' },
                                                         body: JSON.stringify({ trackingNote: e.target.value })
@@ -800,7 +808,7 @@ export default function Dashboard() {
                                                         value={u.role}
                                                         onChange={(e) => {
                                                             const newRole = e.target.value;
-                                                            fetch(`http://localhost:3000/api/admin/users/${u.id}/role`, {
+                                                            fetch(`${API_URL}/admin/users/${u.id}/role`, {
                                                                 method: 'PUT',
                                                                 headers: { 'Content-Type': 'application/json' },
                                                                 body: JSON.stringify({ role: newRole })
@@ -860,7 +868,7 @@ export default function Dashboard() {
                                 <form onSubmit={(e) => {
                                     e.preventDefault();
                                     const name = (e.currentTarget.elements.namedItem('catName') as HTMLInputElement).value;
-                                    fetch('http://localhost:3000/api/categories', {
+                                    fetch(`${API_URL}/categories`, {
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ name })
@@ -877,7 +885,7 @@ export default function Dashboard() {
                                     <div key={cat.id} className="bg-white p-6 rounded-[2rem] border border-gray-100 flex items-center justify-between group">
                                         <span className="font-bold text-brand-dark">{cat.name}</span>
                                         <button onClick={() => {
-                                            fetch(`http://localhost:3000/api/categories/${cat.id}`, { method: 'DELETE' })
+                                            fetch(`${API_URL}/categories/${cat.id}`, { method: 'DELETE' })
                                                 .then(() => setAllCategories(allCategories.filter(c => c.id !== cat.id)));
                                         }} className="p-2 text-red-400 hover:bg-red-50 rounded-xl opacity-0 group-hover:opacity-100 transition-all">
                                             <X size={16} />
@@ -901,7 +909,7 @@ export default function Dashboard() {
                                         return { name: name.trim(), productKeyword: keyword?.trim(), quantity: parseInt(qty) };
                                     });
 
-                                    fetch('http://localhost:3000/api/recipes', {
+                                    fetch(`${API_URL}/recipes`, {
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({
@@ -1019,7 +1027,7 @@ export default function Dashboard() {
                                                                 const reference = `SET-${Date.now()}`;
                                                                 if (!confirm(`Settle ₦${p.netAmount.toLocaleString()} to ${p.farmerName}?`)) return;
 
-                                                                fetch('http://localhost:3000/api/settlements', {
+                                                                fetch(`${API_URL}/settlements`, {
                                                                     method: 'POST',
                                                                     headers: { 'Content-Type': 'application/json' },
                                                                     body: JSON.stringify({
@@ -1079,7 +1087,7 @@ export default function Dashboard() {
                                                 {s.status !== 'COMPLETED' && (
                                                     <button
                                                         onClick={() => {
-                                                            fetch(`http://localhost:3000/api/settlements/${s.id}/status`, {
+                                                            fetch(`${API_URL}/settlements/${s.id}/status`, {
                                                                 method: 'PATCH',
                                                                 headers: { 'Content-Type': 'application/json' },
                                                                 body: JSON.stringify({ status: 'COMPLETED', settlementDate: new Date() })
@@ -1179,15 +1187,15 @@ export default function Dashboard() {
                                 <button
                                     onClick={() => {
                                         const newState = !panelEnabled;
-                                        fetch('http://localhost:3000/api/group-deals/panel-enabled', {
+                                        fetch(`${API_URL}/group-deals/panel-enabled`, {
                                             method: 'PATCH',
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({ enabled: newState })
                                         }).then(res => res.json()).then(data => setPanelEnabled(data.enabled));
                                     }}
                                     className={`px-6 py-3 rounded-2xl font-black text-sm transition-all active:scale-95 shadow-lg ${panelEnabled
-                                            ? 'bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white'
-                                            : 'bg-brand-light text-brand-dark hover:bg-white'
+                                        ? 'bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white'
+                                        : 'bg-brand-light text-brand-dark hover:bg-white'
                                         }`}
                                 >
                                     {panelEnabled ? 'Disable Panel' : 'Enable Panel'}
@@ -1201,7 +1209,7 @@ export default function Dashboard() {
                                         e.preventDefault();
                                         const formData = new FormData(e.target);
                                         const dealData = Object.fromEntries(formData.entries());
-                                        fetch('http://localhost:3000/api/group-deals', {
+                                        fetch(`${API_URL}/group-deals`, {
                                             method: 'POST',
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({
@@ -1279,7 +1287,7 @@ export default function Dashboard() {
                                                             <button
                                                                 onClick={() => {
                                                                     if (confirm('Are you sure you want to deactivate this deal?')) {
-                                                                        fetch(`http://localhost:3000/api/group-deals/${d.id}/deactivate`, { method: 'PATCH' })
+                                                                        fetch(`${API_URL}/group-deals/${d.id}/deactivate`, { method: 'PATCH' })
                                                                             .then(() => window.location.reload());
                                                                     }
                                                                 }}

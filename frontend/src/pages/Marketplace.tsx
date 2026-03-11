@@ -4,6 +4,7 @@ import ProductCard from '../components/ProductCard';
 import Navbar from '../components/Navbar';
 import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_URL } from '../config';
 
 export default function Marketplace() {
     const [products, setProducts] = useState<any[]>([]);
@@ -28,7 +29,7 @@ export default function Marketplace() {
 
     // Fetch categories once
     useEffect(() => {
-        fetch('http://localhost:3000/api/categories')
+        fetch(`${API_URL}/categories`)
             .then(res => res.json())
             .then(data => setCategories(['All', ...data.map((c: any) => c.name)]))
             .catch(() => { });
@@ -44,7 +45,7 @@ export default function Marketplace() {
         if (maxPrice) params.set('maxPrice', maxPrice);
         if (sort !== 'newest') params.set('sort', sort === 'Price: Low–High' ? 'price_asc' : 'price_desc');
 
-        fetch(`http://localhost:3000/api/products?${params.toString()}`)
+        fetch(`${API_URL}/products?${params.toString()}`)
             .then(res => res.json())
             .then(data => { setProducts(data); setLoading(false); })
             .catch(() => setLoading(false));

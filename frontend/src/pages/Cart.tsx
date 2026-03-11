@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Trash2, ShoppingBag } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { API_URL } from '../config';
 
 export default function Cart() {
     const { items, removeFromCart, cartTotal, clearCart } = useCart();
@@ -27,7 +28,7 @@ export default function Cart() {
                 }))
             };
 
-            const response = await fetch('http://localhost:3000/api/orders', {
+            const response = await fetch(`${API_URL}/orders`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderData)

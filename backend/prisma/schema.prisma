@@ -1,148 +1,129 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL") // Optional, but recommended for Supabase
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// Enum Role removed for SQLite compatibility. Using String instead.
-// FARMER, RETAILER, ADMIN
-
-
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String
-  role      String   @default("BUYER") // BUYER, FARMER, ADMIN
-  phone     String?
-  address   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  profile        Profile?
-  products       Product[]
-  orders         Order[]        @relation("BuyerOrders")
-  deliveryTasks  Order[]        @relation("DeliveryOrders")
-  groupMembers   GroupMember[]
-  settlements    Settlement[]   @relation("FarmerSettlements")
-  notifications  Notification[]
-  reviews        Review[]
+  id               Int            @id @default(autoincrement())
+  email            String         @unique
+  password         String
+  name             String
+  role             String         @default("BUYER")
+  phone            String?
+  address          String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  groupMembers     GroupMember[]
+  notifications    Notification[]
+  orders           Order[]        @relation("BuyerOrders")
+  deliveryTasks    Order[]        @relation("DeliveryOrders")
+  products         Product[]
+  profile          Profile?
+  reviews          Review[]
+  settlements      Settlement[]   @relation("FarmerSettlements")
 }
 
 model Profile {
-  id          Int     @id @default(autoincrement())
-  bio         String?
-  location    String?
-  phoneNumber String?
-  farmName    String? // Specific to Farmers
-  businessId  String? // Tax ID etc.
-  
-  userId      Int     @unique
-  user        User    @relation(fields: [userId], references: [id])
-  
-  // Banking Details for Settlements
+  id            Int     @id @default(autoincrement())
+  bio           String?
+  location      String?
+  phoneNumber   String?
+  farmName      String?
+  businessId    String?
+  userId        Int     @unique
   bankName      String?
   accountNumber String?
   accountName   String?
+  user          User    @relation(fields: [userId], references: [id])
 }
 
 model Category {
-  id    Int       @id @default(autoincrement())
-  name  String    @unique
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
   products Product[]
 }
 
 model Product {
-  id             Int      @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   name           String
   description    String?
   price          Decimal
-  unit           String   // e.g., "kg", "bunch", "box"
-  stock          Int      @default(0)
-  categoryName   String?  // Keep for simplicity
-  category       Category? @relation(fields: [categoryName], references: [name])
+  unit           String
+  stock          Int           @default(0)
+  categoryName   String?
   imageUrl       String?
-  
-  // Traceability Fields
-  traceabilityId String   @unique @default(uuid()) // Unique ID for QR code
+  traceabilityId String        @unique @default(uuid())
   harvestDate    DateTime?
-  
   farmerId       Int
-  farmer         User     @relation(fields: [farmerId], references: [id])
-  orderItems     OrderItem[]
-  journey        JourneyStep[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
   groupDeals     GroupDeal[]
+  journey        JourneyStep[]
+  orderItems     OrderItem[]
+  category       Category?     @relation(fields: [categoryName], references: [name])
+  farmer         User          @relation(fields: [farmerId], references: [id])
   reviews        Review[]
-  
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
 }
 
 model JourneyStep {
   id          Int      @id @default(autoincrement())
-  stage       String   // e.g., "Harvested", "Quality Check", "Departed Farm"
-  location    String   // e.g., "Ondo Farm", "Lagos Hub"
+  stage       String
+  location    String
   date        DateTime @default(now())
   description String?
-  
   productId   Int
   product     Product  @relation(fields: [productId], references: [id])
 }
 
 model Order {
-  id              Int      @id @default(autoincrement())
-  status          String   @default("PENDING") // PENDING, CONFIRMED, SHIPPED, DELIVERED
+  id              Int         @id @default(autoincrement())
+  status          String      @default("PENDING")
   totalAmount     Decimal
   shippingAddress String?
   paymentMethod   String?
   deliveryDate    DateTime?
   trackingNote    String?
-  
   buyerId         Int
-  buyer           User     @relation("BuyerOrders", fields: [buyerId], references: [id])
-  
   deliveryAgentId Int?
-  deliveryAgent   User?    @relation("DeliveryOrders", fields: [deliveryAgentId], references: [id])
-  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  buyer           User        @relation("BuyerOrders", fields: [buyerId], references: [id])
+  deliveryAgent   User?       @relation("DeliveryOrders", fields: [deliveryAgentId], references: [id])
   items           OrderItem[]
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
 }
 
 model OrderItem {
-  id        Int     @id @default(autoincrement())
-  orderId   Int
-  order     Order   @relation(fields: [orderId], references: [id])
-  productId Int
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Decimal // Captured price at time of order
-  
+  id           Int         @id @default(autoincrement())
+  orderId      Int
+  productId    Int
+  quantity     Int
+  price        Decimal
   settlementId Int?
+  order        Order       @relation(fields: [orderId], references: [id])
+  product      Product     @relation(fields: [productId], references: [id])
   settlement   Settlement? @relation(fields: [settlementId], references: [id])
 }
 
 model Settlement {
-  id              Int      @id @default(autoincrement())
-  farmerId        Int
-  farmer          User     @relation("FarmerSettlements", fields: [farmerId], references: [id])
-  amount          Decimal  // Total sales amount
-  commission      Decimal  // Fammerce commission
-  netAmount       Decimal  // Amount to be paid to farmer (amount - commission)
-  status          String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
-  reference       String?  @unique
-  settlementDate  DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  items           OrderItem[]
+  id             Int         @id @default(autoincrement())
+  farmerId       Int
+  amount         Decimal
+  commission     Decimal
+  netAmount      Decimal
+  status         String      @default("PENDING")
+  reference      String?     @unique
+  settlementDate DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  items          OrderItem[]
+  farmer         User        @relation("FarmerSettlements", fields: [farmerId], references: [id])
 }
 
 model Recipe {
@@ -152,62 +133,55 @@ model Recipe {
   instructions String?
   imageUrl     String?
   servings     Int          @default(4)
-  mealType     String       @default("LUNCH") // BREAKFAST, LUNCH, DINNER
+  mealType     String       @default("LUNCH")
   ingredients  Ingredient[]
 }
 
 model Ingredient {
   id             Int    @id @default(autoincrement())
-  name           String // Display name e.g. "Fresh Tomatoes"
-  productKeyword String // Keyword to search for e.g. "tomato"
-  quantity       Int    // Quantity required e.g. 2 (units dependent on matching product, simplified for MVP)
-  
+  name           String
+  productKeyword String
+  quantity       Int
   recipeId       Int
   recipe         Recipe @relation(fields: [recipeId], references: [id])
 }
 
-// Group Buying Models
 model GroupDeal {
-  id              Int      @id @default(autoincrement())
-  title           String   // e.g., "50 Eggs Discount Deal"
+  id              Int         @id @default(autoincrement())
+  title           String
   description     String?
-  discountPrice   Decimal  // e.g., 2000
-  originalPrice   Decimal  // e.g., 2800 (reference)
-  minParticipants Int      @default(4)
-  durationHours   Int      @default(48)
+  discountPrice   Decimal
+  originalPrice   Decimal
+  minParticipants Int         @default(4)
+  durationHours   Int         @default(48)
   imageUrl        String?
-  active          Boolean  @default(true)
-  
+  active          Boolean     @default(true)
   productId       Int
-  product         Product  @relation(fields: [productId], references: [id])
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
   groups          DealGroup[]
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  product         Product     @relation(fields: [productId], references: [id])
 }
 
 model DealGroup {
-  id          Int           @id @default(autoincrement())
-  status      String        @default("ACTIVE") // ACTIVE, SUCCESS, EXPIRED, CANCELLED
-  expiresAt   DateTime
-  
-  dealId      Int
-  deal        GroupDeal     @relation(fields: [dealId], references: [id])
-  members     GroupMember[]
-  
-  creatorId   Int
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        Int           @id @default(autoincrement())
+  status    String        @default("ACTIVE")
+  expiresAt DateTime
+  dealId    Int
+  creatorId Int
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  deal      GroupDeal     @relation(fields: [dealId], references: [id])
+  members   GroupMember[]
 }
 
 model GroupMember {
-  id        Int       @id @default(autoincrement())
-  userId    Int
-  user      User      @relation(fields: [userId], references: [id])
-  groupId   Int
-  group     DealGroup @relation(fields: [groupId], references: [id])
-  joinedAt  DateTime  @default(now())
+  id       Int       @id @default(autoincrement())
+  userId   Int
+  groupId  Int
+  joinedAt DateTime  @default(now())
+  group    DealGroup @relation(fields: [groupId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
 
   @@unique([userId, groupId])
 }
@@ -215,29 +189,29 @@ model GroupMember {
 model Notification {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
   title     String
   body      String
   read      Boolean  @default(false)
-  type      String   @default("INFO") // INFO, ORDER, SETTLEMENT
+  type      String   @default("INFO")
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Review {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
   productId Int
-  product   Product  @relation(fields: [productId], references: [id])
-  rating    Int      // 1 - 5
+  rating    Int
   comment   String?
   createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, productId])
 }
 
 model GlobalSetting {
-  id    Int     @id @default(autoincrement())
-  key   String  @unique
+  id    Int    @id @default(autoincrement())
+  key   String @unique
   value String
 }

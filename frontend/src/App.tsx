@@ -13,6 +13,9 @@ import Register from './pages/Register';
 import Checkout from './pages/Checkout';
 import OrderHistory from './pages/OrderHistory';
 import FarmerProfile from './pages/FarmerProfile';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+
 
 import ProtectedRoute from './components/ProtectedRoute';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -32,6 +35,9 @@ function App() {
                 <Route path="/trace/:id" element={<PageWrapper><TracePage /></PageWrapper>} />
                 <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
                 <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
+                <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
+                <Route path="/reset-password/:token" element={<PageWrapper><ResetPassword /></PageWrapper>} />
+
                 <Route path="/farmer/:id" element={<PageWrapper><FarmerProfile /></PageWrapper>} />
 
                 {/* Protected Routes */}

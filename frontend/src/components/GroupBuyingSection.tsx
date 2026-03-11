@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Timer, ArrowRight, CheckCircle2, X, ShoppingBag, ChevronUp, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../config';
 
 /**
  * GroupBuyingSection — Seasonal floating panel.
@@ -17,13 +18,13 @@ export default function GroupBuyingSection() {
 
     useEffect(() => {
         // Check if admin has enabled the floating panel
-        fetch('http://localhost:3000/api/group-deals/panel-enabled')
+        fetch(`${API_URL}/group-deals/panel-enabled`)
             .then(res => res.json())
             .then(data => {
                 setPanelEnabled(data.enabled);
                 if (data.enabled) {
                     // Fetch active deals
-                    fetch('http://localhost:3000/api/group-deals')
+                    fetch(`${API_URL}/group-deals`)
                         .then(res => res.json())
                         .then(d => setDeals(d));
                 }
@@ -140,15 +141,16 @@ function FloatingDealCard({ deal, index }: { deal: any, index: number }) {
         if (!user) { alert('Please login to participate in group deals!'); return; }
         setLoadingAction(true);
         try {
-            const endpoint = activeGroup
-                ? `http://localhost:3000/api/group-deals/groups/${activeGroup.id}/join`
-                : `http://localhost:3000/api/group-deals/${deal.id}/start`;
-
-            const res = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user.id })
-            });
+            const res = await fetch(
+                activeGroup
+                    ? `${API_URL}/group-deals/groups/${activeGroup.id}/join`
+                    : `${API_URL}/group-deals/${deal.id}/start`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: user.id })
+                }
+            );
 
             if (res.ok) {
                 alert(activeGroup ? 'Successfully joined the group!' : 'Group started! Invite your friends.');

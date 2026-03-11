@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, CreditCard, Truck, CheckCircle, ShoppingBag } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import { API_URL } from '../config';
 
 export default function Checkout() {
     const { items, cartTotal, clearCart } = useCart();
@@ -43,7 +44,7 @@ export default function Checkout() {
                 paymentMethod: formData.paymentMethod
             };
 
-            const response = await fetch('http://localhost:3000/api/orders', {
+            const response = await fetch(`${API_URL}/orders`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderData)
@@ -54,7 +55,7 @@ export default function Checkout() {
 
                 if (formData.paymentMethod === 'card') {
                     // Initialize Payment
-                    const payRes = await fetch('http://localhost:3000/api/payments/initialize', {
+                    const payRes = await fetch(`${API_URL}/payments/initialize`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -75,7 +76,7 @@ export default function Checkout() {
                             ref: payData.reference,
                             callback: async (response: any) => {
                                 // Verify Payment on Backend
-                                const verifyRes = await fetch('http://localhost:3000/api/payments/verify', {
+                                const verifyRes = await fetch(`${API_URL}/payments/verify`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
@@ -199,7 +200,7 @@ export default function Checkout() {
                                     Payment Method
                                 </h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <label className={`relative flex flex-col p-6 rounded-3xl cursor-pointer transition-all border-2 ${formData.paymentMethod === 'card' ? 'border-brand-dark bg-brand-dark/5' : 'border-gray-100 hover:border-brand-light'}`}>
+                                    <label className={`relative flex flex - col p - 6 rounded - 3xl cursor - pointer transition - all border - 2 ${formData.paymentMethod === 'card' ? 'border-brand-dark bg-brand-dark/5' : 'border-gray-100 hover:border-brand-light'}`}>
                                         <input
                                             type="radio"
                                             name="paymentMethod"
@@ -213,7 +214,7 @@ export default function Checkout() {
                                         <span className="block text-sm text-gray-500 mt-1">Paystack / Flutterwave</span>
                                     </label>
 
-                                    <label className={`relative flex flex-col p-6 rounded-3xl cursor-pointer transition-all border-2 ${formData.paymentMethod === 'cod' ? 'border-brand-dark bg-brand-dark/5' : 'border-gray-100 hover:border-brand-light'}`}>
+                                    <label className={`relative flex flex - col p - 6 rounded - 3xl cursor - pointer transition - all border - 2 ${formData.paymentMethod === 'cod' ? 'border-brand-dark bg-brand-dark/5' : 'border-gray-100 hover:border-brand-light'}`}>
                                         <input
                                             type="radio"
                                             name="paymentMethod"

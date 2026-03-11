@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { MapPin, Calendar, User, CheckCircle } from 'lucide-react';
+import { API_URL } from '../config';
 
 export default function TracePage() {
     const { id } = useParams();
@@ -9,7 +10,7 @@ export default function TracePage() {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        fetch(`http://localhost:3000/api/trace/${id}`)
+        fetch(`${API_URL}/trace/${id}`)
             .then(res => {
                 if (!res.ok) throw new Error('Product not found');
                 return res.json();

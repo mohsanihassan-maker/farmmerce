@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
+import { API_URL } from '../config';
 
 interface Notification {
     id: number;
@@ -26,7 +27,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     const fetchNotifications = useCallback(() => {
         if (!user) return;
-        fetch(`http://localhost:3000/api/notifications/${user.id}`)
+        fetch(`${API_URL}/notifications/${user.id}`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setNotifications(data);
@@ -42,13 +43,13 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     }, [fetchNotifications]);
 
     const markRead = async (id: number) => {
-        await fetch(`http://localhost:3000/api/notifications/${id}/read`, { method: 'PATCH' });
+        await fetch(`${API_URL}/notifications/${id}/read`, { method: 'PATCH' });
         setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
     };
 
     const markAllRead = async () => {
         if (!user) return;
-        await fetch(`http://localhost:3000/api/notifications/read-all/${user.id}`, { method: 'PATCH' });
+        await fetch(`${API_URL}/notifications/read-all/${user.id}`, { method: 'PATCH' });
         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
     };
 

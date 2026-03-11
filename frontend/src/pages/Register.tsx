@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Lock, Mail, User, ArrowRight, Sprout, ShoppingCart } from 'lucide-react';
+import { Lock, Mail, User, ArrowRight, Sprout, ShoppingCart, Eye, EyeOff } from 'lucide-react';
+
 import { motion } from 'framer-motion';
+import { API_URL } from '../config';
 
 export default function Register() {
     const [name, setName] = useState('');
@@ -11,7 +13,9 @@ export default function Register() {
     const [role, setRole] = useState('BUYER'); // BUYER or FARMER
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const { login } = useAuth();
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -20,7 +24,7 @@ export default function Register() {
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:3000/api/auth/register', {
+            const response = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password, role })
@@ -32,8 +36,9 @@ export default function Register() {
                 throw new Error(data.error || 'Registration failed');
             }
 
-            login(data.user);
+            login(data.user, data.token);
             navigate('/dashboard');
+
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -121,14 +126,22 @@ export default function Register() {
                                 <input
                                     id="password"
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     autoComplete="new-password"
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full pl-10 bg-white/10 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-brand-light focus:border-brand-light sm:text-sm p-3 transition-colors"
+                                    className="block w-full pl-10 pr-10 bg-white/10 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-brand-light focus:border-brand-light sm:text-sm p-3 transition-colors"
                                     placeholder="••••••••"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+
                             </div>
                         </div>
 

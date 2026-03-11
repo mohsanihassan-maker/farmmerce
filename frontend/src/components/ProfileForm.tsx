@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../config';
 import { User, Mail, Phone, MapPin, Save } from 'lucide-react';
 
 export default function ProfileForm() {
@@ -19,7 +20,7 @@ export default function ProfileForm() {
     useEffect(() => {
         if (user) {
             // Fetch latest user data
-            fetch(`http://localhost:3000/api/users/${user.id}`)
+            fetch(`${API_URL}/users/${user.id}`)
                 .then(res => res.json())
                 .then(data => {
                     setFormData({
@@ -42,7 +43,7 @@ export default function ProfileForm() {
         setMessage('');
 
         try {
-            const response = await fetch(`http://localhost:3000/api/users/${user?.id}`, {
+            const response = await fetch(`${API_URL}/users/${user?.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

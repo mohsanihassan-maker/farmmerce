@@ -5,6 +5,7 @@ import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import { MapPin, Star, Package, ArrowLeft, ShieldCheck, MessageCircle, Calendar, Award, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { API_URL } from '../config';
 
 export default function FarmerProfile() {
     const { id } = useParams();
@@ -14,7 +15,7 @@ export default function FarmerProfile() {
 
     useEffect(() => {
         if (!id) return;
-        fetch(`http://localhost:3000/api/users/${id}/profile`)
+        fetch(`${API_URL}/users/${id}/profile`)
             .then(res => res.json())
             .then(data => {
                 setFarmer(data);

@@ -8,6 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import Navbar from '../components/Navbar';
+import { API_URL } from '../config';
 
 const MealTypeIcon = ({ type }: { type: string }) => {
     switch (type.toUpperCase()) {
@@ -34,7 +35,7 @@ export default function MealPlanner() {
         setLoading(true);
         setPlan(null);
         try {
-            const res = await fetch('http://localhost:3000/api/recipes/generate-plan', {
+            const res = await fetch(`${API_URL}/recipes/generate-plan`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ budget, days })

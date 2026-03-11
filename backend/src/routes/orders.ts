@@ -31,19 +31,36 @@ router.post('/', async (req, res) => {
             });
         }
 
-        // Transaction to create order and items
-        const order = await prisma.order.create({
-            data: {
-                buyerId: Number(buyerId),
-                totalAmount: totalAmount,
-                shippingAddress,
-                paymentMethod,
-                status: 'PENDING',
-                items: {
-                    create: orderItemsData
-                }
-            },
-            include: { items: { include: { product: { include: { farmer: true } } } } }
+        // Transaction to create order, items, and deduct stock
+        const order = await prisma.$transaction(async (tx) => {
+            // 1. Create the order
+            const newOrder = await tx.order.create({
+                data: {
+                    buyerId: Number(buyerId),
+                    totalAmount: totalAmount,
+                    shippingAddress,
+                    paymentMethod,
+                    status: 'PENDING',
+                    items: {
+                        create: orderItemsData
+                    }
+                },
+                include: { items: { include: { product: { include: { farmer: true } } } } }
+            });
+
+            // 2. Deduct stock for each item
+            for (const item of items) {
+                await tx.product.update({
+                    where: { id: item.productId },
+                    data: {
+                        stock: {
+                            decrement: item.quantity
+                        }
+                    }
+                });
+            }
+
+            return newOrder;
         });
 
         // Notify each unique farmer about the new order

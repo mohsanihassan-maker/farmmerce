@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Image as ImageIcon } from 'lucide-react';
+import { API_URL } from '../config';
 
 interface ProductFormProps {
     onSubmit: (data: any) => void;
@@ -20,7 +21,7 @@ export default function ProductForm({ onSubmit, onCancel }: ProductFormProps) {
     const [categories, setCategories] = useState<any[]>([]);
 
     useEffect(() => {
-        fetch('http://localhost:3000/api/categories')
+        fetch(`${API_URL}/categories`)
             .then(res => res.json())
             .then(data => {
                 setCategories(data);

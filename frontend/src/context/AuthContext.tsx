@@ -5,12 +5,12 @@ interface User {
     email: string;
     name: string;
     role: string;
-    token?: string; // Optional if we use token auth later
 }
 
 interface AuthContextType {
     user: User | null;
-    login: (userData: User) => void;
+    token: string | null;
+    login: (userData: User, token: string) => void;
     logout: () => void;
     isAuthenticated: boolean;
     loading: boolean;
@@ -32,39 +32,48 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Check local storage on mount
         const storedUser = localStorage.getItem('fammerce_user');
-        if (storedUser) {
+        const storedToken = localStorage.getItem('fammerce_token');
+
+        if (storedUser && storedToken) {
             try {
                 setUser(JSON.parse(storedUser));
+                setToken(storedToken);
             } catch (error) {
                 console.error('Failed to parse stored user', error);
                 localStorage.removeItem('fammerce_user');
+                localStorage.removeItem('fammerce_token');
             }
         }
         setLoading(false);
     }, []);
 
-    const login = (userData: User) => {
+    const login = (userData: User, authToken: string) => {
         setUser(userData);
+        setToken(authToken);
         localStorage.setItem('fammerce_user', JSON.stringify(userData));
+        localStorage.setItem('fammerce_token', authToken);
     };
 
     const logout = () => {
         setUser(null);
+        setToken(null);
         localStorage.removeItem('fammerce_user');
-        // Optional: Redirect to login or home
+        localStorage.removeItem('fammerce_token');
         window.location.href = '/login';
     };
 
     const value = {
         user,
+        token,
         login,
         logout,
-        isAuthenticated: !!user,
+        isAuthenticated: !!user && !!token,
         loading
     };
 
@@ -74,3 +83,4 @@ export function AuthProvider({ children }: AuthProviderProps) {
         </AuthContext.Provider>
     );
 }
+

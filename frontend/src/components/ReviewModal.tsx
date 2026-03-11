@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Star, MessageSquare, Send, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../config';
 
 interface Review {
     id: number;
@@ -35,7 +36,7 @@ export default function ReviewModal({ isOpen, onClose, productId, productName }:
 
     const fetchReviews = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/api/products/${productId}/reviews`);
+            const res = await fetch(`${API_URL}/products/${productId}/reviews`);
             const data = await res.json();
             setReviews(data.reviews || []);
             setAvgRating(data.avgRating || 0);
@@ -74,7 +75,7 @@ export default function ReviewModal({ isOpen, onClose, productId, productName }:
 
         setSubmitting(true);
         try {
-            const res = await fetch(`http://localhost:3000/api/products/${productId}/reviews`, {
+            const res = await fetch(`${API_URL}/products/${productId}/reviews`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: user.id, rating, comment })

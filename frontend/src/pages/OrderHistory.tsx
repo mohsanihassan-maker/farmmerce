@@ -4,6 +4,9 @@ import { ShoppingBag, ChevronRight, Clock, MapPin, CreditCard, User, Star, X } f
 import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { API_URL } from '../config';
+import { api } from '../api';
+
 
 export default function OrderHistory() {
     const { user } = useAuth();
@@ -17,7 +20,7 @@ export default function OrderHistory() {
     useEffect(() => {
         if (!user) return;
 
-        fetch(`http://localhost:3000/api/orders?buyerId=${user.id}`)
+        api.get(`/orders?buyerId=${user.id}`)
             .then(res => res.json())
             .then(data => {
                 setOrders(data);
@@ -29,21 +32,19 @@ export default function OrderHistory() {
             });
     }, [user]);
 
+
     const handleReviewSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user || !reviewingItem) return;
 
         setSubmitting(true);
         try {
-            const res = await fetch(`http://localhost:3000/api/products/${reviewingItem.productId}/reviews`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: user.id,
-                    rating,
-                    comment
-                })
+            const res = await api.post(`/products/${reviewingItem.productId}/reviews`, {
+                userId: user.id,
+                rating,
+                comment
             });
+
 
             if (res.ok) {
                 setReviewingItem(null);
