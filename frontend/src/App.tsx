@@ -19,8 +19,43 @@ import ResetPassword from './pages/ResetPassword';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import { AnimatePresence, motion } from 'framer-motion';
+import { isSupabaseConfigured } from './supabase';
+import { AlertCircle, Terminal } from 'lucide-react';
 
 function App() {
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="min-h-screen bg-brand-dark flex items-center justify-center p-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 text-center"
+        >
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-red/20 mb-6">
+            <AlertCircle className="w-8 h-8 text-brand-red" />
+          </div>
+          <h1 className="text-2xl font-bold mb-4">Configuration Required</h1>
+          <p className="text-white/80 mb-6 leading-relaxed">
+            The application is missing critical environment variables. Please ensure the following are set in your Vercel project settings:
+          </p>
+          <div className="bg-black/30 rounded-lg p-4 text-left font-mono text-sm space-y-2 mb-6 border border-white/10">
+            <div className="flex items-center gap-2 text-brand-light">
+              <Terminal className="w-4 h-4" />
+              <span>VITE_SUPABASE_URL</span>
+            </div>
+            <div className="flex items-center gap-2 text-brand-light">
+              <Terminal className="w-4 h-4" />
+              <span>VITE_SUPABASE_ANON_KEY</span>
+            </div>
+          </div>
+          <p className="text-xs text-white/50">
+            Once set, redeploy the site to apply the changes.
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <AuthProvider>
       <NotificationProvider>
