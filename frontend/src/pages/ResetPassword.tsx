@@ -17,32 +17,57 @@ export default function ResetPassword() {
 
     useEffect(() => {
         const checkSession = async () => {
-            // If we have a direct token from the URL path, we are using the custom backend flow
-            if (token) {
-                setVerifying(false);
-                return;
-            }
+             console.log('ResetPassword: Checking session...');
+             const timeoutId = setTimeout(() => {
+                 if (verifying) {
+                     console.warn('ResetPassword: Session check timed out, showing form anyway.');
+                     setVerifying(false);
+                 }
+             }, 5000); // 5s timeout
 
-            // Otherwise, check for Supabase redirect parameters
-            const params = new URLSearchParams(window.location.search);
-            const errorCode = params.get('error_code');
-            const errorDescription = params.get('error_description');
-
-            if (errorCode) {
-                if (errorCode === 'otp_expired') {
-                    setError('The reset link has expired. Please request a new one.');
-                } else {
-                    setError(`Authentication error: ${errorDescription || errorCode}`);
+            try {
+                // If we have a direct token from the URL path, we are using the custom backend flow
+                if (token) {
+                    console.log('ResetPassword: Custom token found:', token);
+                    setVerifying(false);
+                    clearTimeout(timeoutId);
+                    return;
                 }
-                setVerifying(false);
-                return;
-            }
 
-            const { data } = await supabase.auth.getSession();
-            if (!data.session) {
-                setError('Invalid or expired reset link. Please request a new one.');
+                // Otherwise, check for Supabase redirect parameters
+                const params = new URLSearchParams(window.location.search);
+                const errorCode = params.get('error_code');
+                const errorDescription = params.get('error_description');
+
+                if (errorCode) {
+                    console.log('ResetPassword: Error code in URL:', errorCode);
+                    if (errorCode === 'otp_expired') {
+                        setError('The reset link has expired. Please request a new one.');
+                    } else {
+                        setError(`Authentication error: ${errorDescription || errorCode}`);
+                    }
+                    setVerifying(false);
+                    clearTimeout(timeoutId);
+                    return;
+                }
+
+                console.log('ResetPassword: Calling supabase.auth.getSession()...');
+                const { data, error: sbError } = await supabase.auth.getSession();
+                if (sbError) throw sbError;
+
+                if (!data.session) {
+                    console.warn('ResetPassword: No Supabase session found.');
+                    setError('Invalid or expired reset link. Please request a new one.');
+                } else {
+                    console.log('ResetPassword: Session verified.');
+                }
+            } catch (err: any) {
+                console.error('ResetPassword: Session check failed:', err);
+                setError('Failed to verify reset link. Please try again.');
+            } finally {
+                setVerifying(false);
+                clearTimeout(timeoutId);
             }
-            setVerifying(false);
         };
         checkSession();
     }, [token]);
@@ -206,7 +231,7 @@ export default function ResetPassword() {
                             </p>
                             <Link
                                 to="/login"
-                                className="inline-flex items-center text-brand-light font-bold hover:text-white transition-colorsCondensed"
+                                className="inline-flex items-center text-brand-light font-bold hover:text-white transition-colors"
                             >
                                 Click here if not redirected
                             </Link>
