@@ -40,39 +40,57 @@ export function AuthProvider({ children }: AuthProviderProps) {
     useEffect(() => {
         // Initial session check
         const initAuth = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            const storedUser = localStorage.getItem('fammerce_user');
-            const storedToken = localStorage.getItem('fammerce_token');
+            try {
+                console.log('Initializing Auth...');
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError) throw sessionError;
 
-            if (session) {
-                if (storedUser) {
+                const storedUser = localStorage.getItem('fammerce_user');
+                const storedToken = localStorage.getItem('fammerce_token');
+
+                if (session) {
+                    console.log('Supabase session found');
+                    if (storedUser) {
+                        setUser(JSON.parse(storedUser));
+                    }
+                    setToken(session.access_token);
+                    localStorage.setItem('fammerce_token', session.access_token);
+                } else if (storedUser && storedToken) {
+                    console.log('Local session fallback found');
+                    // Fallback for custom backend session
                     setUser(JSON.parse(storedUser));
+                    setToken(storedToken);
+                } else {
+                    console.log('No active session found');
                 }
-                setToken(session.access_token);
-                localStorage.setItem('fammerce_token', session.access_token);
-            } else if (storedUser && storedToken) {
-                // Fallback for custom backend session
-                setUser(JSON.parse(storedUser));
-                setToken(storedToken);
+            } catch (err) {
+                console.error('Auth initialization failed:', err);
+            } finally {
+                setLoading(false);
             }
-            
-            setLoading(false);
         };
 
         initAuth();
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('Auth state change event:', event);
             if (event === 'PASSWORD_RECOVERY') {
                 window.location.href = '/reset-password';
+                // The original instruction had JSX here, which is not valid in this context.
+                // If a redirect with a message is needed, it should be handled by the component
+                // that consumes this context or by a dedicated redirect component.
+                // For now, just redirecting.
                 return;
             }
 
             if (session) {
+                console.log('Auth state change: Session found');
                 setToken(session.access_token);
                 localStorage.setItem('fammerce_token', session.access_token);
             } else {
+                console.log('Auth state change: No session found');
                 setUser(null);
                 setToken(null);
                 localStorage.removeItem('fammerce_user');
