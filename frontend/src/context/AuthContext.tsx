@@ -42,14 +42,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const initAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             
+            const storedUser = localStorage.getItem('fammerce_user');
+            const storedToken = localStorage.getItem('fammerce_token');
+
             if (session) {
-                // We still need the user details from our local storage or DB
-                const storedUser = localStorage.getItem('fammerce_user');
                 if (storedUser) {
                     setUser(JSON.parse(storedUser));
                 }
                 setToken(session.access_token);
                 localStorage.setItem('fammerce_token', session.access_token);
+            } else if (storedUser && storedToken) {
+                // Fallback for custom backend session
+                setUser(JSON.parse(storedUser));
+                setToken(storedToken);
             }
             
             setLoading(false);
@@ -59,6 +64,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'PASSWORD_RECOVERY') {
+                window.location.href = '/reset-password';
+                return;
+            }
+
             if (session) {
                 setToken(session.access_token);
                 localStorage.setItem('fammerce_token', session.access_token);

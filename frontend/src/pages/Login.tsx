@@ -24,21 +24,11 @@ export default function Login() {
         setLoading(true);
 
         try {
-            // 1. Sign in with Supabase to get the session and enable email features
-            const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-                email,
-                password
-            });
-
-            if (authError) throw authError;
-
-            // 2. Still call our backend to get user role and details if necessary
-            // or just use the token from Supabase in the next call.
+            // 1. Call our backend first to handle JIT migration and role checking
             const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authData.session.access_token}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ email, password })
             });
@@ -50,11 +40,27 @@ export default function Login() {
                 throw new Error(errorMsg);
             }
 
-            login(data.user, authData.session.access_token);
+            // 2. If backend returned a token, try to set it as a session in Supabase
+            if (data.token) {
+                try {
+                   await supabase.auth.setSession({
+                       access_token: data.token,
+                       refresh_token: '' 
+                   });
+                } catch (sbErr) {
+                    console.warn('Supabase session sync skipped:', sbErr);
+                }
+            }
+
+            login(data.user, data.token);
             navigate('/dashboard');
 
         } catch (err: any) {
-            setError(err.message);
+            if (err instanceof TypeError && err.message === 'Failed to fetch') {
+                setError('Cannot connect to the backend server. Please make sure it is running on http://localhost:3000');
+            } else {
+                setError(err.message);
+            }
         } finally {
             setLoading(false);
         }

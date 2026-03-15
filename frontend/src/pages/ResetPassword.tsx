@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Lock, ArrowRight, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../supabase';
 
 export default function ResetPassword() {
+    const { token } = useParams<{ token?: string }>();
     const navigate = useNavigate();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -14,8 +15,29 @@ export default function ResetPassword() {
     const [success, setSuccess] = useState(false);
     const [verifying, setVerifying] = useState(true);
 
-    useState(() => {
+    useEffect(() => {
         const checkSession = async () => {
+            // If we have a direct token from the URL path, we are using the custom backend flow
+            if (token) {
+                setVerifying(false);
+                return;
+            }
+
+            // Otherwise, check for Supabase redirect parameters
+            const params = new URLSearchParams(window.location.search);
+            const errorCode = params.get('error_code');
+            const errorDescription = params.get('error_description');
+
+            if (errorCode) {
+                if (errorCode === 'otp_expired') {
+                    setError('The reset link has expired. Please request a new one.');
+                } else {
+                    setError(`Authentication error: ${errorDescription || errorCode}`);
+                }
+                setVerifying(false);
+                return;
+            }
+
             const { data } = await supabase.auth.getSession();
             if (!data.session) {
                 setError('Invalid or expired reset link. Please request a new one.');
@@ -23,7 +45,7 @@ export default function ResetPassword() {
             setVerifying(false);
         };
         checkSession();
-    });
+    }, [token]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,12 +64,29 @@ export default function ResetPassword() {
         setLoading(true);
 
         try {
-            const { error: resetError } = await supabase.auth.updateUser({
-                password: password
-            });
+            if (token) {
+                // Custom backend reset flow
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/reset-password/${token}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password })
+                });
 
-            if (resetError) {
-                throw resetError;
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to reset password');
+                }
+            } else {
+                // Supabase reset flow
+                const { error: resetError } = await supabase.auth.updateUser({
+                    password: password
+                });
+
+                if (resetError) {
+                    throw resetError;
+                }
             }
 
             setSuccess(true);
