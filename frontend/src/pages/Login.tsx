@@ -24,43 +24,40 @@ export default function Login() {
         setLoading(true);
 
         try {
-            // 1. Call our backend first to handle JIT migration and role checking
-            const response = await fetch(`${API_URL}/auth/login`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
+            // 1. Sign in with Supabase first (works everywhere including Vercel)
+            const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                email,
+                password
             });
 
-            const data = await response.json();
+            if (authError) throw authError;
 
-            if (!response.ok) {
-                const errorMsg = data.details ? `${data.error}: ${data.details} (${data.code || ''})` : (data.error || 'Login failed');
-                throw new Error(errorMsg);
-            }
+            // 2. Try to sync with backend (optional — may not be available on Vercel)
+            let userData = { id: 0, email, name: email.split('@')[0], role: 'BUYER' };
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authData.session.access_token}`
+                    },
+                    body: JSON.stringify({ email, password })
+                });
 
-            // 2. If backend returned a token, try to set it as a session in Supabase
-            if (data.token) {
-                try {
-                   await supabase.auth.setSession({
-                       access_token: data.token,
-                       refresh_token: '' 
-                   });
-                } catch (sbErr) {
-                    console.warn('Supabase session sync skipped:', sbErr);
+                if (response.ok) {
+                    const data = await response.json();
+                    userData = data.user;
                 }
+            } catch (backendErr) {
+                // Backend not available (e.g. on Vercel) — continue with Supabase-only auth
+                console.warn('Backend sync skipped (not available):', backendErr);
             }
 
-            login(data.user, data.token);
+            login(userData, authData.session.access_token);
             navigate('/dashboard');
 
         } catch (err: any) {
-            if (err instanceof TypeError && err.message === 'Failed to fetch') {
-                setError('Cannot connect to the backend server. Please make sure it is running on http://localhost:3000');
-            } else {
-                setError(err.message);
-            }
+            setError(err.message || 'Login failed. Please check your email and password.');
         } finally {
             setLoading(false);
         }

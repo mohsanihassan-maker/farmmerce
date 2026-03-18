@@ -26,22 +26,7 @@ export default function Register() {
         setLoading(true);
 
         try {
-            // 1. Call backend registration first
-            const response = await fetch(`${API_URL}/auth/register`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name, email, password, role })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Registration failed');
-            }
-
-            // 2. Now handle Supabase signup to ensure the user exists in SB Auth
+            // 1. Sign up with Supabase first (works everywhere including Vercel)
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
@@ -53,19 +38,36 @@ export default function Register() {
                 }
             });
 
-            if (authError) {
-                // If it's a rate limit error, we should tell the user
-                if (authError.message.toLowerCase().includes('rate limit exceeded')) {
-                    throw authError;
+            if (authError) throw authError;
+
+            // 2. Try to sync with backend (optional — may not be available on Vercel)
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authData.session?.access_token || ''}`
+                    },
+                    body: JSON.stringify({ name, email, password, role })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (authData.session) {
+                        login(data.user, authData.session.access_token);
+                        navigate('/dashboard');
+                        return;
+                    }
                 }
-                // For other errors (like user already exists), we just log as we might still have a local account
-                console.warn('Supabase signup note:', authError.message);
+            } catch (backendErr) {
+                // Backend not available (e.g. on Vercel) — continue with Supabase-only auth
+                console.warn('Backend sync skipped (not available):', backendErr);
             }
 
-            // 3. Complete login
-            if (authData.session || data.token) {
-                const token = authData.session?.access_token || data.token;
-                login(data.user, token);
+            // 3. Complete login with Supabase-only data
+            if (authData.session) {
+                const userData = { id: 0, email, name, role };
+                login(userData, authData.session.access_token);
                 navigate('/dashboard');
             } else {
                 setError('Registration successful! Please check your email for a confirmation link.');
@@ -75,10 +77,8 @@ export default function Register() {
             console.error('Registration error:', err);
             let errorMessage = err.message || 'Failed to register. Please try again.';
             
-            if (errorMessage.toLowerCase().includes('email rate limit exceeded')) {
-                errorMessage = 'Email rate limit exceeded. Supabase free tier allows only a few registration emails per hour. Please wait about 1 minute and try again.';
-            } else if (err instanceof TypeError && err.message === 'Failed to fetch') {
-                errorMessage = 'Cannot connect to the backend server. Please make sure it is running on http://localhost:3000';
+            if (errorMessage.toLowerCase().includes('rate limit exceeded')) {
+                errorMessage = 'Too many attempts. Please wait a few minutes and try again.';
             }
             
             setError(errorMessage);
