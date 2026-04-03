@@ -86,14 +86,41 @@ router.post('/verify', async (req, res) => {
     }
 });
 
-// Webhook for Paystack
-router.post('/webhook', (req, res) => {
-    const hash = crypto.createHmac('sha512', PAYSTACK_SECRET).update(JSON.stringify(req.body)).digest('hex');
-    if (hash === req.headers['x-paystack-signature']) {
-        const event = req.body;
-        // Handle charge.success etc.
-        console.log('Paystack Webhook Event:', event.event);
+// Webhook for Paystack - Ensures async payment verification
+router.post('/webhook', async (req, res) => {
+    try {
+        const secret = PAYSTACK_SECRET || '';
+        const hash = crypto.createHmac('sha512', secret).update(JSON.stringify(req.body)).digest('hex');
+        
+        if (hash === req.headers['x-paystack-signature']) {
+            const event = req.body;
+            console.log(`[PAYSTACK WEBHOOK] Received event: ${event.event}`);
+
+            if (event.event === 'charge.success') {
+                const { orderId } = event.data.metadata;
+                const { reference, amount } = event.data;
+
+                console.log(`[PAYSTACK WEBHOOK] Payment success for Order #${orderId}, Ref: ${reference}, Amount: ${amount / 100}`);
+
+                if (orderId) {
+                    await prisma.order.update({
+                        where: { id: Number(orderId) },
+                        data: {
+                            status: 'CONFIRMED',
+                            paymentMethod: 'card'
+                        }
+                    });
+                    console.log(`[PAYSTACK WEBHOOK] Order #${orderId} marked as CONFIRMED`);
+                }
+            }
+        } else {
+            console.warn('[PAYSTACK WEBHOOK] Invalid signature detected');
+        }
+    } catch (error: any) {
+        console.error('[PAYSTACK WEBHOOK] Error processing webhook:', error.message);
     }
+    
+    // Always return 200 to Paystack
     res.sendStatus(200);
 });
 

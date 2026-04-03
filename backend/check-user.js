@@ -1,5 +1,10 @@
 const { Client } = require('pg');
-const connectionString = "postgresql://postgres.nxfptjazsogytfhvxmrb:Mohtop%402829@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?sslmode=require";
+const dotenv = require('dotenv');
+const path = require('path');
+
+dotenv.config({ path: path.join(__dirname, '.env') });
+
+const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL || "postgresql://postgres.nxfptjazsogytfhvxmrb:Mohtop%402829@aws-1-eu-west-1.pooler.supabase.com:5432/postgres";
 
 async function check() {
     const client = new Client({

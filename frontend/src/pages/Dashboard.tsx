@@ -364,9 +364,9 @@ export default function Dashboard() {
                             <Menu className="w-6 h-6" />
                         </button>
                         <h1 className="text-lg font-medium text-gray-900 capitalize">{activeTab.replace('-', ' ')}</h1>
-                        <div className="ml-4 px-3 py-1 bg-red-100 border border-red-200 rounded-full text-[10px] font-black text-red-700 flex items-center gap-2">
-                            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                            DEBUG: {user.email} ({user.role})
+                        <div className="ml-4 px-3 py-1 bg-brand-light/20 border border-brand-light/30 rounded-full text-[10px] font-bold text-brand-dark flex items-center gap-2">
+                            <User className="w-3 h-3" />
+                            {user.role}
                         </div>
                     </div>
                     {/* Notification Bell */}

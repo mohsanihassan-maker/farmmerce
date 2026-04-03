@@ -29,6 +29,13 @@ router.post('/register', async (req, res) => {
         
         if (existingUser) {
             if (token && supabaseUser) {
+                // Update supabaseId if missing
+                if (!existingUser.supabaseId) {
+                    await prisma.user.update({
+                        where: { id: existingUser.id },
+                        data: { supabaseId: supabaseUser.id }
+                    });
+                }
                 const { password: _, ...userWithoutPassword } = existingUser;
                 return res.status(200).json({
                     message: 'User already exists, linked to registration',
@@ -45,6 +52,7 @@ router.post('/register', async (req, res) => {
                 email,
                 password: hashedPassword,
                 name,
+                supabaseId: supabaseUser?.id, // Link if available
                 role: role || 'BUYER',
                 phone,
                 address
@@ -89,10 +97,27 @@ router.post('/login', async (req, res) => {
         if (token) {
             const { data: { user: sbUser }, error: sbError } = await supabase.auth.getUser(token);
             if (sbUser && !sbError) {
-                const user = await prisma.user.findUnique({
-                    where: { email: sbUser.email },
+                // Try finding by supabaseId first, then fallback to email
+                let user = await prisma.user.findUnique({
+                    where: { supabaseId: sbUser.id },
                     include: { profile: true }
                 });
+
+                if (!user) {
+                    user = await prisma.user.findUnique({
+                        where: { email: sbUser.email },
+                        include: { profile: true }
+                    });
+                    
+                    // Update supabaseId if found by email but missing Id
+                    if (user && !user.supabaseId) {
+                        await prisma.user.update({
+                            where: { id: user.id },
+                            data: { supabaseId: sbUser.id }
+                        });
+                    }
+                }
+
                 if (user) {
                     const { password: _, ...userWithoutPassword } = user;
                     return res.json({ message: 'Login successful via Supabase', token, user: userWithoutPassword });
@@ -131,8 +156,14 @@ router.post('/login', async (req, res) => {
             }
         });
 
-        // If signup failed because user exists in SB, we just ignore it.
-        // If it succeeded, they are now "shadow migrated".
+        // If signup failed because user exists in SB, we should still capture their Id if possible
+        const finalSupabaseId = sbData.user?.id;
+        if (finalSupabaseId && !user.supabaseId) {
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { supabaseId: finalSupabaseId }
+            });
+        }
         
         const newToken = sbData.session?.access_token || jwt.sign(
             { userId: user.id, role: user.role },
