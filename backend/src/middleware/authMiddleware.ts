@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabase } from '../utils/supabase';
+import prisma from '../utils/prisma';
 
 export interface AuthRequest extends Request {
     user?: {
@@ -22,11 +23,24 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
         const { data: { user }, error } = await supabase.auth.getUser(token);
 
         if (user && !error) {
-            // We need to find the local user ID by email since we link via email
-            const prisma = new (require('@prisma/client').PrismaClient)();
-            const localUser = await prisma.user.findUnique({
-                where: { email: user.email }
+            // Priority lookup: use supabaseId first, fallback to email
+            let localUser = await prisma.user.findUnique({
+                where: { supabaseId: user.id }
             });
+
+            if (!localUser) {
+                localUser = await prisma.user.findUnique({
+                    where: { email: user.email }
+                });
+                
+                // Sync supabaseId if found by email but id is missing
+                if (localUser && !localUser.supabaseId) {
+                    await prisma.user.update({
+                        where: { id: localUser.id },
+                        data: { supabaseId: user.id }
+                    });
+                }
+            }
 
             if (localUser) {
                 req.user = {

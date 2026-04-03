@@ -242,7 +242,7 @@ export default function Dashboard() {
                             <div className="flex flex-col items-center gap-8 px-4">
                                 <div className="p-6 bg-gray-50 rounded-[2.5rem] border-2 border-dashed border-gray-200 group hover:border-brand-dark transition-colors duration-500">
                                     <QRCodeCanvas
-                                        value={`http://localhost:5173/trace/${selectedQr.traceabilityId}`}
+                                        value={`${window.location.origin}/trace/${selectedQr.traceabilityId}`}
                                         size={220}
                                         level="H"
                                         includeMargin={true}
