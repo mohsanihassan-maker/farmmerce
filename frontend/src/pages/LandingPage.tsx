@@ -11,11 +11,13 @@ const LandingPage = () => {
     return (
         <div className="min-h-screen bg-brand-dark overflow-x-hidden">
             <Navbar />
-            <main>
+            <main className="bg-white">
                 <Hero />
-                <section className="bg-gray-50 py-20 border-y border-gray-100">
-                    <FoodBundleSelector isPublic />
-                </section>
+                
+                <div className="max-w-7xl mx-auto py-16">
+                    <FoodBundleSelector isCompact />
+                </div>
+
                 <MarketplaceShowcase />
                 <Features />
                 {/* Additional Sections can go here */}

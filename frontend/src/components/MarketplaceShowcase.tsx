@@ -54,13 +54,13 @@ export default function MarketplaceShowcase() {
                         </p>
                     </div>
 
-                    <a
-                        href="/market"
-                        className="flex items-center gap-2 px-8 py-4 bg-brand-dark text-white rounded-2xl font-bold hover:bg-black transition-all group shadow-xl shadow-brand-dark/10"
+                    <button
+                        onClick={() => window.location.href = '/market'}
+                        className="flex items-center gap-2 px-8 py-4 bg-brand-dark text-white rounded-[1.5rem] font-black uppercase tracking-widest text-xs hover:bg-black transition-all group shadow-xl shadow-brand-dark/10"
                     >
                         Explore Marketplace
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </a>
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform text-brand-light" />
+                    </button>
                 </div>
 
                 <motion.div
@@ -91,10 +91,10 @@ export default function MarketplaceShowcase() {
                 <div className="mt-20 pt-20 border-t border-gray-100">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {[
-                            { name: 'Vegetables', color: 'from-green-100/80 to-green-50 text-green-800 border-green-200/50', iconColor: 'text-green-600' },
-                            { name: 'Fruits', color: 'from-orange-100/80 to-orange-50 text-orange-800 border-orange-200/50', iconColor: 'text-orange-600' },
-                            { name: 'Grains', color: 'from-yellow-100/80 to-yellow-50 text-yellow-800 border-yellow-200/50', iconColor: 'text-yellow-600' },
-                            { name: 'Livestock', color: 'from-red-100/80 to-red-50 text-red-800 border-red-200/50', iconColor: 'text-red-600' }
+                            { name: 'Vegetables', color: 'bg-brand-light/20 text-brand-dark border-brand-light/30', iconColor: 'text-brand-dark' },
+                            { name: 'Fruits',     color: 'bg-brand-mars/10 text-brand-mars border-brand-mars/20', iconColor: 'text-brand-mars' },
+                            { name: 'Grains',     color: 'bg-brand-yellow/20 text-brand-yellowDark border-brand-yellow/30', iconColor: 'text-brand-yellowDark' },
+                            { name: 'Livestock',  color: 'bg-brand-purple/10 text-brand-purple border-brand-purple/20', iconColor: 'text-brand-purple' }
                         ].map((cat) => (
                             <motion.div
                                 key={cat.name}

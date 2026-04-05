@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBasket, Users, Check, ArrowRight, Zap, Leaf, Award } from 'lucide-react';
+import { ShoppingBasket, Users, Check, ArrowRight, Zap, Leaf, Award, Plus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 // NOTE: These paths are absolute to the user's current environment for local preview.
@@ -87,22 +87,71 @@ const BUNDLES = [
     }
 ];
 
-export default function FoodBundleSelector({ isPublic = false }: { isPublic?: boolean }) {
+export default function FoodBundleSelector({ isPublic = false, isCompact = false }: { isPublic?: boolean, isCompact?: boolean }) {
     const [selectedIdx, setSelectedIdx] = useState(1); // Default to Standard
     const { addToCart } = useCart();
     const bundle = BUNDLES[selectedIdx];
 
-    const handleAddToCart = () => {
+    const handleAddToCart = (idx?: number) => {
+        const b = idx !== undefined ? BUNDLES[idx] : bundle;
         const bundleItem = {
-            id: `bundle-${bundle.id}`,
-            name: `${bundle.name} Bundle`,
-            price: bundle.price,
+            id: `bundle-${b.id}`,
+            name: `${b.name} Bundle`,
+            price: b.price,
             farmer: { name: 'Farmmerce Direct' },
-            imageUrl: bundle.imageUrl
+            imageUrl: b.imageUrl
         };
         addToCart(bundleItem);
-        alert(`${bundle.name} added to your cart!`);
+        alert(`${b.name} added to your cart!`);
     };
+
+    if (isCompact) {
+        return (
+            <div className="w-full px-4 sm:px-6">
+                <div className="flex items-center gap-2 mb-6">
+                    <div className="w-1.5 h-6 bg-brand-mars rounded-full" />
+                    <h2 className="text-xl font-black text-brand-dark tracking-tight leading-none">
+                        Featured <span className="text-brand-mars">Bundles</span>
+                    </h2>
+                </div>
+                
+                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+                    {BUNDLES.map((b, i) => (
+                        <motion.div
+                            key={b.id}
+                            whileHover={{ y: -5 }}
+                            className="flex-shrink-0 w-[240px] bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden group hover:shadow-xl hover:border-brand-mars/20 transition-all duration-300"
+                        >
+                            <div className="h-32 relative overflow-hidden">
+                                <img src={b.imageUrl} alt={b.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                <div className="absolute top-2 right-2 flex bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg">
+                                    <span className="text-[9px] font-black uppercase text-brand-mars leading-none px-1">
+                                        -{b.savings}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="p-4">
+                                <p className="text-[10px] font-black text-brand-dark/40 uppercase tracking-widest truncate">{b.familySize}</p>
+                                <h3 className="text-sm font-black text-brand-dark truncate mb-1">{b.name}</h3>
+                                <div className="flex items-center justify-between mt-3">
+                                    <div>
+                                        <p className="text-[9px] font-black text-gray-300 line-through leading-none">₦{(b.price * 1.3).toLocaleString()}</p>
+                                        <p className="text-lg font-black text-brand-dark">₦{b.price.toLocaleString()}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => handleAddToCart(i)}
+                                        className="w-10 h-10 bg-brand-dark text-brand-light rounded-2xl flex items-center justify-center shadow-lg hover:bg-brand-mars hover:text-white transition-all transform active:scale-95"
+                                    >
+                                        <Plus size={20} />
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={`space-y-8 ${isPublic ? 'max-w-6xl mx-auto py-12' : ''}`}>
@@ -232,7 +281,7 @@ export default function FoodBundleSelector({ isPublic = false }: { isPublic?: bo
 
                             <div className="flex flex-col sm:flex-row gap-3">
                                 <button
-                                    onClick={handleAddToCart}
+                                    onClick={() => handleAddToCart()}
                                     className={`flex-1 py-5 bg-brand-dark text-white rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-black transition-all shadow-2xl active:scale-95`}
                                 >
                                     <Zap size={16} className="text-brand-light" />
