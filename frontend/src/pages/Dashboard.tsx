@@ -29,6 +29,7 @@ import { useNotifications } from '../context/NotificationContext';
 import MarketplaceView from '../components/MarketplaceView';
 import BuyerHome from '../components/BuyerHome';
 import MealPlannerEmbed from '../components/MealPlannerEmbed';
+import FoodBundleSelector from '../components/FoodBundleSelector';
 import { QRCodeCanvas } from 'qrcode.react';
 import { API_URL } from '../config';
 import { api } from '../api';
@@ -444,13 +445,15 @@ export default function Dashboard() {
                     {activeTab === 'marketplace' && <MarketplaceView />}
                     {activeTab === 'meal-planner' && <MealPlannerEmbed />}
                     {activeTab === 'promos' && (
-                        <div className="space-y-6">
-                            <div className="bg-rose-600 rounded-[2.5rem] p-8 text-white relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32" />
-                                <h2 className="text-3xl font-black mb-2 relative z-10">Active Promotions</h2>
-                                <p className="text-rose-100 font-medium relative z-10">Save big on farm-fresh produce this week!</p>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-12">
+                            <FoodBundleSelector />
+                            
+                            <div className="space-y-6">
+                                <div className="flex items-center justify-between px-2">
+                                    <h2 className="text-xl font-black text-brand-dark tracking-tight leading-none mb-1">Coupon Codes</h2>
+                                    <p className="text-xs text-gray-400 font-medium">Extra savings for you</p>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {[
                                     { code: 'FRESH15', title: '15% Off Vegetables', desc: 'Valid on all leafy greens and root vegetables.', color: 'border-green-100 bg-green-50 text-green-700' },
                                     { code: 'SHIPFREE', title: 'Free Delivery', desc: 'On orders above ₦5,000 using our logistics partners.', color: 'border-blue-100 bg-blue-50 text-blue-700' },
@@ -469,6 +472,7 @@ export default function Dashboard() {
                                 ))}
                             </div>
                         </div>
+                    </div>
                     )}
 
                     {activeTab === 'dashboard' && (

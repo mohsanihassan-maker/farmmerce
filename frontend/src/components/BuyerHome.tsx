@@ -19,6 +19,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { API_URL } from '../config';
+import FoodBundleSelector from './FoodBundleSelector';
 
 const QUICK_LINKS = [
     { label: 'Shop All',  icon: ShoppingBag, tab: 'marketplace',  bg: 'bg-brand-dark',   text: 'text-white',       accent: 'text-brand-light' },
@@ -162,6 +163,11 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                             ))}
                         </div>
                     </div>
+                </section>
+
+                {/* ── FOOD BUNDLE SELECTOR ── */}
+                <section>
+                    <FoodBundleSelector />
                 </section>
 
                 {/* ── QUICK LINKS ── */}
