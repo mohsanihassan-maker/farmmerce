@@ -17,20 +17,25 @@ import {
     Menu,
     Home,
     Filter,
-    Users
+    Users,
+    Sprout
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductForm from '../components/ProductForm';
 import ProfileForm from '../components/ProfileForm';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
+import MarketplaceView from '../components/MarketplaceView';
+import BuyerHome from '../components/BuyerHome';
 import { QRCodeCanvas } from 'qrcode.react';
 import { API_URL } from '../config';
 import { api } from '../api';
 
 
 export default function Dashboard() {
-    const [activeTab, setActiveTab] = useState('dashboard');
+    const { user, isAuthenticated, loading } = useAuth();
+    const [viewMode, setViewMode] = useState<any>(user?.role === 'FARMER' ? 'FARMER' : 'BUYER');
+    const [activeTab, setActiveTab] = useState(user?.role === 'FARMER' ? 'dashboard' : 'buyer-home');
     const [orders, setOrders] = useState<any[]>([]);
     const [myProducts, setMyProducts] = useState<any[]>([]);
     const [stats, setStats] = useState<any>(null);
@@ -47,7 +52,6 @@ export default function Dashboard() {
     const [allSettlements, setAllSettlements] = useState<any[]>([]);
     const [allDeals, setAllDeals] = useState<any[]>([]);
     const [panelEnabled, setPanelEnabled] = useState(false);
-    const { user, isAuthenticated, loading } = useAuth();
     const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
     const navigate = useNavigate();
 
@@ -331,7 +335,7 @@ export default function Dashboard() {
                                 </button>
                             </div>
                             <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-                                <SidebarContent activeTab={activeTab} setActiveTab={(tab) => { setActiveTab(tab); setIsMobileMenuOpen(false); }} user={user} />
+                                <SidebarContent activeTab={activeTab} setActiveTab={(tab) => { setActiveTab(tab); setIsMobileMenuOpen(false); }} viewMode={viewMode} setViewMode={setViewMode} user={user} />
                             </nav>
                         </motion.aside>
                     </>
@@ -346,7 +350,7 @@ export default function Dashboard() {
                     </Link>
                 </div>
                 <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-                    <SidebarContent activeTab={activeTab} setActiveTab={setActiveTab} user={user} />
+                    <SidebarContent activeTab={activeTab} setActiveTab={setActiveTab} viewMode={viewMode} setViewMode={setViewMode} user={user} />
                 </nav>
                 <div className="p-4 border-t border-gray-200">
                     <UserInfo user={user} />
@@ -363,10 +367,12 @@ export default function Dashboard() {
                         >
                             <Menu className="w-6 h-6" />
                         </button>
-                        <h1 className="text-lg font-medium text-gray-900 capitalize">{activeTab.replace('-', ' ')}</h1>
-                        <div className="ml-4 px-3 py-1 bg-brand-light/20 border border-brand-light/30 rounded-full text-[10px] font-bold text-brand-dark flex items-center gap-2">
+                        <h1 className="text-lg font-black text-brand-dark capitalize leading-tight">
+                            {activeTab === 'buyer-home' ? 'My Dashboard' : activeTab.replace(/-/g, ' ')}
+                        </h1>
+                        <div className="ml-4 px-3 py-1 bg-brand-light/20 border border-brand-light/30 rounded-full text-[10px] font-black text-brand-dark flex items-center gap-2 uppercase tracking-widest">
                             <User className="w-3 h-3" />
-                            {user.role}
+                            {viewMode}
                         </div>
                     </div>
                     {/* Notification Bell */}
@@ -429,19 +435,24 @@ export default function Dashboard() {
                     </div>
                 </header>
 
-                <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+                <main className="flex-1 overflow-y-auto">
+                    {activeTab === 'buyer-home' && <BuyerHome setActiveTab={setActiveTab} />}
+
+                    <div className={`p-4 sm:p-6 lg:p-8 ${activeTab === 'buyer-home' ? 'hidden' : ''}`}>
+                    {activeTab === 'marketplace' && <MarketplaceView />}
+
                     {activeTab === 'dashboard' && (
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                             <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-primary">
-                                <dt className="text-sm font-medium text-gray-500 truncate">{user.role === 'FARMER' ? 'Total Revenue' : 'Total Spent'}</dt>
-                                <dd className="text-2xl font-bold text-gray-900">
-                                    ₦{stats ? (user.role === 'FARMER' ? stats.totalRevenue : stats.totalSpent).toLocaleString() : '...'}
+                                <dt className="text-sm font-black text-gray-400 uppercase tracking-widest truncate">{viewMode === 'FARMER' ? 'Total Revenue' : 'Total Spent'}</dt>
+                                <dd className="text-2xl font-black text-brand-dark mt-1">
+                                    ₦{stats ? (viewMode === 'FARMER' ? stats.totalRevenue : stats.totalSpent).toLocaleString() : '...'}
                                 </dd>
                             </div>
                             <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-blue-500">
-                                <dt className="text-sm font-medium text-gray-500 truncate">{user.role === 'FARMER' ? 'Pending Orders' : 'Orders Placed'}</dt>
-                                <dd className="text-2xl font-bold text-gray-900">
-                                    {stats ? (user.role === 'FARMER' ? stats.pendingOrders : stats.orderCount) : '...'}
+                                <dt className="text-sm font-black text-gray-400 uppercase tracking-widest truncate">{viewMode === 'FARMER' ? 'Pending Orders' : 'Orders Placed'}</dt>
+                                <dd className="text-2xl font-black text-brand-dark mt-1">
+                                    {stats ? (viewMode === 'FARMER' ? stats.pendingOrders : stats.orderCount) : '...'}
                                 </dd>
                             </div>
                             <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-green-500">
@@ -450,7 +461,7 @@ export default function Dashboard() {
                                     {stats ? stats.co2Saved.toFixed(1) : '...'} <span className="text-sm font-normal text-gray-500">kg</span>
                                 </dd>
                             </div>
-                            {user.role === 'FARMER' && stats?.lowStockCount > 0 && (
+                            {viewMode === 'FARMER' && stats?.lowStockCount > 0 && (
                                 <div className="bg-red-50 overflow-hidden shadow rounded-lg p-5 border-l-4 border-red-500">
                                     <dt className="text-sm font-medium text-red-600 truncate flex items-center gap-2">
                                         <Bell className="w-4 h-4" />
@@ -1321,20 +1332,84 @@ export default function Dashboard() {
                             </div>
                         </div>
                     )}
+                    </div>
                 </main>
             </div>
         </div>
     );
 }
 
-function SidebarContent({ activeTab, setActiveTab, user }: { activeTab: string, setActiveTab: (tab: string) => void, user: any }) {
+function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }: { activeTab: string, setActiveTab: (tab: string) => void, viewMode: string, setViewMode: (mode: string) => void, user: any }) {
+    if (viewMode === 'BUYER' || user?.role === 'BUYER') {
+        return (
+            <>
+                <Link to="/" className="w-full flex items-center px-3 py-2.5 text-xs font-black rounded-2xl text-brand-dark/50 hover:bg-gray-50 transition-all mb-2 uppercase tracking-widest">
+                    <Home className="mr-3 h-4 w-4" />
+                    Back to Site
+                </Link>
+
+                {user?.role === 'FARMER' && (
+                    <button
+                        onClick={() => {
+                            setViewMode('FARMER');
+                            setActiveTab('dashboard');
+                        }}
+                        className="w-full flex items-center px-3 py-3 text-xs font-black rounded-2xl text-white bg-brand-dark hover:bg-black transition-all mb-4 uppercase tracking-widest"
+                    >
+                        <Sprout className="mr-3 h-4 w-4 text-brand-light" />
+                        Switch to Farmer Mode
+                    </button>
+                )}
+
+                <p className="px-3 text-[9px] font-black text-gray-300 uppercase tracking-widest mb-2">Shop</p>
+
+                <button onClick={() => setActiveTab('buyer-home')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl transition-all ${activeTab === 'buyer-home' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <LayoutDashboard className="mr-3 h-5 w-5" />
+                    Home
+                </button>
+                <button onClick={() => setActiveTab('marketplace')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl transition-all ${activeTab === 'marketplace' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <ShoppingBag className="mr-3 h-5 w-5" />
+                    Marketplace
+                </button>
+                <button onClick={() => setActiveTab('my-orders')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl transition-all ${activeTab === 'my-orders' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <ShoppingCart className="mr-3 h-5 w-5" />
+                    My Orders
+                </button>
+                <Link to="/meal-planner" className="w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl text-gray-500 hover:bg-gray-50 transition-all">
+                    <ChefHat className="mr-3 h-5 w-5" />
+                    Meal Planner
+                </Link>
+                <div className="pt-4 border-t border-gray-100 mt-4">
+                    <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl transition-all ${activeTab === 'profile' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
+                        <User className="mr-3 h-5 w-5" />
+                        Profile
+                    </button>
+                </div>
+            </>
+        );
+    }
+
     return (
         <>
             <Link to="/" className="w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl text-brand-dark bg-brand-light/20 hover:bg-brand-light/40 transition-all mb-4">
                 <Home className="mr-3 h-5 w-5" />
                 Back to Site
             </Link>
-            <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'dashboard' ? 'bg-brand-dark text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+
+            {user?.role === 'FARMER' && (
+                <button
+                    onClick={() => {
+                        setViewMode('BUYER');
+                        setActiveTab('marketplace');
+                    }}
+                    className="w-full flex items-center px-3 py-3 text-xs font-black rounded-2xl text-brand-dark bg-brand-light hover:bg-white transition-all mb-6 uppercase tracking-widest"
+                >
+                    <ShoppingCart className="mr-3 h-5 w-5" />
+                    Buyer Mode
+                </button>
+            )}
+
+            <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'dashboard' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
                 <LayoutDashboard className="mr-3 h-5 w-5" />
                 Dashboard
             </button>

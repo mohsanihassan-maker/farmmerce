@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Lock, Mail, User, ArrowRight, Sprout, ShoppingCart, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 import { motion } from 'framer-motion';
 import { API_URL } from '../config';
@@ -106,8 +106,8 @@ export default function Register() {
                 >
                     <div className="mb-6 text-center">
                         <h2 className="text-2xl font-bold text-white">Create Account</h2>
-                        <p className="mt-2 text-sm text-gray-400">
-                            Join the future of agriculture
+                        <p className="mt-1 text-sm text-gray-400">
+                            Start shopping fresh farm produce today
                         </p>
                     </div>
 
@@ -183,28 +183,6 @@ export default function Register() {
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
 
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-3">
-                                I want to...
-                            </label>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div
-                                    onClick={() => setRole('BUYER')}
-                                    className={`cursor-pointer rounded-xl border p-4 flex flex-col items-center justify-center gap-2 transition-all ${role === 'BUYER' ? 'bg-brand-light text-brand-dark border-brand-light' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'}`}
-                                >
-                                    <ShoppingCart size={24} />
-                                    <span className="font-bold text-sm">Buy Food</span>
-                                </div>
-                                <div
-                                    onClick={() => setRole('FARMER')}
-                                    className={`cursor-pointer rounded-xl border p-4 flex flex-col items-center justify-center gap-2 transition-all ${role === 'FARMER' ? 'bg-brand-light text-brand-dark border-brand-light' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'}`}
-                                >
-                                    <Sprout size={24} />
-                                    <span className="font-bold text-sm">Sell Produce</span>
-                                </div>
                             </div>
                         </div>
 
