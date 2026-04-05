@@ -455,9 +455,9 @@ export default function Dashboard() {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {[
-                                    { code: 'FRESH15', title: '15% Off Vegetables', desc: 'Valid on all leafy greens and root vegetables.', color: 'border-green-100 bg-green-50 text-green-700' },
-                                    { code: 'SHIPFREE', title: 'Free Delivery', desc: 'On orders above ₦5,000 using our logistics partners.', color: 'border-blue-100 bg-blue-50 text-blue-700' },
-                                    { code: 'FARMSTRENGTH', title: '₦1,000 Off Bundle', desc: 'Buy any 4 categories and save ₦1,000 instantly.', color: 'border-amber-100 bg-amber-50 text-amber-700' },
+                                    { code: 'FRESH15', title: '15% Off Vegetables', desc: 'Valid on all leafy greens and root vegetables.', color: 'border-brand-light/30 bg-brand-light/10 text-brand-dark' },
+                                    { code: 'SHIPFREE', title: 'Free Delivery', desc: 'On orders above ₦5,000 using our logistics partners.', color: 'border-brand-mars/30 bg-brand-mars/10 text-brand-mars' },
+                                    { code: 'FARMSTRENGTH', title: '₦1,000 Off Bundle', desc: 'Buy any 4 categories and save ₦1,000 instantly.', color: 'border-brand-yellow/30 bg-brand-yellow/10 text-brand-yellowDark' },
                                 ].map((promo) => (
                                     <div key={promo.code} className={`p-6 rounded-3xl border-2 ${promo.color} flex flex-col justify-between`}>
                                         <div>
@@ -477,27 +477,27 @@ export default function Dashboard() {
 
                     {activeTab === 'dashboard' && (
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                            <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-primary">
+                            <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-brand-dark">
                                 <dt className="text-sm font-black text-gray-400 uppercase tracking-widest truncate">{viewMode === 'FARMER' ? 'Total Revenue' : 'Total Spent'}</dt>
                                 <dd className="text-2xl font-black text-brand-dark mt-1">
                                     ₦{stats ? (viewMode === 'FARMER' ? stats.totalRevenue : stats.totalSpent).toLocaleString() : '...'}
                                 </dd>
                             </div>
-                            <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-blue-500">
+                            <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-brand-mars">
                                 <dt className="text-sm font-black text-gray-400 uppercase tracking-widest truncate">{viewMode === 'FARMER' ? 'Pending Orders' : 'Orders Placed'}</dt>
                                 <dd className="text-2xl font-black text-brand-dark mt-1">
                                     {stats ? (viewMode === 'FARMER' ? stats.pendingOrders : stats.orderCount) : '...'}
                                 </dd>
                             </div>
-                            <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-green-500">
-                                <dt className="text-sm font-medium text-gray-500 truncate">CO2 Saved (Est.)</dt>
-                                <dd className="text-2xl font-bold text-green-600">
-                                    {stats ? stats.co2Saved.toFixed(1) : '...'} <span className="text-sm font-normal text-gray-500">kg</span>
+                            <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-brand-light">
+                                <dt className="text-sm font-black text-gray-400 uppercase tracking-widest truncate">CO2 Saved (Est.)</dt>
+                                <dd className="text-2xl font-black text-brand-dark mt-1">
+                                    {stats ? stats.co2Saved.toFixed(1) : '...'} <span className="text-xs font-black uppercase tracking-widest text-gray-400">kg</span>
                                 </dd>
                             </div>
                             {viewMode === 'FARMER' && stats?.lowStockCount > 0 && (
-                                <div className="bg-red-50 overflow-hidden shadow rounded-lg p-5 border-l-4 border-red-500">
-                                    <dt className="text-sm font-medium text-red-600 truncate flex items-center gap-2">
+                                <div className="bg-brand-red/5 overflow-hidden shadow rounded-lg p-5 border-l-4 border-brand-red">
+                                    <dt className="text-sm font-black text-brand-red uppercase tracking-widest truncate flex items-center gap-2">
                                         <Bell className="w-4 h-4" />
                                         Low Stock Alerts
                                     </dt>
@@ -1535,31 +1535,31 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
                     <div className="pt-6 pb-2">
                         <p className="px-3 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Platform Admin</p>
                         <div className="space-y-1">
-                            <button onClick={() => setActiveTab('admin-stats')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-stats' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
+                            <button onClick={() => setActiveTab('admin-stats')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-stats' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
                                 <LayoutDashboard className="mr-3 h-5 w-5" />
                                 Overview
                             </button>
-                            <button onClick={() => setActiveTab('admin-users')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-users' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
+                            <button onClick={() => setActiveTab('admin-users')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-users' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
                                 <User className="mr-3 h-5 w-5" />
                                 Users
                             </button>
-                            <button onClick={() => setActiveTab('admin-orders')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-orders' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
+                            <button onClick={() => setActiveTab('admin-orders')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-orders' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
                                 <ShoppingBag className="mr-3 h-5 w-5" />
                                 All Orders
                             </button>
-                            <button onClick={() => setActiveTab('admin-categories')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-categories' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
+                            <button onClick={() => setActiveTab('admin-categories')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-categories' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
                                 <Filter className="mr-3 h-5 w-5" />
                                 Categories
                             </button>
-                            <button onClick={() => setActiveTab('admin-recipes')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-recipes' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
+                            <button onClick={() => setActiveTab('admin-recipes')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-recipes' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
                                 <ChefHat className="mr-3 h-5 w-5" />
                                 Recipes
                             </button>
-                            <button onClick={() => setActiveTab('admin-settlements')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-settlements' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
+                            <button onClick={() => setActiveTab('admin-settlements')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-settlements' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
                                 <Navigation className="mr-3 h-5 w-5" />
                                 Settlements
                             </button>
-                            <button onClick={() => setActiveTab('group-deals')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'group-deals' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-gray-500 hover:bg-gray-50'}`}>
+                            <button onClick={() => setActiveTab('group-deals')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'group-deals' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
                                 <Users className="mr-3 h-5 w-5" />
                                 Group Deals
                             </button>

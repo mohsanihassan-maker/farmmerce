@@ -23,9 +23,9 @@ import FoodBundleSelector from './FoodBundleSelector';
 
 const QUICK_LINKS = [
     { label: 'Shop All',  icon: ShoppingBag, tab: 'marketplace',  bg: 'bg-brand-dark',   text: 'text-white',       accent: 'text-brand-light' },
-    { label: 'My Orders', icon: Clock,        tab: 'my-orders',   bg: 'bg-blue-600',     text: 'text-white',       accent: 'text-blue-200' },
-    { label: 'Meal Plan', icon: ChefHat,      tab: 'meal-planner', bg: 'bg-amber-500',   text: 'text-white',       accent: 'text-amber-100' },
-    { label: 'Promos',    icon: Tag,          tab: 'promos',       bg: 'bg-rose-500',    text: 'text-white',       accent: 'text-rose-100' },
+    { label: 'My Orders', icon: Clock,        tab: 'my-orders',   bg: 'bg-brand-mars',   text: 'text-white',       accent: 'text-brand-mars/20' },
+    { label: 'Meal Plan', icon: ChefHat,      tab: 'meal-planner', bg: 'bg-brand-yellowDark', text: 'text-white',       accent: 'text-brand-yellow/20' },
+    { label: 'Promos',    icon: Tag,          tab: 'promos',       bg: 'bg-brand-red',    text: 'text-white',       accent: 'text-brand-red/20' },
 ];
 
 const PROMO_BANNERS = [
@@ -90,10 +90,10 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
     const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
     const statusStyle: Record<string, string> = {
-        PENDING: 'bg-yellow-100 text-yellow-700',
-        CONFIRMED: 'bg-blue-100 text-blue-700',
-        SHIPPED: 'bg-indigo-100 text-indigo-700',
-        DELIVERED: 'bg-green-100 text-green-700',
+        PENDING: 'bg-brand-yellow/20 text-brand-yellowDark',
+        CONFIRMED: 'bg-brand-mars/10 text-brand-mars',
+        SHIPPED: 'bg-brand-purple/10 text-brand-purple',
+        DELIVERED: 'bg-brand-light/30 text-brand-dark',
     };
 
     return (

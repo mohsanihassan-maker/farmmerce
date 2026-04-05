@@ -96,9 +96,9 @@ export default function ProfileForm() {
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className={`mb-8 p-4 rounded-2xl flex items-center gap-3 font-bold text-sm ${message.includes('success') ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}
+                            className={`mb-8 p-4 rounded-2xl flex items-center gap-3 font-black uppercase tracking-widest text-[10px] border ${message.includes('success') ? 'bg-brand-light/20 text-brand-dark border-brand-light/30' : 'bg-brand-red/10 text-brand-red border-brand-red/20'}`}
                         >
-                            <div className={`w-2 h-2 rounded-full ${message.includes('success') ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
+                            <div className={`w-2 h-2 rounded-full ${message.includes('success') ? 'bg-brand-dark' : 'bg-brand-red'} animate-pulse`} />
                             {message}
                         </motion.div>
                     )}
