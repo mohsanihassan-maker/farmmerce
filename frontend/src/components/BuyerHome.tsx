@@ -20,6 +20,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { API_URL } from '../config';
 import FoodBundleSelector from './FoodBundleSelector';
+import { supabase } from '../supabase';
 
 const QUICK_LINKS = [
     { label: 'Shop All',  icon: ShoppingBag, tab: 'marketplace',  bg: 'bg-brand-dark',   text: 'text-white',       accent: 'text-brand-light' },
@@ -67,22 +68,52 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
     }, []);
 
     useEffect(() => {
-        fetch(`${API_URL}/products?sort=newest&limit=8`)
-            .then(r => r.json())
-            .then(d => Array.isArray(d) && setFeaturedProducts(d.slice(0, 8)))
-            .catch(() => {});
+        const loadContent = async () => {
+            // 1. Fetch Products
+            try {
+                const res = await fetch(`${API_URL}/products?sort=newest&limit=8`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data)) {
+                        setFeaturedProducts(data.slice(0, 8));
+                    }
+                } else throw new Error();
+            } catch {
+                console.warn('REST API Products fallback to Supabase...');
+                const { data } = await supabase.from('Product').select('*, farmer:User(id, name)').limit(8).order('createdAt', { ascending: false });
+                if (data) setFeaturedProducts(data);
+            }
 
-        fetch(`${API_URL}/categories`)
-            .then(r => r.json())
-            .then(d => Array.isArray(d) && setCategories(d))
-            .catch(() => {});
+            // 2. Fetch Categories
+            try {
+                const res = await fetch(`${API_URL}/categories`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data)) setCategories(data);
+                } else throw new Error();
+            } catch {
+                console.warn('REST API Categories fallback to Supabase...');
+                const { data } = await supabase.from('Category').select('*');
+                if (data) setCategories(data);
+            }
 
-        if (user?.id) {
-            fetch(`${API_URL}/orders?buyerId=${user.id}&limit=3`)
-                .then(r => r.json())
-                .then(d => Array.isArray(d) && setRecentOrders(d.slice(0, 3)))
-                .catch(() => {});
-        }
+            // 3. Recent Orders (Only if logged in)
+            if (user?.id) {
+                try {
+                    const res = await fetch(`${API_URL}/orders?buyerId=${user.id}&limit=3`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (Array.isArray(data)) setRecentOrders(data.slice(0, 3));
+                    } else throw new Error();
+                } catch {
+                    console.warn('REST API Orders fallback to Supabase...');
+                    const { data } = await supabase.from('Order').select('*, items:OrderItem(*)').eq('buyerId', user.id).limit(3).order('createdAt', { ascending: false });
+                    if (data) setRecentOrders(data);
+                }
+            }
+        };
+
+        loadContent();
     }, [user]);
 
     const firstName = user?.name?.split(' ')[0] || 'there';

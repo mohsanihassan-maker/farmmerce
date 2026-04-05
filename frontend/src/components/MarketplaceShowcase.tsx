@@ -3,22 +3,44 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ShoppingBag } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { API_URL } from '../config';
+import { supabase } from '../supabase';
 
 export default function MarketplaceShowcase() {
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`${API_URL}/products`)
-            .then(res => res.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    // Show only first 8 products for the showcase
-                    setProducts(data.slice(0, 8));
+        const loadProducts = async () => {
+            setLoading(true);
+            try {
+                // Try REST API first
+                const res = await fetch(`${API_URL}/products`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data)) {
+                        setProducts(data.slice(0, 8));
+                        return;
+                    }
                 }
-            })
-            .catch(err => console.error(err))
-            .finally(() => setLoading(false));
+                throw new Error('API Offline');
+            } catch (err) {
+                console.warn('REST API unavailable, falling back to Supabase Direct...');
+                // Fallback: Direct Supabase Fetch
+                const { data, error } = await supabase
+                    .from('Product')
+                    .select('*, farmer:User(id, name)')
+                    .limit(8)
+                    .order('createdAt', { ascending: false });
+
+                if (data && !error) {
+                    setProducts(data);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadProducts();
     }, []);
 
     const handleAddToCart = (id: number) => {

@@ -4,6 +4,7 @@ import ProductCard from './ProductCard';
 import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_URL } from '../config';
+import { supabase } from '../supabase';
 
 export default function MarketplaceView() {
     const [products, setProducts] = useState<any[]>([]);
@@ -36,18 +37,46 @@ export default function MarketplaceView() {
 
     // Fetch products whenever filters change
     useEffect(() => {
-        setLoading(true);
-        const params = new URLSearchParams();
-        if (debouncedSearch) params.set('search', debouncedSearch);
-        if (category !== 'All') params.set('category', category);
-        if (minPrice) params.set('minPrice', minPrice);
-        if (maxPrice) params.set('maxPrice', maxPrice);
-        if (sort !== 'newest') params.set('sort', sort === 'Price: Low–High' ? 'price_asc' : 'price_desc');
+        const loadProducts = async () => {
+            setLoading(true);
+            const params = new URLSearchParams();
+            if (debouncedSearch) params.set('search', debouncedSearch);
+            if (category !== 'All') params.set('category', category);
+            if (minPrice) params.set('minPrice', minPrice);
+            if (maxPrice) params.set('maxPrice', maxPrice);
+            if (sort !== 'newest') params.set('sort', sort === 'Price: Low–High' ? 'price_asc' : 'price_desc');
 
-        fetch(`${API_URL}/products?${params.toString()}`)
-            .then(res => res.json())
-            .then(data => { setProducts(data); setLoading(false); })
-            .catch(() => setLoading(false));
+            try {
+                const res = await fetch(`${API_URL}/products?${params.toString()}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data)) {
+                        setProducts(data);
+                        setLoading(false);
+                        return;
+                    }
+                }
+                throw new Error('API Offline');
+            } catch (err) {
+                console.warn('REST API unavailable, falling back to Supabase Direct...');
+                let query = supabase.from('Product').select('*, farmer:User(id, name)');
+
+                if (debouncedSearch) query = query.ilike('name', `%${debouncedSearch}%`);
+                if (category !== 'All') query = query.eq('categoryName', category);
+                if (minPrice) query = query.gte('price', parseFloat(minPrice));
+                if (maxPrice) query = query.lte('price', parseFloat(maxPrice));
+
+                if (sort === 'Price: Low–High') query = query.order('price', { ascending: true });
+                else if (sort === 'Price: High–Low') query = query.order('price', { ascending: false });
+                else query = query.order('createdAt', { ascending: false });
+
+                const { data, error } = await query;
+                if (data && !error) setProducts(data);
+                setLoading(false);
+            }
+        };
+
+        loadProducts();
     }, [debouncedSearch, category, minPrice, maxPrice, sort]);
 
     const handleAddToCart = (productId: number) => {
