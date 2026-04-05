@@ -133,16 +133,16 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
                             <div className="p-4">
                                 <p className="text-[10px] font-black text-brand-dark/40 uppercase tracking-widest truncate">{b.familySize}</p>
                                 <h3 className="text-sm font-black text-brand-dark truncate mb-1">{b.name}</h3>
-                                <div className="flex items-center justify-between mt-3">
+                                <div className="flex items-center justify-between mt-4 bg-gray-50/50 p-2 rounded-2xl border border-gray-100">
                                     <div>
-                                        <p className="text-[9px] font-black text-gray-300 line-through leading-none">₦{(b.price * 1.3).toLocaleString()}</p>
-                                        <p className="text-lg font-black text-brand-dark">₦{b.price.toLocaleString()}</p>
+                                        <p className="text-[10px] font-black text-gray-300 line-through leading-none px-1">₦{(b.price * 1.3).toLocaleString()}</p>
+                                        <p className="text-xl font-black text-brand-dark px-1">₦{b.price.toLocaleString()}</p>
                                     </div>
                                     <button
                                         onClick={() => handleAddToCart(i)}
-                                        className="w-10 h-10 bg-brand-dark text-brand-light rounded-2xl flex items-center justify-center shadow-lg hover:bg-brand-mars hover:text-white transition-all transform active:scale-95"
+                                        className="w-12 h-12 bg-brand-dark text-brand-light rounded-2xl flex items-center justify-center shadow-lg hover:bg-brand-mars hover:text-white transition-all transform active:scale-95 group-hover:scale-110"
                                     >
-                                        <Plus size={20} />
+                                        <Plus size={24} />
                                     </button>
                                 </div>
                             </div>
@@ -261,10 +261,10 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
                         <div className="space-y-6">
                             <div className="flex items-center justify-between px-2 pt-6 border-t border-gray-100">
                                 <div>
-                                    <p className="text-[11px] font-black uppercase tracking-widest text-gray-400">One Monthly Payment</p>
-                                    <div className="flex items-baseline gap-3">
-                                        <span className="text-4xl lg:text-5xl font-black text-brand-dark leading-none tracking-tighter">₦{bundle.price.toLocaleString()}</span>
-                                        <span className="text-sm text-gray-300 font-black line-through">₦{(bundle.price * 1.3).toLocaleString()}</span>
+                                    <p className="text-[12px] font-black uppercase tracking-widest text-brand-mars mb-1">Exclusive Monthly Offer</p>
+                                    <div className="flex items-baseline gap-4">
+                                        <span className="text-5xl lg:text-7xl font-black text-brand-dark leading-none tracking-tighter">₦{bundle.price.toLocaleString()}</span>
+                                        <span className="text-lg text-gray-300 font-black line-through">₦{(bundle.price * 1.3).toLocaleString()}</span>
                                     </div>
                                 </div>
                                 <div className="hidden sm:block text-right">

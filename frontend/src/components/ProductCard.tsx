@@ -105,10 +105,10 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
 
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-2xl font-bold text-brand-dark">
-                                ₦{Number(product.price).toLocaleString()}
+                            <p className="text-2xl font-black text-brand-dark">
+                                ₦{parseFloat(String(product.price)).toLocaleString()}
                             </p>
-                            <p className="text-xs text-gray-500 font-medium">per {product.unit}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">per {product.unit}</p>
                         </div>
 
                         <button

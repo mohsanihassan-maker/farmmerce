@@ -35,7 +35,15 @@ export default function MarketplaceShowcase() {
         </div>
     );
 
-    if (products.length === 0) return null;
+    if (products.length === 0) return (
+        <div className="py-20 text-center bg-gray-50/50 rounded-[3rem] mx-4 border-2 border-dashed border-gray-100 flex flex-col items-center gap-4">
+            <ShoppingBag className="w-12 h-12 text-gray-200" />
+            <div>
+                <p className="text-lg font-black text-brand-dark">Marketplace is Restocking</p>
+                <p className="text-sm text-gray-400 font-medium">We're harvesting fresh items from the fields right now.</p>
+            </div>
+        </div>
+    );
 
     return (
         <section className="py-24 bg-white">
