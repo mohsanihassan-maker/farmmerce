@@ -27,6 +27,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import MarketplaceView from '../components/MarketplaceView';
 import BuyerHome from '../components/BuyerHome';
+import MealPlannerEmbed from '../components/MealPlannerEmbed';
 import { QRCodeCanvas } from 'qrcode.react';
 import { API_URL } from '../config';
 import { api } from '../api';
@@ -440,6 +441,7 @@ export default function Dashboard() {
 
                     <div className={`p-4 sm:p-6 lg:p-8 ${activeTab === 'buyer-home' ? 'hidden' : ''}`}>
                     {activeTab === 'marketplace' && <MarketplaceView />}
+                    {activeTab === 'meal-planner' && <MealPlannerEmbed />}
 
                     {activeTab === 'dashboard' && (
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -1375,10 +1377,10 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
                     <ShoppingCart className="mr-3 h-5 w-5" />
                     My Orders
                 </button>
-                <Link to="/meal-planner" className="w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl text-gray-500 hover:bg-gray-50 transition-all">
+                <button onClick={() => setActiveTab('meal-planner')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl transition-all ${activeTab === 'meal-planner' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
                     <ChefHat className="mr-3 h-5 w-5" />
                     Meal Planner
-                </Link>
+                </button>
                 <div className="pt-4 border-t border-gray-100 mt-4">
                     <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl transition-all ${activeTab === 'profile' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
                         <User className="mr-3 h-5 w-5" />

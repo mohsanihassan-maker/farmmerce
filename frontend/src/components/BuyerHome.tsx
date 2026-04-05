@@ -21,10 +21,10 @@ import { useCart } from '../context/CartContext';
 import { API_URL } from '../config';
 
 const QUICK_LINKS = [
-    { label: 'Shop All', icon: ShoppingBag, tab: 'marketplace', color: 'bg-brand-dark text-white', iconColor: 'text-brand-light' },
-    { label: 'My Orders', icon: Clock, tab: 'my-orders', color: 'bg-blue-50 text-blue-700', iconColor: 'text-blue-500' },
-    { label: 'Meal Plan', href: '/meal-planner', icon: ChefHat, color: 'bg-amber-50 text-amber-700', iconColor: 'text-amber-500' },
-    { label: 'Promos', icon: Tag, tab: 'promos', color: 'bg-red-50 text-red-700', iconColor: 'text-red-500' },
+    { label: 'Shop All',  icon: ShoppingBag, tab: 'marketplace',  bg: 'bg-brand-dark',   text: 'text-white',       accent: 'text-brand-light' },
+    { label: 'My Orders', icon: Clock,        tab: 'my-orders',   bg: 'bg-blue-600',     text: 'text-white',       accent: 'text-blue-200' },
+    { label: 'Meal Plan', icon: ChefHat,      tab: 'meal-planner', bg: 'bg-amber-500',   text: 'text-white',       accent: 'text-amber-100' },
+    { label: 'Promos',    icon: Tag,          tab: 'promos',       bg: 'bg-rose-500',    text: 'text-white',       accent: 'text-rose-100' },
 ];
 
 const PROMO_BANNERS = [
@@ -157,21 +157,16 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
 
                 {/* ── QUICK LINKS ── */}
                 <section>
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-4 gap-2">
                         {QUICK_LINKS.map((q) => (
-                            q.href ? (
-                                <Link key={q.label} to={q.href}
-                                    className={`${q.color} flex flex-col items-center gap-2 p-3 rounded-2xl transition-all active:scale-95`}>
-                                    <q.icon size={20} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-center leading-tight">{q.label}</span>
-                                </Link>
-                            ) : (
-                                <button key={q.label} onClick={() => setActiveTab(q.tab!)}
-                                    className={`${q.color} flex flex-col items-center gap-2 p-3 rounded-2xl transition-all active:scale-95`}>
-                                    <q.icon size={20} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-center leading-tight">{q.label}</span>
-                                </button>
-                            )
+                            <button
+                                key={q.label}
+                                onClick={() => setActiveTab(q.tab)}
+                                className={`${q.bg} ${q.text} flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-2xl transition-all active:scale-95 shadow-sm`}
+                            >
+                                <q.icon size={18} className={q.accent} />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-center leading-tight">{q.label}</span>
+                            </button>
                         ))}
                     </div>
                 </section>
