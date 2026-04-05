@@ -314,12 +314,12 @@ function ProductCard({ product, index, onTap }: { product: any; index: number; o
                 <p className="text-xs text-gray-400 font-medium truncate">{product.farmer?.name || 'Local Farm'}</p>
                 <p className="text-sm font-black text-brand-dark truncate mt-0.5">{product.name}</p>
                 <div className="flex items-center justify-between mt-2">
-                    <span className="text-base font-black text-brand-dark">₦{Number(product.price).toLocaleString()}</span>
+                    <span className="text-base font-black text-brand-dark">₦{parseFloat(String(product.price)).toLocaleString()}</span>
                     <button
                         onClick={(e) => { e.stopPropagation(); addToCart(product); }}
-                        className="w-7 h-7 bg-brand-dark text-white rounded-xl flex items-center justify-center text-lg font-black hover:bg-brand-light hover:text-brand-dark transition-all active:scale-90"
+                        className="w-10 h-10 bg-brand-dark text-white rounded-2xl flex items-center justify-center shadow-lg hover:bg-brand-mars transition-all active:scale-90"
                     >
-                        +
+                        <ShoppingCart size={18} />
                     </button>
                 </div>
             </div>
