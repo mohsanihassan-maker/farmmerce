@@ -18,7 +18,8 @@ import {
     Home,
     Filter,
     Users,
-    Sprout
+    Sprout,
+    Clock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductForm from '../components/ProductForm';
@@ -442,6 +443,33 @@ export default function Dashboard() {
                     <div className={`p-4 sm:p-6 lg:p-8 ${activeTab === 'buyer-home' ? 'hidden' : ''}`}>
                     {activeTab === 'marketplace' && <MarketplaceView />}
                     {activeTab === 'meal-planner' && <MealPlannerEmbed />}
+                    {activeTab === 'promos' && (
+                        <div className="space-y-6">
+                            <div className="bg-rose-600 rounded-[2.5rem] p-8 text-white relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32" />
+                                <h2 className="text-3xl font-black mb-2 relative z-10">Active Promotions</h2>
+                                <p className="text-rose-100 font-medium relative z-10">Save big on farm-fresh produce this week!</p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {[
+                                    { code: 'FRESH15', title: '15% Off Vegetables', desc: 'Valid on all leafy greens and root vegetables.', color: 'border-green-100 bg-green-50 text-green-700' },
+                                    { code: 'SHIPFREE', title: 'Free Delivery', desc: 'On orders above ₦5,000 using our logistics partners.', color: 'border-blue-100 bg-blue-50 text-blue-700' },
+                                    { code: 'FARMSTRENGTH', title: '₦1,000 Off Bundle', desc: 'Buy any 4 categories and save ₦1,000 instantly.', color: 'border-amber-100 bg-amber-50 text-amber-700' },
+                                ].map((promo) => (
+                                    <div key={promo.code} className={`p-6 rounded-3xl border-2 ${promo.color} flex flex-col justify-between`}>
+                                        <div>
+                                            <h3 className="font-black text-lg mb-1">{promo.title}</h3>
+                                            <p className="text-sm opacity-80 mb-4">{promo.desc}</p>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <code className="px-3 py-1 bg-white/50 rounded-lg font-black tracking-widest">{promo.code}</code>
+                                            <button className="text-xs font-black uppercase tracking-widest hover:underline">Copy Code</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {activeTab === 'dashboard' && (
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -603,42 +631,81 @@ export default function Dashboard() {
                     )}
 
                     {activeTab === 'my-orders' && (
-                        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                            <div className="px-4 py-5 sm:px-6">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900">My Purchase History</h3>
+                        <div className="max-w-4xl mx-auto space-y-6">
+                            <div className="flex items-center justify-between px-2">
+                                <h1 className="text-2xl font-black text-brand-dark tracking-tight">Purchase History</h1>
+                                <span className="px-4 py-1.5 bg-brand-light/20 text-brand-dark rounded-full text-xs font-black uppercase tracking-widest">
+                                    {orders.length} Orders
+                                </span>
                             </div>
-                            <ul role="list" className="divide-y divide-gray-200">
-                                {orders.length > 0 ? orders.map((order: any) => (
-                                    <li key={order.id} className="px-6 py-4">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-lg font-bold text-gray-900">Order #{order.id}</span>
-                                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${order.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' : order.status === 'SHIPPED' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}`}>{order.status}</span>
-                                        </div>
-                                        <div className="text-sm text-gray-500 mb-2">{new Date(order.createdAt).toLocaleDateString()}</div>
 
-                                        {/* Tracking Info for Buyer */}
+                            <div className="space-y-4">
+                                {orders.length > 0 ? orders.map((order: any) => (
+                                    <div key={order.id} className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-brand-dark/20 font-black text-xl">
+                                                    📦
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-black text-brand-dark">Order #{order.id}</h3>
+                                                    <p className="text-xs text-gray-400 font-medium">{new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                                                </div>
+                                            </div>
+                                            <span className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.1em] rounded-xl border ${
+                                                order.status === 'DELIVERED' ? 'bg-green-50 text-green-700 border-green-100' :
+                                                order.status === 'SHIPPED' ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                                                'bg-amber-50 text-amber-700 border-amber-100'
+                                            }`}>
+                                                {order.status}
+                                            </span>
+                                        </div>
+
                                         {order.trackingNote && (
-                                            <div className="bg-blue-50 p-2 rounded mb-2 text-xs text-blue-800 border border-blue-100">
-                                                <strong>Tracking Update:</strong> {order.trackingNote}
+                                            <div className="bg-indigo-50/50 border border-indigo-100 p-3 rounded-2xl mb-4 flex items-center gap-3">
+                                                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
+                                                <p className="text-xs text-indigo-700 font-bold">
+                                                    <span className="opacity-60 font-black uppercase tracking-widest text-[9px] block mb-0.5">Tracking Update</span>
+                                                    {order.trackingNote}
+                                                </p>
                                             </div>
                                         )}
 
-                                        <div className="border-t border-gray-100 pt-2">
+                                        <div className="space-y-2 border-t border-gray-50 pt-4">
                                             {order.items.map((item: any) => (
-                                                <div key={item.id} className="flex justify-between text-sm py-1">
-                                                    <span>{item.quantity}x {item.product.name}</span>
-                                                    <span>₦{Number(item.price).toFixed(2)}</span>
+                                                <div key={item.id} className="flex justify-between items-center text-sm">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-[10px] font-black">{item.quantity}x</span>
+                                                        <span className="font-bold text-brand-dark/70">{item.product.name}</span>
+                                                    </div>
+                                                    <span className="font-black text-brand-dark">₦{Number(item.price).toLocaleString()}</span>
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className="mt-2 text-right font-bold text-gray-900">
-                                            Total: ₦{Number(order.totalAmount).toFixed(2)}
+
+                                        <div className="mt-6 flex items-center justify-between bg-gray-50/50 rounded-2xl p-4">
+                                            <div>
+                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Total Amount</p>
+                                                <p className="text-xl font-black text-brand-dark">₦{Number(order.totalAmount).toLocaleString()}</p>
+                                            </div>
+                                            <button className="px-6 py-2.5 bg-brand-dark text-white rounded-xl text-xs font-black hover:bg-black transition-all active:scale-95 shadow-lg">
+                                                Order Details
+                                            </button>
                                         </div>
-                                    </li>
+                                    </div>
                                 )) : (
-                                    <li className="px-6 py-4 text-center text-gray-500">You haven't placed any orders yet.</li>
+                                    <div className="bg-white rounded-[2.5rem] p-12 text-center border-2 border-dashed border-gray-100">
+                                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <ShoppingCart size={32} className="text-gray-200" />
+                                        </div>
+                                        <h3 className="text-lg font-black text-brand-dark mb-1">No orders yet</h3>
+                                        <p className="text-sm text-gray-400 max-w-xs mx-auto">Start exploring the marketplace to find fresh farm produce today!</p>
+                                        <button onClick={() => setActiveTab('marketplace')} className="mt-6 px-8 py-3 bg-brand-light text-brand-dark rounded-2xl font-black text-sm hover:bg-white transition-all shadow-md">
+                                            Go Shopping
+                                        </button>
+                                    </div>
                                 )}
-                            </ul>
+                            </div>
                         </div>
                     )}
 
@@ -1336,6 +1403,26 @@ export default function Dashboard() {
                     )}
                     </div>
                 </main>
+
+                {/* ── MOBILE BOTTOM NAV (BUYER ONLY) ── */}
+                {(user?.role === 'BUYER' || viewMode === 'BUYER') && (
+                    <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-gray-100 px-6 py-3 flex items-center justify-around z-30 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] md:hidden">
+                        {[
+                            { label: 'Home',    icon: Home,      tab: 'buyer-home' },
+                            { label: 'Market',  icon: ShoppingBag, tab: 'marketplace' },
+                            { label: 'Orders',  icon: Clock,       tab: 'my-orders' },
+                            { label: 'Meal',    icon: ChefHat,     tab: 'meal-planner' },
+                            { label: 'Profile', icon: User,        tab: 'profile' },
+                        ].map(({ label, icon: Icon, tab }) => (
+                            <button key={tab} onClick={() => setActiveTab(tab)}
+                                className={`flex flex-col items-center gap-1 transition-all ${activeTab === tab ? 'text-brand-dark' : 'text-gray-400'}`}>
+                                <Icon size={20} className={activeTab === tab ? 'scale-110' : ''} />
+                                <span className={`text-[8px] font-black uppercase tracking-widest ${activeTab === tab ? 'opacity-100' : 'opacity-40'}`}>{label}</span>
+                                {activeTab === tab && <motion.div layoutId="bubble" className="absolute -top-1 w-1 h-1 bg-brand-dark rounded-full" />}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );

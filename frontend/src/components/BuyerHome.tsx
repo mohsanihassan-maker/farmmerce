@@ -116,40 +116,49 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                 </div>
 
                 {/* Search Bar */}
-                <button
-                    onClick={() => setActiveTab('marketplace')}
-                    className="mt-3 w-full flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-gray-400 text-sm hover:border-brand-dark/30 transition-all text-left"
-                >
-                    <Search size={16} className="shrink-0" />
-                    <span>Search fresh produce, farms…</span>
-                </button>
+                <div className="mt-3">
+                    <button
+                        onClick={() => setActiveTab('marketplace')}
+                        className="w-full flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-gray-400 text-sm hover:border-brand-dark/30 transition-all text-left shadow-sm"
+                    >
+                        <Search size={16} className="shrink-0" />
+                        <span>Search fresh produce, farms…</span>
+                    </button>
+                    <div className="flex gap-2 mt-2 overflow-x-auto no-scrollbar px-1">
+                        {['Tomato', 'Onion', 'Yam', 'Fresh Eggs'].map(tag => (
+                            <button key={tag} onClick={() => setActiveTab('marketplace')} className="text-[10px] font-bold text-gray-400 bg-gray-100/50 px-2 py-1 rounded-lg hover:bg-gray-200 transition-colors whitespace-nowrap">
+                                {tag}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             <div className="px-4 space-y-7 py-5 pb-28">
                 {/* ── PROMO BANNER ── */}
                 <section>
-                    <div className="relative overflow-hidden rounded-[1.75rem] h-36 shadow-lg">
+                    <div className="relative overflow-hidden rounded-[2rem] h-40 shadow-xl">
                         {PROMO_BANNERS.map((b, i) => (
                             <motion.div
                                 key={b.id}
-                                initial={{ opacity: 0, x: 40 }}
-                                animate={{ opacity: i === activeBanner ? 1 : 0, x: i === activeBanner ? 0 : 40 }}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: i === activeBanner ? 1 : 0, scale: i === activeBanner ? 1 : 0.95 }}
                                 transition={{ duration: 0.5 }}
-                                className={`absolute inset-0 bg-gradient-to-r ${b.gradient} p-6 flex items-center justify-between`}
+                                className={`absolute inset-0 bg-gradient-to-br ${b.gradient} p-7 flex items-center justify-between`}
                             >
-                                <div>
-                                    <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">Limited Offer</p>
-                                    <h3 className="text-white text-xl font-black leading-tight">{b.title}</h3>
-                                    <p className="text-white/70 text-xs mt-1">{b.subtitle}</p>
+                                <div className="max-w-[60%]">
+                                    <p className="text-white/80 text-[10px] font-black uppercase tracking-[0.2em] mb-2">Exclusive Deal</p>
+                                    <h3 className="text-white text-2xl font-black leading-tight drop-shadow-sm">{b.title}</h3>
+                                    <p className="text-white/80 text-xs mt-2 font-medium">{b.subtitle}</p>
                                 </div>
-                                <div className="text-5xl">{b.emoji}</div>
+                                <div className="text-6xl drop-shadow-lg">{b.emoji}</div>
                             </motion.div>
                         ))}
                         {/* Dots */}
-                        <div className="absolute bottom-3 left-6 flex gap-1.5">
+                        <div className="absolute bottom-4 left-7 flex gap-2">
                             {PROMO_BANNERS.map((_, i) => (
                                 <button key={i} onClick={() => setActiveBanner(i)}
-                                    className={`h-1.5 rounded-full transition-all ${i === activeBanner ? 'w-5 bg-white' : 'w-1.5 bg-white/40'}`} />
+                                    className={`h-1.5 rounded-full transition-all duration-300 ${i === activeBanner ? 'w-6 bg-white' : 'w-1.5 bg-white/40'}`} />
                             ))}
                         </div>
                     </div>
@@ -157,15 +166,17 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
 
                 {/* ── QUICK LINKS ── */}
                 <section>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 gap-3">
                         {QUICK_LINKS.map((q) => (
                             <button
                                 key={q.label}
                                 onClick={() => setActiveTab(q.tab)}
-                                className={`${q.bg} ${q.text} flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-2xl transition-all active:scale-95 shadow-sm`}
+                                className={`${q.bg} ${q.text} flex flex-col items-center justify-center gap-2 py-4 px-1 rounded-3xl transition-all active:scale-90 shadow-lg border border-white/10`}
                             >
-                                <q.icon size={18} className={q.accent} />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-center leading-tight">{q.label}</span>
+                                <div className="p-2 bg-white/20 rounded-xl">
+                                    <q.icon size={20} className="text-white" />
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-center leading-tight">{q.label}</span>
                             </button>
                         ))}
                     </div>
@@ -264,22 +275,6 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                         ))}
                     </div>
                 </section>
-            </div>
-
-            {/* ── BOTTOM NAV ── */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-3 flex items-center justify-around z-30 shadow-2xl md:hidden">
-                {[
-                    { label: 'Home', icon: Flame, tab: 'home' },
-                    { label: 'Shop', icon: ShoppingBag, tab: 'marketplace' },
-                    { label: 'Orders', icon: Clock, tab: 'my-orders' },
-                    { label: 'Profile', icon: Bell, tab: 'profile' },
-                ].map(({ label, icon: Icon, tab }) => (
-                    <button key={tab} onClick={() => setActiveTab(tab === 'home' ? 'buyer-home' : tab)}
-                        className="flex flex-col items-center gap-1 text-gray-400 hover:text-brand-dark transition-colors">
-                        <Icon size={20} />
-                        <span className="text-[9px] font-black uppercase tracking-widest">{label}</span>
-                    </button>
-                ))}
             </div>
         </div>
     );
