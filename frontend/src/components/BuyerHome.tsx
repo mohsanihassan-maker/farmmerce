@@ -233,12 +233,13 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                                     if (q.tab === 'marketplace') setActiveTab('marketplace');
                                     else setLocalTab(q.tab);
                                 }}
-                                className={`${q.bg} ${q.text} flex flex-col items-center justify-center gap-2 py-4 px-1 rounded-3xl transition-all active:scale-90 shadow-lg border border-white/10`}
+                                className={`${q.bg} ${q.text} flex flex-col items-center justify-center gap-2 py-4 px-1 rounded-3xl transition-all active:scale-90 shadow-lg border border-white/10 group hover:-translate-y-1 hover:shadow-xl duration-300`}
                             >
-                                <div className="p-2 bg-white/20 rounded-xl">
-                                    <q.icon size={20} className="text-white" />
+                                <div className="p-2.5 bg-white/20 rounded-2xl shadow-inner group-hover:bg-white/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 relative">
+                                    <q.icon size={26} className="drop-shadow-lg relative z-10 text-current" />
+                                    <div className="absolute inset-0 bg-white/50 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"></div>
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-wider text-center leading-tight">{q.label}</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-center leading-tight drop-shadow-sm group-hover:scale-105 transition-transform">{q.label}</span>
                             </button>
                         ))}
                     </div>
