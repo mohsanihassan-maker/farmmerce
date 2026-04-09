@@ -30,9 +30,23 @@ export default function MarketplaceView() {
     // Fetch categories once
     useEffect(() => {
         fetch(`${API_URL}/categories`)
-            .then(res => res.json())
-            .then(data => setCategories(['All', ...data.map((c: any) => c.name)]))
-            .catch(() => { });
+            .then(res => {
+                if (!res.ok) throw new Error();
+                return res.json();
+            })
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    setCategories(['All', ...data.map((c: any) => c.name)]);
+                } else {
+                    throw new Error('Empty');
+                }
+            })
+            .catch(async () => {
+                const { data } = await supabase.from('Category').select('*');
+                if (data) {
+                    setCategories(['All', ...data.map((c: any) => c.name)]);
+                }
+            });
     }, []);
 
     // Fetch products whenever filters change
@@ -50,13 +64,13 @@ export default function MarketplaceView() {
                 const res = await fetch(`${API_URL}/products?${params.toString()}`);
                 if (res.ok) {
                     const data = await res.json();
-                    if (Array.isArray(data)) {
+                    if (Array.isArray(data) && data.length > 0) {
                         setProducts(data);
                         setLoading(false);
                         return;
                     }
                 }
-                throw new Error('API Offline');
+                throw new Error('API Offline or Empty');
             } catch (err) {
                 console.warn('REST API unavailable, falling back to Supabase Direct...');
                 let query = supabase.from('Product').select('*, farmer:User(id, name)');

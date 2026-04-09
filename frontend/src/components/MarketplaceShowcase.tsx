@@ -17,12 +17,12 @@ export default function MarketplaceShowcase() {
                 const res = await fetch(`${API_URL}/products`);
                 if (res.ok) {
                     const data = await res.json();
-                    if (Array.isArray(data)) {
+                    if (Array.isArray(data) && data.length > 0) {
                         setProducts(data.slice(0, 8));
                         return;
                     }
                 }
-                throw new Error('API Offline');
+                throw new Error('API Offline or Empty');
             } catch (err) {
                 console.warn('REST API unavailable, falling back to Supabase Direct...');
                 // Fallback: Direct Supabase Fetch

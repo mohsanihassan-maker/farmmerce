@@ -74,9 +74,9 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                 const res = await fetch(`${API_URL}/products?sort=newest&limit=8`);
                 if (res.ok) {
                     const data = await res.json();
-                    if (Array.isArray(data)) {
+                    if (Array.isArray(data) && data.length > 0) {
                         setFeaturedProducts(data.slice(0, 8));
-                    }
+                    } else throw new Error('API Empty');
                 } else throw new Error();
             } catch {
                 console.warn('REST API Products fallback to Supabase...');
@@ -89,7 +89,8 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                 const res = await fetch(`${API_URL}/categories`);
                 if (res.ok) {
                     const data = await res.json();
-                    if (Array.isArray(data)) setCategories(data);
+                    if (Array.isArray(data) && data.length > 0) setCategories(data);
+                    else throw new Error('Empty');
                 } else throw new Error();
             } catch {
                 console.warn('REST API Categories fallback to Supabase...');
