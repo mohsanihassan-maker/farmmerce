@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBasket, Users, Check, ArrowRight, Zap, Leaf, Award, Plus } from 'lucide-react';
+import { ShoppingBasket, Users, Check, ArrowRight, Zap, Leaf, Award, Plus, ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 // NOTE: These paths are absolute to the user's current environment for local preview.
@@ -91,6 +91,22 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
     const [selectedIdx, setSelectedIdx] = useState(1); // Default to Standard
     const { addToCart } = useCart();
     const bundle = BUNDLES[selectedIdx];
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!isCompact || !scrollRef.current) return;
+        const interval = setInterval(() => {
+            if (scrollRef.current) {
+                const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+                if (scrollLeft + clientWidth >= scrollWidth - 10) {
+                    scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    scrollRef.current.scrollBy({ left: 260, behavior: 'smooth' });
+                }
+            }
+        }, 3500);
+        return () => clearInterval(interval);
+    }, [isCompact]);
 
     const handleAddToCart = (idx?: number) => {
         const b = idx !== undefined ? BUNDLES[idx] : bundle;
@@ -115,34 +131,52 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
                     </h2>
                 </div>
                 
-                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+                <div 
+                    ref={scrollRef}
+                    className="flex gap-4 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth snap-x snap-mandatory"
+                >
                     {BUNDLES.map((b, i) => (
                         <motion.div
                             key={b.id}
                             whileHover={{ y: -5 }}
-                            className="flex-shrink-0 w-[240px] bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden group hover:shadow-xl hover:border-brand-mars/20 transition-all duration-300"
+                            className="snap-center flex-shrink-0 w-[260px] bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden group hover:shadow-2xl hover:border-brand-mars/40 transition-all duration-300 relative"
                         >
-                            <div className="h-32 relative overflow-hidden">
-                                <img src={b.imageUrl} alt={b.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                <div className="absolute top-2 right-2 flex bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg">
-                                    <span className="text-[9px] font-black uppercase text-brand-mars leading-none px-1">
-                                        -{b.savings}
-                                    </span>
+                            <div className="h-32 relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
+                                <img src={b.imageUrl} alt={b.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                <div className={`absolute top-0 right-0 m-3 px-3 py-1 rounded-full text-[10px] font-black uppercase shadow-lg backdrop-blur-md border border-white/30 bg-gradient-to-r ${b.color} text-white`}>
+                                    Save {b.savings}
                                 </div>
                             </div>
-                            <div className="p-4">
-                                <p className="text-[10px] font-black text-brand-dark/40 uppercase tracking-widest truncate">{b.familySize}</p>
-                                <h3 className="text-sm font-black text-brand-dark truncate mb-1">{b.name}</h3>
-                                <div className="flex items-center justify-between mt-4 bg-gray-50/50 p-2 rounded-2xl border border-gray-100">
+                            <div className="p-5">
+                                <p className="text-[10px] font-black text-brand-dark/40 uppercase tracking-widest truncate flex items-center gap-1 mb-1">
+                                    <Users size={12} className="text-brand-mars" /> {b.familySize}
+                                </p>
+                                <h3 className="text-base font-black text-brand-dark leading-tight mb-3">{b.name}</h3>
+                                
+                                {/* "Order Options" summary limit to 2 items */}
+                                <div className="space-y-1.5 mb-5">
+                                    {b.items.slice(0, 2).map(item => (
+                                       <div key={item} className="flex items-center gap-2 text-[11px] text-gray-500 font-medium">
+                                          <div className="w-3 h-3 rounded-full flex items-center justify-center shrink-0 bg-gray-100">
+                                              <Check size={8} style={{color: b.accentColor}} />
+                                          </div>
+                                          <span className="truncate">{item}</span>
+                                       </div>
+                                    ))}
+                                    <div className="text-[9px] text-brand-dark/40 font-bold ml-5 uppercase tracking-widest">+{b.items.length - 2} more items</div>
+                                </div>
+                                
+                                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                                     <div>
-                                        <p className="text-[10px] font-black text-gray-300 line-through leading-none px-1">₦{(b.price * 1.3).toLocaleString()}</p>
-                                        <p className="text-xl font-black text-brand-dark px-1">₦{b.price.toLocaleString()}</p>
+                                        <p className="text-[10px] font-black text-gray-300 line-through leading-none">₦{(b.price * 1.3).toLocaleString()}</p>
+                                        <p className="text-lg font-black text-brand-dark leading-none mt-1">₦{b.price.toLocaleString()}</p>
                                     </div>
                                     <button
                                         onClick={() => handleAddToCart(i)}
-                                        className="w-12 h-12 bg-brand-dark text-brand-light rounded-2xl flex items-center justify-center shadow-lg hover:bg-brand-mars hover:text-white transition-all transform active:scale-95 group-hover:scale-110"
+                                        className="h-10 px-4 bg-brand-dark text-white rounded-xl shadow-lg hover:bg-brand-mars transition-all transform active:scale-95 flex items-center gap-2 group-hover:shadow-brand-mars/20"
                                     >
-                                        <Plus size={24} />
+                                        <ShoppingCart size={14} className="text-brand-light" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Add</span>
                                     </button>
                                 </div>
                             </div>

@@ -220,7 +220,7 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
 
                 {/* ── FOOD BUNDLE SELECTOR ── */}
                 <section>
-                    <FoodBundleSelector />
+                    <FoodBundleSelector isCompact={true} />
                 </section>
 
                 {/* ── QUICK LINKS ── */}
