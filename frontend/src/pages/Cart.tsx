@@ -50,12 +50,20 @@ export default function Cart() {
 
     if (items.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-                <ShoppingBag className="h-16 w-16 text-gray-300 mb-4" />
-                <h2 className="text-xl font-medium text-gray-900">Your cart is empty</h2>
-                <Link to="/market" className="mt-4 text-primary hover:text-green-700 font-medium">
-                    Return to Marketplace
-                </Link>
+            <div className="flex flex-col min-h-screen bg-brand-dark/5 font-sans pb-16">
+                <Navbar />
+                <div className="flex-1 flex items-center justify-center pt-24 px-4">
+                    <div className="bg-white p-12 md:p-16 rounded-[3rem] shadow-2xl shadow-brand-dark/5 border border-brand-dark/5 flex flex-col items-center text-center max-w-lg w-full">
+                        <div className="w-24 h-24 bg-brand-light/30 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                            <ShoppingBag className="h-10 w-10 text-brand-dark" />
+                        </div>
+                        <h2 className="text-3xl font-black text-brand-dark mb-2 tracking-tight">Your Cart is Empty</h2>
+                        <p className="text-gray-500 font-medium mb-8">Looks like you haven't added any fresh farm produce yet.</p>
+                        <Link to="/dashboard" className="px-8 py-4 bg-brand-dark text-white rounded-2xl font-black shadow-xl hover:shadow-2xl hover:bg-black hover:-translate-y-1 transition-all duration-300 uppercase tracking-widest text-xs">
+                            Explore Fresh Market
+                        </Link>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -65,7 +73,7 @@ export default function Cart() {
             <Navbar />
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
                 <div className="flex items-center justify-between mb-8">
-                    <h1 className="text-4xl font-bold text-brand-dark">Your Cart</h1>
+                    <h1 className="text-4xl font-black text-brand-dark tracking-tight">Your Cart</h1>
                     <span className="bg-brand-light text-brand-dark px-4 py-1.5 rounded-full font-bold text-sm border border-brand-dark/10">
                         {items.length} {items.length === 1 ? 'Item' : 'Items'}
                     </span>

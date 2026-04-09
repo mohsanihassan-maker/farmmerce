@@ -200,7 +200,7 @@ export default function Checkout() {
                                     Payment Method
                                 </h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <label className={`relative flex flex - col p - 6 rounded - 3xl cursor - pointer transition - all border - 2 ${formData.paymentMethod === 'card' ? 'border-brand-dark bg-brand-dark/5' : 'border-gray-100 hover:border-brand-light'}`}>
+                                    <label className={`relative flex flex-col p-6 rounded-3xl cursor-pointer transition-all border-2 ${formData.paymentMethod === 'card' ? 'border-brand-dark bg-brand-dark/5 shadow-inner' : 'border-gray-100 hover:border-brand-light hover:shadow-md'}`}>
                                         <input
                                             type="radio"
                                             name="paymentMethod"
@@ -209,12 +209,12 @@ export default function Checkout() {
                                             onChange={handleChange}
                                             className="absolute top-4 right-4 w-5 h-5 accent-brand-dark"
                                         />
-                                        <div className="mb-4 text-brand-dark/60"><CreditCard size={32} /></div>
-                                        <span className="block font-bold text-brand-dark text-lg">Card Payment</span>
-                                        <span className="block text-sm text-gray-500 mt-1">Paystack / Flutterwave</span>
+                                        <div className={`mb-4 transition-colors ${formData.paymentMethod === 'card' ? 'text-brand-dark' : 'text-brand-dark/40'}`}><CreditCard size={32} /></div>
+                                        <span className="block font-black text-brand-dark text-lg drop-shadow-sm">Card Payment</span>
+                                        <span className="block text-sm text-gray-400 mt-1 font-medium">Paystack / Flutterwave</span>
                                     </label>
 
-                                    <label className={`relative flex flex - col p - 6 rounded - 3xl cursor - pointer transition - all border - 2 ${formData.paymentMethod === 'cod' ? 'border-brand-dark bg-brand-dark/5' : 'border-gray-100 hover:border-brand-light'}`}>
+                                    <label className={`relative flex flex-col p-6 rounded-3xl cursor-pointer transition-all border-2 ${formData.paymentMethod === 'cod' ? 'border-brand-dark bg-brand-dark/5 shadow-inner' : 'border-gray-100 hover:border-brand-light hover:shadow-md'}`}>
                                         <input
                                             type="radio"
                                             name="paymentMethod"
@@ -223,9 +223,9 @@ export default function Checkout() {
                                             onChange={handleChange}
                                             className="absolute top-4 right-4 w-5 h-5 accent-brand-dark"
                                         />
-                                        <div className="mb-4 text-brand-dark/60"><Truck size={32} /></div>
-                                        <span className="block font-bold text-brand-dark text-lg">Pay on Delivery</span>
-                                        <span className="block text-sm text-gray-500 mt-1">Cash or Transfer</span>
+                                        <div className={`mb-4 transition-colors ${formData.paymentMethod === 'cod' ? 'text-brand-dark' : 'text-brand-dark/40'}`}><Truck size={32} /></div>
+                                        <span className="block font-black text-brand-dark text-lg drop-shadow-sm">Pay on Delivery</span>
+                                        <span className="block text-sm text-gray-400 mt-1 font-medium">Cash or Transfer</span>
                                     </label>
                                 </div>
                             </div>
