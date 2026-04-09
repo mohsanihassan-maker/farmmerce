@@ -406,18 +406,20 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {[
-                            { code: 'FRESH15', title: '15% Off Vegetables', desc: 'Valid on all leafy greens and root vegetables.', color: 'border-brand-light/30 bg-brand-light/10 text-brand-dark' },
-                            { code: 'SHIPFREE', title: 'Free Delivery', desc: 'On orders above ₦5,000 using our logistics partners.', color: 'border-brand-mars/30 bg-brand-mars/10 text-brand-mars' },
-                            { code: 'FARMSTRENGTH', title: '₦1,000 Off Bundle', desc: 'Buy any 4 categories and save ₦1,000 instantly.', color: 'border-brand-yellow/30 bg-brand-yellow/10 text-brand-yellowDark' },
+                            { code: 'FRESH15', title: '15% Off Vegetables', desc: 'Valid on all leafy greens and root vegetables.', color: 'bg-gradient-to-br from-brand-dark to-emerald-600 text-white shadow-xl shadow-brand-dark/20 border-0' },
+                            { code: 'SHIPFREE', title: 'Free Delivery', desc: 'On orders above ₦5,000 using our logistics partners.', color: 'bg-gradient-to-br from-brand-mars to-orange-500 text-white shadow-xl shadow-brand-mars/20 border-0' },
+                            { code: 'FARMSTRENGTH', title: '₦1,000 Off Bundle', desc: 'Buy any 4 categories and save ₦1,000 instantly.', color: 'bg-gradient-to-br from-brand-yellowDark to-brand-yellow text-brand-dark shadow-xl shadow-brand-yellow/30 border-0' },
                         ].map((promo) => (
-                            <div key={promo.code} className={`p-6 rounded-3xl border-2 ${promo.color} flex flex-col justify-between`}>
+                            <div key={promo.code} className={`p-6 rounded-3xl ${promo.color} flex flex-col justify-between transition-transform hover:-translate-y-1 duration-300`}>
                                 <div>
-                                    <h3 className="font-black text-lg mb-1">{promo.title}</h3>
-                                    <p className="text-sm opacity-80 mb-4">{promo.desc}</p>
+                                    <h3 className="font-black text-lg mb-1 drop-shadow-sm">{promo.title}</h3>
+                                    <p className={`text-sm mb-4 font-medium ${promo.color.includes('text-white') ? 'text-white/80' : 'text-brand-dark/80'}`}>{promo.desc}</p>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <code className="px-3 py-1 bg-white/50 rounded-lg font-black tracking-widest">{promo.code}</code>
-                                    <button className="text-xs font-black uppercase tracking-widest hover:underline">Copy Code</button>
+                                    <code className={`px-4 py-2 rounded-xl font-black tracking-widest shadow-inner ${promo.color.includes('text-white') ? 'bg-white/20 backdrop-blur-md border border-white/20 text-white' : 'bg-white/50 backdrop-blur-md border border-white/40 text-brand-dark'}`}>
+                                        {promo.code}
+                                    </code>
+                                    <button className="text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-transform bg-black/10 px-3 py-2 rounded-lg">Copy</button>
                                 </div>
                             </div>
                         ))}
