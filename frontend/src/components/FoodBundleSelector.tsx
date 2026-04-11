@@ -3,94 +3,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBasket, Users, Check, ArrowRight, Zap, Leaf, Award, Plus, ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
-// NOTE: These paths are absolute to the user's current environment for local preview.
-const BUNDLES = [
-    {
-        id: 'lite',
-        name: 'Harvest Lite',
-        familySize: '2-3 Persons',
-        price: 24500,
-        savings: '15% Off',
-        color: 'from-brand-dark to-brand-light/40',
-        badge: 'bg-brand-light/20 text-brand-dark',
-        imageUrl: '/harvest_lite_bundle_1775397493609.png',
-        accentColor: '#013f31',
-        items: [
-            '5kg Long Grain Rice',
-            '2kg Brown Beans',
-            '2L Premium Veg Oil',
-            '2 Large Tubers of Yam',
-            '1 Small Basket Veggies',
-            '1kg Red Onions'
-        ]
-    },
-    {
-        id: 'standard',
-        name: 'Harvest Standard',
-        familySize: '4-5 Persons',
-        price: 48500,
-        savings: '25% Off',
-        color: 'from-brand-mars to-brand-mars/40',
-        badge: 'bg-brand-mars/10 text-brand-mars font-black',
-        imageUrl: '/harvest_standard_bundle_1775397565651.png',
-        accentColor: '#ff6f64',
-        featured: true,
-        items: [
-            '10kg Long Grain Rice',
-            '5kg Brown Beans',
-            '5L Premium Veg Oil',
-            '5 Medium Tubers of Yam',
-            '1 Large Basket Veggies',
-            '3kg Red Onions'
-        ]
-    },
-    {
-        id: 'pro',
-        name: 'Harvest Pro',
-        familySize: '6-8 Persons',
-        price: 88000,
-        savings: '30% Off',
-        color: 'from-brand-yellowDark to-brand-yellow/40',
-        badge: 'bg-brand-yellow/20 text-brand-yellowDark font-black',
-        imageUrl: '/harvest_pro_bundle_1775397604426.png',
-        accentColor: '#f6c744',
-        items: [
-            '25kg Long Grain Rice',
-            '10kg Brown Beans',
-            '10L Premium Veg Oil',
-            '10 Large Tubers of Yam',
-            '2 Large Baskets Veggies',
-            '1 Crate Fresh Farm Eggs',
-            '5kg Red Onions'
-        ]
-    },
-    {
-        id: 'feast',
-        name: 'Harvest Feast',
-        familySize: '10+ Persons',
-        price: 165000,
-        savings: '35% Off',
-        color: 'from-brand-purple to-brand-pink/40',
-        badge: 'bg-brand-pink/20 text-brand-purple font-black',
-        imageUrl: '/harvest_feast_bundle_1775397672304.png',
-        accentColor: '#81295c',
-        items: [
-            '50kg Long Grain Rice',
-            '20kg Brown Beans',
-            '20L Premium Veg Oil',
-            '20 Large Tubers of Yam',
-            '4 Large Baskets Veggies',
-            '2 Crates Fresh Farm Eggs',
-            '10kg Red Onions',
-            '1 Whole Broiler Chicken'
-        ]
-    }
-];
+import { API_URL } from '../config';
 
 export default function FoodBundleSelector({ isPublic = false, isCompact = false }: { isPublic?: boolean, isCompact?: boolean }) {
     const [selectedIdx, setSelectedIdx] = useState(1); // Default to Standard
+    const [bundles, setBundles] = useState<any[]>([]);
     const { addToCart } = useCart();
-    const bundle = BUNDLES[selectedIdx];
+    
+    useEffect(() => {
+        fetch(`${API_URL}/bundles`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.length > 0) setBundles(data);
+            })
+            .catch(err => console.error(err));
+    }, []);
+
+    const bundle = bundles[selectedIdx] || bundles[0];
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -109,7 +38,8 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
     }, [isCompact]);
 
     const handleAddToCart = (idx?: number) => {
-        const b = idx !== undefined ? BUNDLES[idx] : bundle;
+        if (!bundle) return;
+        const b = idx !== undefined ? bundles[idx] : bundle;
         const bundleItem = {
             id: `bundle-${b.id}`,
             name: `${b.name} Bundle`,
@@ -135,7 +65,8 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
                     ref={scrollRef}
                     className="flex gap-4 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth snap-x snap-mandatory"
                 >
-                    {BUNDLES.map((b, i) => (
+                    {bundles.length === 0 && <div className="text-gray-400 text-sm py-4">Loading bundles...</div>}
+                    {bundles.map((b, i) => (
                         <motion.div
                             key={b.id}
                             whileHover={{ y: -5 }}
@@ -202,7 +133,8 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
                     <p className="text-sm md:text-base text-gray-400 font-medium">Choose your range and save up to 35% compared to open market prices.</p>
                 </div>
                 <div className="flex bg-gray-100/80 p-2 rounded-[2rem] gap-1 shadow-inner overflow-x-auto no-scrollbar">
-                    {BUNDLES.map((b, i) => (
+                    {bundles.length === 0 && <span className="p-3 text-sm text-gray-400">Loading...</span>}
+                    {bundles.map((b, i) => (
                         <button
                             key={b.id}
                             onClick={() => setSelectedIdx(i)}
@@ -223,6 +155,7 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
             </div>
 
             {/* ── MAIN BUNDLE SHOWCASE ── */}
+            {bundle && (
             <AnimatePresence mode="wait">
                 <motion.div
                     key={bundle.id}
@@ -335,6 +268,7 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
                     </div>
                 </motion.div>
             </AnimatePresence>
+            )}
         </div>
     );
 }

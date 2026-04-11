@@ -216,3 +216,19 @@ model GlobalSetting {
   key   String @unique
   value String
 }
+
+model Bundle {
+  id          Int      @id @default(autoincrement())
+  name        String
+  familySize  String
+  price       Decimal
+  savings     String?
+  color       String?
+  badge       String?
+  imageUrl    String?
+  accentColor String?
+  featured    Boolean  @default(false)
+  items       String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

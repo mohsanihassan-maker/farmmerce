@@ -37,8 +37,8 @@ import { api } from '../api';
 
 export default function Dashboard() {
     const { user, isAuthenticated, loading } = useAuth();
-    const [viewMode, setViewMode] = useState<any>(user?.role === 'FARMER' ? 'FARMER' : 'BUYER');
-    const [activeTab, setActiveTab] = useState(user?.role === 'FARMER' ? 'dashboard' : 'buyer-home');
+    const [viewMode, setViewMode] = useState<any>(user?.role === 'FARMER' ? 'FARMER' : user?.role === 'ADMIN' ? 'ADMIN' : 'BUYER');
+    const [activeTab, setActiveTab] = useState(user?.role === 'FARMER' ? 'dashboard' : user?.role === 'ADMIN' ? 'admin-stats' : 'buyer-home');
     const [orders, setOrders] = useState<any[]>([]);
     const [myProducts, setMyProducts] = useState<any[]>([]);
     const [stats, setStats] = useState<any>(null);
@@ -54,6 +54,7 @@ export default function Dashboard() {
     const [pendingSettlements, setPendingSettlements] = useState<any[]>([]);
     const [allSettlements, setAllSettlements] = useState<any[]>([]);
     const [allDeals, setAllDeals] = useState<any[]>([]);
+    const [allBundles, setAllBundles] = useState<any[]>([]);
     const [panelEnabled, setPanelEnabled] = useState(false);
     const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
     const navigate = useNavigate();
@@ -167,6 +168,12 @@ export default function Dashboard() {
             fetch(`${API_URL}/settlements`)
                 .then(res => res.json())
                 .then(data => setAllSettlements(data))
+                .catch(err => console.error(err));
+        }
+        if (activeTab === 'admin-bundles') {
+            api.get('/bundles')
+                .then(res => res.json())
+                .then(data => setAllBundles(data))
                 .catch(err => console.error(err));
         }
         if (activeTab === 'group-deals') {
@@ -1407,6 +1414,40 @@ export default function Dashboard() {
                             </div>
                         </div>
                     )}
+                    )}
+
+                    {activeTab === 'admin-bundles' && (
+                        <div className="max-w-4xl mx-auto space-y-8">
+                            <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100">
+                                <h3 className="text-2xl font-black text-brand-dark mb-6 tracking-tight">Manage Food Bundles</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {allBundles.map(bundle => (
+                                        <div key={bundle.id} className="p-6 bg-gray-50 border border-gray-100 rounded-3xl flex flex-col justify-between items-start gap-4 hover:shadow-lg transition-all">
+                                            <div className="flex gap-4 items-center">
+                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg bg-gradient-to-br ${bundle.color}`}>
+                                                    <Package size={20} />
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-brand-dark text-lg">{bundle.name}</p>
+                                                    <p className="text-[10px] text-gray-400 uppercase tracking-widest font-black">{bundle.familySize}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between w-full items-end mt-2 pt-4 border-t border-gray-200">
+                                                <p className="text-xl font-black text-brand-dark">₦{bundle.price}</p>
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${bundle.badge}`}>{bundle.savings}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                {allBundles.length === 0 && (
+                                    <div className="text-center py-10 opacity-50">
+                                        <Package className="mx-auto mb-4" size={48} />
+                                        <p className="text-sm font-bold">No bundles found.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                     </div>
                 </main>
 
@@ -1435,7 +1476,47 @@ export default function Dashboard() {
 }
 
 function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }: { activeTab: string, setActiveTab: (tab: string) => void, viewMode: string, setViewMode: (mode: string) => void, user: any }) {
-    if (viewMode === 'BUYER' || user?.role === 'BUYER') {
+    const adminSection = user?.role === 'ADMIN' ? (
+        <div className="pt-6 pb-2">
+            <p className="px-3 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Platform Admin</p>
+            <div className="space-y-1">
+                <button onClick={() => setActiveTab('admin-stats')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-stats' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <LayoutDashboard className="mr-3 h-5 w-5" />
+                    Overview
+                </button>
+                <button onClick={() => setActiveTab('admin-users')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-users' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <User className="mr-3 h-5 w-5" />
+                    Users
+                </button>
+                <button onClick={() => setActiveTab('admin-orders')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-orders' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <ShoppingBag className="mr-3 h-5 w-5" />
+                    All Orders
+                </button>
+                <button onClick={() => setActiveTab('admin-categories')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-categories' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <Filter className="mr-3 h-5 w-5" />
+                    Categories
+                </button>
+                <button onClick={() => setActiveTab('admin-recipes')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-recipes' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <ChefHat className="mr-3 h-5 w-5" />
+                    Recipes
+                </button>
+                <button onClick={() => setActiveTab('admin-settlements')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-settlements' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <Navigation className="mr-3 h-5 w-5" />
+                    Settlements
+                </button>
+                <button onClick={() => setActiveTab('group-deals')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'group-deals' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <Users className="mr-3 h-5 w-5" />
+                    Group Deals
+                </button>
+                <button onClick={() => setActiveTab('admin-bundles')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-bundles' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <Package className="mr-3 h-5 w-5" />
+                    Food Bundles
+                </button>
+            </div>
+        </div>
+    ) : null;
+
+    if (viewMode === 'BUYER') {
         return (
             <>
                 <Link to="/" className="w-full flex items-center px-3 py-2.5 text-xs font-black rounded-2xl text-brand-dark/50 hover:bg-gray-50 transition-all mb-2 uppercase tracking-widest">
@@ -1480,6 +1561,7 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
                         Profile
                     </button>
                 </div>
+                {adminSection}
             </>
         );
     }
@@ -1532,43 +1614,7 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
                     My Settlements
                 </button>
             )}
-            {
-                user?.role === 'ADMIN' && (
-                    <div className="pt-6 pb-2">
-                        <p className="px-3 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Platform Admin</p>
-                        <div className="space-y-1">
-                            <button onClick={() => setActiveTab('admin-stats')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-stats' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
-                                <LayoutDashboard className="mr-3 h-5 w-5" />
-                                Overview
-                            </button>
-                            <button onClick={() => setActiveTab('admin-users')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-users' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
-                                <User className="mr-3 h-5 w-5" />
-                                Users
-                            </button>
-                            <button onClick={() => setActiveTab('admin-orders')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-orders' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
-                                <ShoppingBag className="mr-3 h-5 w-5" />
-                                All Orders
-                            </button>
-                            <button onClick={() => setActiveTab('admin-categories')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-categories' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
-                                <Filter className="mr-3 h-5 w-5" />
-                                Categories
-                            </button>
-                            <button onClick={() => setActiveTab('admin-recipes')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-recipes' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
-                                <ChefHat className="mr-3 h-5 w-5" />
-                                Recipes
-                            </button>
-                            <button onClick={() => setActiveTab('admin-settlements')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-settlements' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
-                                <Navigation className="mr-3 h-5 w-5" />
-                                Settlements
-                            </button>
-                            <button onClick={() => setActiveTab('group-deals')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'group-deals' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
-                                <Users className="mr-3 h-5 w-5" />
-                                Group Deals
-                            </button>
-                        </div>
-                    </div>
-                )
-            }
+            {adminSection}
             <div className="pt-6">
                 <Link to="/meal-planner" className="w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl text-gray-500 hover:bg-gray-50 transition-all group">
                     <ChefHat className="mr-3 h-5 w-5" />

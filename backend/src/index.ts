@@ -16,6 +16,7 @@ import settlementRoutes from './routes/settlements';
 import notificationRoutes from './routes/notifications';
 import reviewRoutes from './routes/reviews';
 import paymentsRoutes from './routes/payments';
+import bundlesRoutes from './routes/bundles';
 import { authenticateToken, authorizeRoles } from './middleware/authMiddleware';
 
 
@@ -47,6 +48,7 @@ app.use('/api/settlements', authenticateToken, settlementRoutes);
 app.use('/api/notifications', authenticateToken, notificationRoutes);
 app.use('/api/products', reviewRoutes); // nested: /api/products/:id/reviews
 app.use('/api/payments', authenticateToken, paymentsRoutes);
+app.use('/api/bundles', bundlesRoutes);
 
 
 app.listen(port, async () => {
