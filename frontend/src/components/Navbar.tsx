@@ -51,16 +51,11 @@ const Navbar = () => {
 
                     <div className="hidden md:block">
                         <div className="ml-10 flex items-baseline space-x-1">
-                            <Link to="/" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Company</Link>
-                            <Link to="/market" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Vendors</Link>
-                            {!isAuthenticated && <Link to="/register" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Riders</Link>}
-                            <Link to="/market" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Products</Link>
+                            <Link to="/" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Home</Link>
+                            <Link to="/market" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Market</Link>
+                            <Link to="/" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">About</Link>
                             {isAuthenticated && (
-                                <>
-                                    <Link to="/meal-planner" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Meals</Link>
-                                    <Link to="/orders" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Orders</Link>
-                                    <Link to="/dashboard" className="text-brand-dark hover:bg-gray-50 border border-gray-100 px-4 py-2 rounded-full text-sm font-black transition-all">More ⊕</Link>
-                                </>
+                                <Link to="/dashboard" className="text-brand-dark hover:bg-gray-50 border border-gray-100 px-4 py-2 rounded-full text-sm font-black transition-all">Dashboard ⊕</Link>
                             )}
                         </div>
                     </div>
@@ -208,11 +203,11 @@ const Navbar = () => {
                                 </button>
                             )}
                             <Link to="/" className="text-gray-300 hover:text-brand-light block px-3 py-2 rounded-md text-base font-medium" onClick={() => setIsOpen(false)}>Home</Link>
-                            <Link to="/market" className="text-gray-300 hover:text-brand-light block px-3 py-2 rounded-md text-base font-medium" onClick={() => setIsOpen(false)}>Marketplace</Link>
+                            <Link to="/market" className="text-gray-300 hover:text-brand-light block px-3 py-2 rounded-md text-base font-medium" onClick={() => setIsOpen(false)}>Market</Link>
+                            <Link to="/" className="text-gray-300 hover:text-brand-light block px-3 py-2 rounded-md text-base font-medium" onClick={() => setIsOpen(false)}>About</Link>
 
                             {isAuthenticated ? (
                                 <>
-                                    <Link to="/meal-planner" className="text-gray-300 hover:text-brand-light block px-3 py-2 rounded-md text-base font-medium" onClick={() => setIsOpen(false)}>Meal Planner</Link>
                                     <Link to="/dashboard" className="text-gray-300 hover:text-brand-light block px-3 py-2 rounded-md text-base font-medium" onClick={() => setIsOpen(false)}>Dashboard</Link>
                                     {user?.role === 'ADMIN' && (
                                         <Link to="/dashboard" className="text-brand-light hover:text-white block px-3 py-2 rounded-md text-base font-bold bg-white/5" onClick={() => setIsOpen(false)}>Admin Panel</Link>
