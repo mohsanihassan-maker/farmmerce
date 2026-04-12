@@ -150,7 +150,7 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
     };
 
     return (
-        <div className="min-h-full bg-gray-50">
+        <div className="min-h-full bg-[#FAF8F5]">
             {/* ── HEADER ── */}
             <div className="bg-white border-b border-gray-100 sticky top-0 z-20 px-4 py-4">
                 <div className="flex items-center justify-between gap-3">

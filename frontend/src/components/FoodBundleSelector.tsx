@@ -86,7 +86,7 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
                                 
                                 {/* "Order Options" summary limit to 2 items */}
                                 <div className="space-y-1.5 mb-5">
-                                    {b.items.slice(0, 2).map(item => (
+                                    {b.items.slice(0, 2).map((item: string) => (
                                        <div key={item} className="flex items-center gap-2 text-[11px] text-gray-500 font-medium">
                                           <div className="w-3 h-3 rounded-full flex items-center justify-center shrink-0 bg-gray-100">
                                               <Check size={8} style={{color: b.accentColor}} />
@@ -166,7 +166,7 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
                     className="grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden bg-white rounded-[3rem] shadow-2xl border border-gray-100 mx-4"
                 >
                     {/* Visual Section */}
-                    <div className="relative h-64 lg:h-auto overflow-hidden bg-brand-dark">
+                    <div className="relative h-64 lg:h-auto overflow-hidden bg-brand-light">
                         <motion.img
                             key={bundle.imageUrl}
                             src={bundle.imageUrl}
@@ -207,7 +207,7 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
                             <div className="space-y-3 mb-10">
                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 pl-1">Included in this bundle</p>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    {bundle.items.map((item, idx) => (
+                                    {bundle.items.map((item: string, idx: number) => (
                                         <motion.div
                                             key={item}
                                             initial={{ opacity: 0, x: -10 }}

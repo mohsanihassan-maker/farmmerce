@@ -56,6 +56,8 @@ export default function Dashboard() {
     const [allDeals, setAllDeals] = useState<any[]>([]);
     const [allBundles, setAllBundles] = useState<any[]>([]);
     const [panelEnabled, setPanelEnabled] = useState(false);
+    const [selectedAdminUser, setSelectedAdminUser] = useState<any>(null);
+    const [bundleForm, setBundleForm] = useState<any>({ name: '', familySize: '', price: '', savings: '', color: 'from-blue-500 to-indigo-600', badge: '', imageUrl: '', items: '[]' });
     const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
     const navigate = useNavigate();
 
@@ -227,15 +229,20 @@ export default function Dashboard() {
 
     if (loading || !user) {
         return (
-            <div className="min-h-screen bg-brand-dark flex flex-col items-center justify-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-brand-light mb-4"></div>
-                <p className="text-white font-bold text-xl tracking-tight">Accessing Farmmerce...</p>
+            <div className="min-h-screen bg-[#FAF8F5] flex flex-col items-center justify-center gap-5">
+                <img src="/farmmerce-20.png" alt="Farmmerce" className="h-10 w-auto object-contain opacity-60 animate-pulse" />
+                <div className="flex gap-2">
+                    {[0,1,2].map(i => (
+                        <div key={i} className="w-2 h-2 bg-brand-dark rounded-full animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+                    ))}
+                </div>
+                <p className="text-brand-dark/40 font-black text-xs uppercase tracking-[0.3em]">Loading dashboard…</p>
             </div>
         );
     }
 
     return (
-        <div className="flex h-screen overflow-hidden bg-gray-100 font-inter relative">
+        <div className="flex h-screen overflow-hidden bg-[#FAF8F5] font-sans relative">
             {/* QR Modal */}
             {selectedQr && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -353,35 +360,35 @@ export default function Dashboard() {
             </AnimatePresence>
 
             {/* Desktop Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
-                <div className="h-16 flex items-center px-6 border-b border-gray-200">
+            <aside className="w-64 bg-white border-r border-gray-100 hidden md:flex flex-col shadow-sm">
+                <div className="h-16 flex items-center px-6 border-b border-gray-100">
                     <Link to="/" className="flex items-center">
                         <img src="/farmmerce-20.png" alt="Farmmerce" className="h-8 w-auto object-contain" />
                     </Link>
                 </div>
-                <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+                <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
                     <SidebarContent activeTab={activeTab} setActiveTab={setActiveTab} viewMode={viewMode} setViewMode={setViewMode} user={user} />
                 </nav>
-                <div className="p-4 border-t border-gray-200">
+                <div className="p-4 border-t border-gray-100">
                     <UserInfo user={user} />
                 </div>
             </aside>
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
-                <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+                <header className="h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 sm:px-6 lg:px-8 sticky top-0 z-20">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setIsMobileMenuOpen(true)}
-                            className="p-2 -ml-2 text-gray-400 md:hidden"
+                            className="p-2 -ml-2 text-gray-400 hover:text-brand-dark md:hidden transition-colors"
                         >
                             <Menu className="w-6 h-6" />
                         </button>
-                        <h1 className="text-lg font-black text-brand-dark capitalize leading-tight">
+                        <h1 className="text-xl md:text-2xl font-black text-brand-dark tracking-tighter capitalize leading-none">
                             {activeTab === 'buyer-home' ? 'My Dashboard' : activeTab.replace(/-/g, ' ')}
                         </h1>
-                        <div className="ml-4 px-3 py-1 bg-brand-light/20 border border-brand-light/30 rounded-full text-[10px] font-black text-brand-dark flex items-center gap-2 uppercase tracking-widest">
-                            <User className="w-3 h-3" />
+                        <div className="hidden sm:flex ml-2 px-3 py-1 bg-gray-100 rounded-full text-[9px] font-black text-gray-500 items-center gap-1.5 uppercase tracking-widest">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
                             {viewMode}
                         </div>
                     </div>
@@ -897,29 +904,90 @@ export default function Dashboard() {
                                                     </span>
                                                 </td>
                                                 <td className="px-8 py-6">
-                                                    <select
-                                                        value={u.role}
-                                                        onChange={(e) => {
-                                                            const newRole = e.target.value;
-                                                            fetch(`${API_URL}/admin/users/${u.id}/role`, {
-                                                                method: 'PUT',
-                                                                headers: { 'Content-Type': 'application/json' },
-                                                                body: JSON.stringify({ role: newRole })
-                                                            }).then(() => {
-                                                                setAllUsers(prev => prev.map(usr => usr.id === u.id ? { ...usr, role: newRole } : usr));
-                                                            });
-                                                        }}
-                                                        className="text-xs font-bold bg-white border-gray-200 rounded-xl focus:ring-brand-dark"
-                                                    >
-                                                        <option value="BUYER">Promote to Buyer</option>
-                                                        <option value="FARMER">Promote to Farmer</option>
-                                                        <option value="ADMIN">Promote to Admin</option>
-                                                    </select>
+                                                    <div className="flex items-center gap-2">
+                                                        <select
+                                                            value={u.role}
+                                                            onChange={(e) => {
+                                                                const newRole = e.target.value;
+                                                                fetch(`${API_URL}/admin/users/${u.id}/role`, {
+                                                                    method: 'PUT',
+                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                    body: JSON.stringify({ role: newRole })
+                                                                }).then(() => {
+                                                                    setAllUsers(prev => prev.map(usr => usr.id === u.id ? { ...usr, role: newRole } : usr));
+                                                                });
+                                                            }}
+                                                            className="text-xs font-bold bg-white border-gray-200 rounded-xl focus:ring-brand-dark"
+                                                        >
+                                                            <option value="BUYER">Promote to Buyer</option>
+                                                            <option value="FARMER">Promote to Farmer</option>
+                                                            <option value="ADMIN">Promote to Admin</option>
+                                                        </select>
+                                                        <button
+                                                            onClick={() => {
+                                                                fetch(`${API_URL}/users/${u.id}`)
+                                                                    .then(res => res.json())
+                                                                    .then(data => setSelectedAdminUser(data))
+                                                                    .catch(console.error);
+                                                            }}
+                                                            className="px-4 py-2 bg-brand-light/10 text-brand-dark rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-dark hover:text-white transition-all shadow-sm"
+                                                        >
+                                                            View Profile
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    )}
+
+                    {selectedAdminUser && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-dark/50 backdrop-blur-sm">
+                            <div className="bg-white rounded-[2.5rem] p-8 max-w-lg w-full shadow-2xl relative">
+                                <button onClick={() => setSelectedAdminUser(null)} className="absolute top-6 right-6 p-2 bg-gray-100/50 rounded-full hover:bg-gray-200 transition-colors">
+                                    <X size={20} />
+                                </button>
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="w-16 h-16 bg-brand-light/20 rounded-[1.5rem] flex items-center justify-center text-brand-dark font-black text-2xl">
+                                        {selectedAdminUser.name[0]}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-2xl font-black text-brand-dark">{selectedAdminUser.name}</h3>
+                                        <p className="text-sm font-medium text-gray-500">{selectedAdminUser.email}</p>
+                                        <span className="px-3 py-1 mt-2 inline-block rounded-lg text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-700">
+                                            {selectedAdminUser.role}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="bg-gray-50 p-5 rounded-3xl border border-gray-100">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Contact Information</p>
+                                        <div className="space-y-2">
+                                            <p className="font-bold text-sm text-brand-dark flex items-center justify-between"><span className="text-gray-500">Phone</span> {selectedAdminUser.phone || 'Not Provided'}</p>
+                                            <p className="font-bold text-sm text-brand-dark flex items-center justify-between"><span className="text-gray-500">Address</span> {selectedAdminUser.address || 'Not Provided'}</p>
+                                            <p className="font-bold text-sm text-brand-dark flex items-center justify-between"><span className="text-gray-500">Joined</span> {new Date(selectedAdminUser.createdAt).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                    {selectedAdminUser.role === 'FARMER' && selectedAdminUser.profile && (
+                                        <div className="bg-green-50/50 p-5 rounded-3xl border border-green-100">
+                                            <p className="text-[10px] font-black text-green-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                <Sprout className="w-3 h-3" /> Farmer Profile
+                                            </p>
+                                            <div className="space-y-2">
+                                                <p className="font-bold text-sm text-brand-dark flex items-center justify-between"><span className="text-green-700/60">Farm Name</span> {selectedAdminUser.profile.farmName || 'N/A'}</p>
+                                                <p className="font-bold text-sm text-brand-dark flex items-center justify-between"><span className="text-green-700/60">Location</span> {selectedAdminUser.profile.location || 'N/A'}</p>
+                                            </div>
+                                            {selectedAdminUser.profile.bio && (
+                                                <div className="mt-4 pt-4 border-t border-green-100">
+                                                    <p className="text-xs font-medium text-brand-dark leading-relaxed italic">"{selectedAdminUser.profile.bio}"</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}
@@ -1418,22 +1486,71 @@ export default function Dashboard() {
                     {activeTab === 'admin-bundles' && (
                         <div className="max-w-4xl mx-auto space-y-8">
                             <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100">
-                                <h3 className="text-2xl font-black text-brand-dark mb-6 tracking-tight">Manage Food Bundles</h3>
+                                <h3 className="text-2xl font-black text-brand-dark mb-6 tracking-tight">Create New Promotion Bundle</h3>
+                                <form onSubmit={async (e) => {
+                                    e.preventDefault();
+                                    try {
+                                        let itemsArray = [];
+                                        try { itemsArray = JSON.parse(bundleForm.items); } catch(err) { alert('Items must be valid JSON array.'); return; }
+                                        const res = await fetch(`${API_URL}/bundles`, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ ...bundleForm, items: itemsArray })
+                                        });
+                                        if (res.ok) {
+                                            const newBundle = await res.json();
+                                            setAllBundles([...allBundles, newBundle]);
+                                            setBundleForm({ name: '', familySize: '', price: '', savings: '', color: 'from-blue-500 to-indigo-600', badge: '', imageUrl: '', items: '[]' });
+                                            alert("Bundle created successfully!");
+                                        } else alert('Failed to create bundle');
+                                    } catch(e) { console.error(e); }
+                                }} className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <input placeholder="Bundle Name (e.g. Student Pack)" value={bundleForm.name} onChange={e => setBundleForm({...bundleForm, name: e.target.value})} className="p-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-brand-dark text-sm font-bold font-sans" required />
+                                        <input placeholder="Family Size (e.g. 1-2 Persons)" value={bundleForm.familySize} onChange={e => setBundleForm({...bundleForm, familySize: e.target.value})} className="p-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-brand-dark text-sm font-bold font-sans" required />
+                                        <input type="number" placeholder="Price (₦)" value={bundleForm.price} onChange={e => setBundleForm({...bundleForm, price: e.target.value})} className="p-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-brand-dark text-sm font-bold font-sans" required />
+                                        <input placeholder="Savings Text (e.g. Save 15%)" value={bundleForm.savings} onChange={e => setBundleForm({...bundleForm, savings: e.target.value})} className="p-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-brand-dark text-sm font-bold font-sans" />
+                                        <input placeholder="Badge Class (e.g. bg-brand-yellow text-white)" value={bundleForm.badge} onChange={e => setBundleForm({...bundleForm, badge: e.target.value})} className="p-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-brand-dark text-sm font-bold font-sans" />
+                                        <select value={bundleForm.color} onChange={e => setBundleForm({...bundleForm, color: e.target.value})} className="p-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-brand-dark text-sm font-bold font-sans" required>
+                                            <option value="from-blue-500 to-indigo-600">Blue-Indigo Gradient</option>
+                                            <option value="from-emerald-400 to-green-600">Emerald-Green Gradient</option>
+                                            <option value="from-orange-400 to-red-500">Orange-Red Gradient</option>
+                                            <option value="from-purple-500 to-pink-500">Purple-Pink Gradient</option>
+                                        </select>
+                                    </div>
+                                    <div className="p-4 bg-brand-light/10 rounded-2xl border border-brand-light/20">
+                                        <label className="text-[10px] font-black text-brand-dark uppercase tracking-widest mb-2 block">Items JSON Payload</label>
+                                        <textarea rows={2} value={bundleForm.items} onChange={e => setBundleForm({...bundleForm, items: e.target.value})} className="w-full p-4 bg-white/50 rounded-2xl border-none focus:ring-2 focus:ring-brand-dark text-xs font-mono font-bold" required />
+                                        <p className="text-[10px] text-gray-500 mt-1">Example: <code className="font-bold">[{'{"name":"Rice","qty":"2kg","keyword":"rice"}'}]</code></p>
+                                    </div>
+                                    <button type="submit" className="w-full py-5 bg-brand-dark text-white rounded-2xl font-black tracking-widest uppercase hover:bg-black transition-all shadow-xl shadow-brand-dark/20 text-sm">Create Platform Bundle</button>
+                                </form>
+                            </div>
+
+                            <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100">
+                                <h3 className="text-2xl font-black text-brand-dark mb-6 tracking-tight">Active Bundles</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {allBundles.map(bundle => (
-                                        <div key={bundle.id} className="p-6 bg-gray-50 border border-gray-100 rounded-3xl flex flex-col justify-between items-start gap-4 hover:shadow-lg transition-all">
-                                            <div className="flex gap-4 items-center">
-                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg bg-gradient-to-br ${bundle.color}`}>
-                                                    <Package size={20} />
+                                        <div key={bundle.id} className="p-6 bg-gray-50 border border-gray-100 rounded-3xl flex flex-col justify-between items-start gap-4 hover:shadow-lg transition-all relative group">
+                                            <button onClick={async () => {
+                                                if(!confirm('Delete this bundle?')) return;
+                                                const res = await fetch(`${API_URL}/bundles/${bundle.id}`, { method: 'DELETE' });
+                                                if(res.ok) setAllBundles(allBundles.filter(b => b.id !== bundle.id));
+                                            }} className="absolute top-4 right-4 p-2 bg-red-100 text-red-500 rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-sm z-10">
+                                                <X size={16} strokeWidth={3} />
+                                            </button>
+                                            <div className="flex gap-4 items-center w-full pr-8">
+                                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg bg-gradient-to-br ${bundle.color} shrink-0`}>
+                                                    <Package size={24} />
                                                 </div>
-                                                <div>
-                                                    <p className="font-bold text-brand-dark text-lg">{bundle.name}</p>
-                                                    <p className="text-[10px] text-gray-400 uppercase tracking-widest font-black">{bundle.familySize}</p>
+                                                <div className="truncate w-full">
+                                                    <p className="font-bold text-brand-dark text-lg truncate w-full">{bundle.name}</p>
+                                                    <p className="text-[10px] text-gray-400 uppercase tracking-widest font-black truncate">{bundle.familySize}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex justify-between w-full items-end mt-2 pt-4 border-t border-gray-200">
-                                                <p className="text-xl font-black text-brand-dark">₦{bundle.price}</p>
-                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${bundle.badge}`}>{bundle.savings}</span>
+                                            <div className="flex justify-between w-full items-center mt-2 pt-4 border-t border-gray-200">
+                                                <p className="text-2xl font-black text-brand-dark">₦{bundle.price}</p>
+                                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${bundle.badge}`}>{bundle.savings}</span>
                                             </div>
                                         </div>
                                     ))}
@@ -1441,7 +1558,7 @@ export default function Dashboard() {
                                 {allBundles.length === 0 && (
                                     <div className="text-center py-10 opacity-50">
                                         <Package className="mx-auto mb-4" size={48} />
-                                        <p className="text-sm font-bold">No bundles found.</p>
+                                        <p className="text-sm font-bold uppercase tracking-widest">No active bundles</p>
                                     </div>
                                 )}
                             </div>
@@ -1479,35 +1596,35 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
         <div className="pt-6 pb-2">
             <p className="px-3 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Platform Admin</p>
             <div className="space-y-1">
-                <button onClick={() => setActiveTab('admin-stats')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-stats' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('admin-stats')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-stats' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <LayoutDashboard className="mr-3 h-5 w-5" />
                     Overview
                 </button>
-                <button onClick={() => setActiveTab('admin-users')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-users' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('admin-users')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-users' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <User className="mr-3 h-5 w-5" />
                     Users
                 </button>
-                <button onClick={() => setActiveTab('admin-orders')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-orders' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('admin-orders')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-orders' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <ShoppingBag className="mr-3 h-5 w-5" />
                     All Orders
                 </button>
-                <button onClick={() => setActiveTab('admin-categories')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-categories' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('admin-categories')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-categories' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <Filter className="mr-3 h-5 w-5" />
                     Categories
                 </button>
-                <button onClick={() => setActiveTab('admin-recipes')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-recipes' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('admin-recipes')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-recipes' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <ChefHat className="mr-3 h-5 w-5" />
                     Recipes
                 </button>
-                <button onClick={() => setActiveTab('admin-settlements')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-settlements' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('admin-settlements')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-settlements' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <Navigation className="mr-3 h-5 w-5" />
                     Settlements
                 </button>
-                <button onClick={() => setActiveTab('group-deals')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'group-deals' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('group-deals')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'group-deals' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <Users className="mr-3 h-5 w-5" />
                     Group Deals
                 </button>
-                <button onClick={() => setActiveTab('admin-bundles')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'admin-bundles' ? 'bg-brand-dark text-white shadow-lg shadow-brand-dark/10' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('admin-bundles')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-bundles' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <Package className="mr-3 h-5 w-5" />
                     Food Bundles
                 </button>
@@ -1538,24 +1655,24 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
 
                 <p className="px-3 text-[9px] font-black text-gray-300 uppercase tracking-widest mb-2">Shop</p>
 
-                <button onClick={() => setActiveTab('buyer-home')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl transition-all ${activeTab === 'buyer-home' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('buyer-home')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'buyer-home' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
                     <LayoutDashboard className="mr-3 h-5 w-5" />
                     Home
                 </button>
-                <button onClick={() => setActiveTab('marketplace')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl transition-all ${activeTab === 'marketplace' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('marketplace')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'marketplace' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
                     <ShoppingBag className="mr-3 h-5 w-5" />
                     Marketplace
                 </button>
-                <button onClick={() => setActiveTab('my-orders')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl transition-all ${activeTab === 'my-orders' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('my-orders')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'my-orders' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
                     <ShoppingCart className="mr-3 h-5 w-5" />
                     My Orders
                 </button>
-                <button onClick={() => setActiveTab('meal-planner')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl transition-all ${activeTab === 'meal-planner' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('meal-planner')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'meal-planner' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
                     <ChefHat className="mr-3 h-5 w-5" />
                     Meal Planner
                 </button>
                 <div className="pt-4 border-t border-gray-100 mt-4">
-                    <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl transition-all ${activeTab === 'profile' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full transition-all ${activeTab === 'profile' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
                         <User className="mr-3 h-5 w-5" />
                         Profile
                     </button>
@@ -1585,41 +1702,41 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
                 </button>
             )}
 
-            <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'dashboard' ? 'bg-brand-dark text-white shadow-lg' : 'text-gray-500 hover:bg-gray-50'}`}>
+            <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'dashboard' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                 <LayoutDashboard className="mr-3 h-5 w-5" />
                 Dashboard
             </button>
-            <button onClick={() => setActiveTab('products')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'products' ? 'bg-brand-dark text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+            <button onClick={() => setActiveTab('products')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'products' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                 <Package className="mr-3 h-5 w-5" />
                 My Products
             </button>
-            <button onClick={() => setActiveTab('orders')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'orders' ? 'bg-brand-dark text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+            <button onClick={() => setActiveTab('orders')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'orders' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                 <ShoppingBag className="mr-3 h-5 w-5" />
                 Incoming Orders
             </button>
             {user?.role === 'DELIVERY' && (
-                <button onClick={() => setActiveTab('logistics')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'logistics' ? 'bg-brand-dark text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('logistics')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'logistics' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <Truck className="mr-3 h-5 w-5" />
                     Logistics
                 </button>
             )}
-            <button onClick={() => setActiveTab('my-orders')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'my-orders' ? 'bg-brand-dark text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+            <button onClick={() => setActiveTab('my-orders')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'my-orders' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                 <ShoppingCart className="mr-3 h-5 w-5" />
                 My Orders
             </button>
             {user?.role === 'FARMER' && (
-                <button onClick={() => setActiveTab('settlements')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'settlements' ? 'bg-brand-dark text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('settlements')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'settlements' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <Navigation className="mr-3 h-5 w-5" />
                     My Settlements
                 </button>
             )}
             {adminSection}
             <div className="pt-6">
-                <Link to="/meal-planner" className="w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl text-gray-500 hover:bg-gray-50 transition-all group">
+                <Link to="/meal-planner" className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 text-gray-500 hover:bg-gray-100 hover:text-brand-dark`}>
                     <ChefHat className="mr-3 h-5 w-5" />
                     Meal Planner
                 </Link>
-                <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl group transition-all ${activeTab === 'profile' ? 'bg-brand-dark text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+                <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'profile' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <User className="mr-3 h-5 w-5" />
                     Profile
                 </button>

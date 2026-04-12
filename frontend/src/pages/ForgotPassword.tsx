@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Mail, ArrowRight, ArrowLeft, CheckCircle, Leaf } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../supabase';
 
@@ -14,18 +14,12 @@ export default function ForgotPassword() {
         e.preventDefault();
         setError('');
         setLoading(true);
-
         try {
             const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
                 redirectTo: `${window.location.origin}/reset-password`,
             });
-
-            if (resetError) {
-                throw resetError;
-            }
-
+            if (resetError) throw resetError;
             setSuccess(true);
-
         } catch (err: any) {
             setError(err.message || 'Failed to request password reset');
         } finally {
@@ -34,38 +28,69 @@ export default function ForgotPassword() {
     };
 
     return (
-        <div className="min-h-screen bg-brand-dark flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans relative overflow-hidden">
-            <div className="absolute inset-0 opacity-[0.07] pointer-events-none">
-                <img src="/pattern.png" alt="" className="w-full h-full object-cover" />
-            </div>
+        <div className="min-h-screen bg-[#FAF8F5] flex font-sans overflow-hidden">
+            {/* Left Panel */}
+            <motion.div
+                initial={{ x: -60, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="hidden lg:flex lg:w-[45%] bg-brand-dark flex-col justify-between p-12 relative overflow-hidden"
+            >
+                <div className="absolute top-0 left-0 w-80 h-80 bg-brand-light/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-brand-mars/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl" />
 
-            <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-                <Link to="/" className="flex justify-center hover:opacity-80 transition mb-8">
-                    <img src="/farmmerce-20.png" alt="Farmmerce" className="h-12 w-auto object-contain" />
+                <Link to="/" className="relative z-10">
+                    <img src="/farmmerce-20.png" alt="Farmmerce" className="h-10 w-auto object-contain" />
                 </Link>
+
+                <div className="relative z-10">
+                    <p className="text-brand-light/60 text-xs font-black uppercase tracking-[0.3em] mb-4">Account recovery</p>
+                    <h1 className="text-5xl font-black text-white tracking-tighter leading-[0.95] mb-6">
+                        Lost your<br />
+                        <span className="text-brand-light">password?</span>
+                    </h1>
+                    <p className="text-gray-400 text-base font-medium leading-relaxed max-w-sm">
+                        No worries — we'll send you a secure link to reset it. Takes less than a minute.
+                    </p>
+                    <div className="flex items-center gap-3 mt-8">
+                        <div className="w-8 h-8 bg-brand-light/15 rounded-xl flex items-center justify-center">
+                            <Leaf size={14} className="text-brand-light" />
+                        </div>
+                        <p className="text-sm text-gray-400 font-medium">Your account is safe and secure</p>
+                    </div>
+                </div>
+
+                <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
+                    className="absolute bottom-24 right-8 text-5xl opacity-30">🔑</motion.div>
+            </motion.div>
+
+            {/* Right Panel */}
+            <div className="flex-1 flex flex-col justify-center items-center px-6 sm:px-12 py-16">
+                <Link to="/" className="lg:hidden mb-10">
+                    <img src="/farmmerce-20.png" alt="Farmmerce" className="h-10 w-auto object-contain" />
+                </Link>
+
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="bg-white/5 backdrop-blur-lg border border-white/10 py-8 px-4 shadow-2xl rounded-2xl sm:px-10"
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="w-full max-w-md"
                 >
                     {!success ? (
                         <>
-                            <div className="mb-6 text-center">
-                                <h2 className="text-2xl font-bold text-white">Reset Password</h2>
-                                <p className="mt-2 text-sm text-gray-400">
-                                    Enter your email and we'll send you a link to reset your password.
-                                </p>
+                            <div className="mb-10">
+                                <h2 className="text-4xl font-black text-brand-dark tracking-tighter leading-tight">Reset password</h2>
+                                <p className="mt-2 text-gray-400 font-medium">Enter your email and we'll send you a secure reset link.</p>
                             </div>
 
-                            <form className="space-y-6" onSubmit={handleSubmit}>
+                            <form className="space-y-5" onSubmit={handleSubmit}>
                                 <div>
-                                    <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+                                    <label htmlFor="email" className="block text-xs font-black text-brand-dark/50 uppercase tracking-widest mb-2">
                                         Email address
                                     </label>
-                                    <div className="mt-1 relative rounded-md shadow-sm">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <Mail className="h-5 w-5 text-gray-500" aria-hidden="true" />
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                                            <Mail className="h-4 w-4 text-gray-400" />
                                         </div>
                                         <input
                                             id="email"
@@ -74,61 +99,74 @@ export default function ForgotPassword() {
                                             required
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="block w-full pl-10 bg-white/10 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:ring-brand-light focus:border-brand-light sm:text-sm p-3 transition-colors"
+                                            className="block w-full pl-11 pr-4 py-4 bg-white border border-gray-200 rounded-2xl text-brand-dark placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-brand-dark text-sm font-medium transition-all shadow-sm"
                                             placeholder="you@example.com"
                                         />
                                     </div>
                                 </div>
 
                                 {error && (
-                                    <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4">
-                                        <p className="text-sm text-red-300">{error}</p>
-                                    </div>
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        className="rounded-2xl bg-brand-red/5 border border-brand-red/20 px-5 py-4"
+                                    >
+                                        <p className="text-sm font-bold text-brand-red">{error}</p>
+                                    </motion.div>
                                 )}
 
-                                <div>
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-brand-dark bg-brand-light hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-light disabled:opacity-50 transition-all transform hover:scale-[1.02]"
-                                    >
-                                        {loading ? 'Processing...' : 'Send Reset Link'}
-                                        {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
-                                    </button>
-                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-brand-dark text-white rounded-full font-black text-sm tracking-tight hover:bg-black transition-all shadow-xl shadow-brand-dark/20 disabled:opacity-50 active:scale-95"
+                                >
+                                    {loading ? (
+                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    ) : (
+                                        <>Send Reset Link <ArrowRight className="h-4 w-4" /></>
+                                    )}
+                                </button>
                             </form>
+
+                            <div className="mt-8 text-center">
+                                <Link to="/login" className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-brand-dark transition-colors">
+                                    <ArrowLeft className="h-4 w-4" /> Back to Login
+                                </Link>
+                            </div>
                         </>
                     ) : (
-                        <div className="text-center py-4">
-                            <div className="flex justify-center mb-6">
-                                <div className="p-4 bg-brand-light/20 rounded-full">
-                                    <CheckCircle className="h-12 w-12 text-brand-light" />
-                                </div>
-                            </div>
-                            <h2 className="text-2xl font-bold text-white mb-2">Check Your Email</h2>
-                            <p className="text-gray-400 mb-8 leading-relaxed">
-                                We've sent password reset instructions to <strong>{email}</strong>. 
-                                Please check your inbox and your spam folder.
-                                <br /><br />
-                                <span className="text-xs italic">Note: If you haven't received the email after 5 minutes and you had an account before our recent upgrade (March 2026), please <Link to="/register" className="text-brand-light underline">Register again</Link> with the same email to migrate your account.</span>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5 }}
+                            className="text-center"
+                        >
+                            <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                                className="inline-flex items-center justify-center w-24 h-24 bg-brand-light/20 rounded-[2rem] mb-8"
+                            >
+                                <CheckCircle className="h-12 w-12 text-brand-dark" />
+                            </motion.div>
+
+                            <h2 className="text-4xl font-black text-brand-dark tracking-tighter mb-3">Check your email</h2>
+                            <p className="text-gray-400 font-medium leading-relaxed mb-2">
+                                We've sent reset instructions to
+                            </p>
+                            <p className="font-black text-brand-dark mb-8">{email}</p>
+                            <p className="text-xs text-gray-300 font-medium leading-relaxed mb-10 max-w-sm mx-auto">
+                                Check your inbox and spam folder. If you had an account before March 2026 and don't receive an email,{' '}
+                                <Link to="/register" className="text-brand-dark font-bold underline underline-offset-2">register again</Link> with the same email to migrate your account.
                             </p>
 
                             <Link
                                 to="/login"
-                                className="inline-flex items-center text-brand-light font-bold hover:text-white transition-colors"
+                                className="inline-flex items-center gap-2 py-4 px-8 bg-brand-dark text-white rounded-full font-black text-sm tracking-tight hover:bg-black transition-all shadow-xl shadow-brand-dark/20"
                             >
-                                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Login
+                                <ArrowLeft className="h-4 w-4" /> Back to Login
                             </Link>
-                        </div>
-                    )}
-
-
-                    {!success && (
-                        <div className="mt-6 text-center">
-                            <Link to="/login" className="inline-flex items-center text-sm font-medium text-gray-400 hover:text-brand-light transition-colors">
-                                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Login
-                            </Link>
-                        </div>
+                        </motion.div>
                     )}
                 </motion.div>
             </div>

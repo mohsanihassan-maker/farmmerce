@@ -40,8 +40,8 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="fixed w-full z-50 bg-brand-dark/95 backdrop-blur-sm border-b border-white/10">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav className="fixed w-full z-50 top-4 px-4 sm:px-6 lg:px-8 pointer-events-none">
+            <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-md border border-gray-100 shadow-xl shadow-brand-dark/5 rounded-[2rem] pointer-events-auto">
                 <div className="flex items-center justify-between h-20">
                     <div className="flex-shrink-0">
                         <Link to="/" className="flex items-center gap-2">
@@ -50,33 +50,28 @@ const Navbar = () => {
                     </div>
 
                     <div className="hidden md:block">
-                        <div className="ml-10 flex items-baseline space-x-8">
-                            <Link to="/" className="text-gray-300 hover:text-brand-light px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</Link>
-                            <Link to="/market" className="text-gray-300 hover:text-brand-light px-3 py-2 rounded-md text-sm font-medium transition-colors">Market</Link>
-                            <a href="#how-it-works" className="text-gray-300 hover:text-brand-light px-3 py-2 rounded-md text-sm font-medium transition-colors">About</a>
+                        <div className="ml-10 flex items-baseline space-x-1">
+                            <Link to="/" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Company</Link>
+                            <Link to="/market" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Vendors</Link>
+                            {!isAuthenticated && <Link to="/register" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Riders</Link>}
+                            <Link to="/market" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Products</Link>
                             {isAuthenticated && (
                                 <>
-                                    <Link to="/meal-planner" className="text-gray-300 hover:text-brand-light px-3 py-2 rounded-md text-sm font-medium transition-colors">Meal Planner</Link>
-                                    <Link to="/orders" className="text-gray-300 hover:text-brand-light px-3 py-2 rounded-md text-sm font-medium transition-colors">Orders</Link>
-                                    <Link to="/dashboard" className="text-gray-300 hover:text-brand-light px-3 py-2 rounded-md text-sm font-medium transition-colors">Dashboard</Link>
-                                    {user?.role === 'ADMIN' && (
-                                        <Link to="/dashboard" className="bg-white/10 text-brand-light px-3 py-2 rounded-md text-sm font-bold border border-white/20 hover:bg-white/20 transition-colors">Admin Panel</Link>
-                                    )}
+                                    <Link to="/meal-planner" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Meals</Link>
+                                    <Link to="/orders" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Orders</Link>
+                                    <Link to="/dashboard" className="text-brand-dark hover:bg-gray-50 border border-gray-100 px-4 py-2 rounded-full text-sm font-black transition-all">More ⊕</Link>
                                 </>
-                            )}
-                            {!isAuthenticated && (
-                                <Link to="/register" className="text-gray-300 hover:text-brand-light px-3 py-2 rounded-md text-sm font-medium transition-colors">For Farmers</Link>
                             )}
                         </div>
                     </div>
 
-                    <div className="hidden md:flex items-center gap-6">
+                    <div className="hidden md:flex items-center gap-4 pr-2">
                         {deferredPrompt && (
                             <button
                                 onClick={handleInstall}
-                                className="flex items-center gap-2 px-4 py-2 bg-brand-light/10 text-brand-light border border-brand-light/20 rounded-full text-xs font-black uppercase tracking-widest hover:bg-brand-light hover:text-brand-dark transition-all animate-pulse"
+                                className="flex items-center gap-2 px-4 py-2 bg-brand-light text-brand-dark rounded-full text-xs font-black uppercase tracking-widest transition-all animate-pulse shadow-sm"
                             >
-                                📱 Install App
+                                📱 App
                             </button>
                         )}
                         {isAuthenticated ? (
@@ -85,11 +80,11 @@ const Navbar = () => {
                                 <div className="relative">
                                     <button
                                         onClick={() => setShowNotifications(!showNotifications)}
-                                        className={`relative p-2 rounded-full transition-colors ${showNotifications ? 'bg-white/10 text-brand-light' : 'text-gray-300 hover:text-brand-light'}`}
+                                        className={`relative p-2 rounded-full transition-colors ${showNotifications ? 'bg-gray-100 text-brand-dark' : 'text-gray-400 hover:text-brand-dark hover:bg-gray-50'}`}
                                     >
                                         <Bell size={22} />
                                         {unreadCount > 0 && (
-                                            <span className="absolute top-1.5 right-1.5 bg-brand-red text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full border-2 border-brand-dark">
+                                            <span className="absolute top-1.5 right-1.5 bg-brand-red text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full border-2 border-white">
                                                 {unreadCount}
                                             </span>
                                         )}
@@ -109,16 +104,16 @@ const Navbar = () => {
                                                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                    className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 py-2"
+                                                    className="absolute right-0 mt-3 w-80 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden z-50 py-2"
                                                 >
-                                                    <div className="px-4 py-2 border-b border-gray-50 flex justify-between items-center">
-                                                        <h3 className="font-bold text-brand-dark">Notifications</h3>
+                                                    <div className="px-5 py-3 border-b border-gray-50 flex justify-between items-center">
+                                                        <h3 className="font-black text-brand-dark tracking-tight">Updates</h3>
                                                         {unreadCount > 0 && (
                                                             <button
                                                                 onClick={() => markAllRead()}
-                                                                className="text-xs text-brand-dark/50 hover:text-brand-dark font-medium transition-colors"
+                                                                className="text-[10px] font-black uppercase tracking-widest text-brand-dark/40 hover:text-brand-dark transition-colors"
                                                             >
-                                                                Clear all
+                                                                Clear
                                                             </button>
                                                         )}
                                                     </div>
@@ -128,23 +123,20 @@ const Navbar = () => {
                                                                 <div
                                                                     key={n.id}
                                                                     onClick={() => markRead(n.id)}
-                                                                    className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors relative flex gap-3 ${!n.read ? 'bg-brand-light/5' : ''}`}
+                                                                    className={`px-5 py-4 hover:bg-gray-50 cursor-pointer transition-colors relative flex gap-3 ${!n.read ? 'bg-brand-light/10' : ''}`}
                                                                 >
-                                                                    <div className={`mt-1 h-2 w-2 rounded-full flex-shrink-0 ${!n.read ? 'bg-brand-light' : 'bg-transparent'}`} />
+                                                                    <div className={`mt-1.5 h-2 w-2 rounded-full flex-shrink-0 ${!n.read ? 'bg-brand-green' : 'bg-transparent'}`} />
                                                                     <div className="flex-1">
-                                                                        <p className={`text-sm leading-tight ${!n.read ? 'font-bold text-brand-dark' : 'text-gray-600'}`}>{n.title}</p>
-                                                                        <p className="text-xs text-gray-400 mt-1 line-clamp-2">{n.body}</p>
-                                                                        <p className="text-[10px] text-gray-300 mt-1 uppercase font-bold tracking-wider">
-                                                                            {new Date(n.createdAt).toLocaleDateString()}
-                                                                        </p>
+                                                                        <p className={`text-sm leading-tight ${!n.read ? 'font-black text-brand-dark' : 'font-medium text-gray-500'}`}>{n.title}</p>
+                                                                        <p className="text-xs text-gray-400 mt-1 line-clamp-2 leading-relaxed">{n.body}</p>
                                                                     </div>
                                                                     {n.read && <Check size={12} className="text-brand-light mt-1" />}
                                                                 </div>
                                                             ))
                                                         ) : (
-                                                            <div className="py-10 text-center">
-                                                                <Bell size={32} className="mx-auto text-gray-100 mb-2" />
-                                                                <p className="text-sm text-gray-400">No notifications yet</p>
+                                                            <div className="py-12 text-center">
+                                                                <Bell size={24} className="mx-auto text-gray-200 mb-3" />
+                                                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">All caught up</p>
                                                             </div>
                                                         )}
                                                     </div>
@@ -154,31 +146,33 @@ const Navbar = () => {
                                     </AnimatePresence>
                                 </div>
 
-                                <Link to="/cart" className="relative text-gray-300 hover:text-brand-light transition-colors">
-                                    <ShoppingCart size={24} />
+                                <Link to="/cart" className="relative p-2 text-gray-400 hover:text-brand-dark hover:bg-gray-50 rounded-full border border-transparent transition-all">
+                                    <ShoppingCart size={22} />
                                     {itemCount > 0 && (
-                                        <span className="absolute -top-1.5 -right-1.5 bg-brand-red text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full border-2 border-brand-dark">
+                                        <span className="absolute -top-1 -right-1 bg-brand-red text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
                                             {itemCount}
                                         </span>
                                     )}
                                 </Link>
-                                <div className="flex items-center gap-3">
-                                    <span className="text-sm font-medium text-gray-300">Hi, {user?.name?.split(' ')[0]}</span>
+                                <div className="flex items-center gap-2 pl-2 border-l border-gray-100">
+                                    <div className="w-8 h-8 rounded-full bg-brand-light/30 flex items-center justify-center text-brand-dark font-black text-xs">
+                                        {user?.name?.[0]}
+                                    </div>
                                     <button
                                         onClick={handleLogout}
-                                        className="text-gray-400 hover:text-white transition-colors"
+                                        className="text-gray-400 hover:text-brand-red p-2 rounded-full transition-colors"
                                         title="Logout"
                                     >
-                                        <LogOut size={20} />
+                                        <LogOut size={18} />
                                     </button>
                                 </div>
                             </>
                         ) : (
                             <>
-                                <Link to="/login" className="text-white hover:text-brand-light font-medium px-4 py-2 transition-colors">
-                                    Log in
+                                <Link to="/login" className="text-brand-dark font-black text-sm px-4 py-2 hover:bg-gray-50 rounded-full transition-colors">
+                                    Sign in
                                 </Link>
-                                <Link to="/register" className="bg-brand-light text-brand-dark px-5 py-2.5 rounded-full font-bold hover:bg-white transition-all transform hover:scale-105">
+                                <Link to="/register" className="bg-[#0F8B4F] text-white px-6 py-2.5 rounded-full font-black text-sm tracking-tight hover:bg-[#004B23] transition-all focus:ring-2 focus:ring-[#0F8B4F] focus:ring-offset-2">
                                     Get Started
                                 </Link>
                             </>

@@ -19,7 +19,7 @@
 
 @layer base {
   body {
-    @apply bg-brand-dark text-white font-sans antialiased;
+    @apply bg-[#FAF8F5] text-brand-dark font-sans antialiased;
   }
 
   input::placeholder,
