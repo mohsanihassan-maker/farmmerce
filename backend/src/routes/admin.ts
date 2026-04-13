@@ -129,4 +129,90 @@ router.post('/settings', async (req, res) => {
     }
 });
 
+// GET /api/admin/applications - List all pending farmer applications
+router.get('/applications', async (req, res) => {
+    try {
+        const applications = await prisma.user.findMany({
+            where: {
+                profile: {
+                    applicationStatus: 'PENDING_FARMER'
+                }
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                profile: true,
+                createdAt: true
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        res.json(applications);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch applications' });
+    }
+});
+
+// POST /api/admin/applications/:id/approve - Approve a farmer application
+router.post('/applications/:id/approve', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = parseInt(id);
+
+        await prisma.$transaction([
+            prisma.user.update({
+                where: { id: userId },
+                data: { role: 'FARMER' }
+            }),
+            prisma.profile.update({
+                where: { userId: userId },
+                data: { applicationStatus: 'APPROVED' }
+            }),
+            prisma.notification.create({
+                data: {
+                    userId: userId,
+                    title: 'Application Approved! 🚜',
+                    body: 'Congratulations! Your farmer application has been approved. You can now start listing your products.',
+                    type: 'SUCCESS'
+                }
+            })
+        ]);
+
+        res.json({ message: 'Application approved successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to approve application' });
+    }
+});
+
+// POST /api/admin/applications/:id/reject - Reject a farmer application
+router.post('/applications/:id/reject', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = parseInt(id);
+
+        await prisma.$transaction([
+            prisma.profile.update({
+                where: { userId: userId },
+                data: { applicationStatus: 'REJECTED' }
+            }),
+            prisma.notification.create({
+                data: {
+                    userId: userId,
+                    title: 'Application Update',
+                    body: 'Your farmer application was not approved at this time. Please contact support for more details.',
+                    type: 'WARNING'
+                }
+            })
+        ]);
+
+        res.json({ message: 'Application rejected' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to reject application' });
+    }
+});
+
 export default router;

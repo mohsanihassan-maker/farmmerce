@@ -51,12 +51,14 @@ router.put('/:id', async (req, res) => {
                             create: {
                                 farmName: profile.farmName,
                                 location: profile.location,
-                                bio: profile.bio
+                                bio: profile.bio,
+                                applicationStatus: profile.applicationStatus
                             },
                             update: {
                                 farmName: profile.farmName,
                                 location: profile.location,
-                                bio: profile.bio
+                                bio: profile.bio,
+                                applicationStatus: profile.applicationStatus
                             }
                         }
                     }
@@ -192,6 +194,44 @@ router.get('/:id/profile', async (req, res) => {
     } catch (error) {
         console.error('Farmer Profile Error:', error);
         res.status(500).json({ error: 'Failed to fetch farmer profile' });
+    }
+});
+
+// POST /api/users/:id/apply-farmer - Apply to become a farmer
+router.post('/:id/apply-farmer', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { farmName, location, bio, bankName, accountNumber } = req.body;
+        const userId = parseInt(id);
+
+        const application = await prisma.profile.upsert({
+            where: { userId: userId },
+            create: {
+                userId,
+                farmName,
+                location,
+                bio,
+                bankName,
+                accountNumber,
+                applicationStatus: 'PENDING_FARMER'
+            },
+            update: {
+                farmName,
+                location,
+                bio,
+                bankName,
+                accountNumber,
+                applicationStatus: 'PENDING_FARMER'
+            }
+        });
+
+        // Notify Admins (Mock: In a real app, you'd find admins and send notifications)
+        // For now, we just rely on the admin dashboard fetching pending requests.
+
+        res.json(application);
+    } catch (error) {
+        console.error('Farmer Application Error:', error);
+        res.status(500).json({ error: 'Failed to submit application' });
     }
 });
 

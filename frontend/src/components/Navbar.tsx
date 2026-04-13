@@ -44,8 +44,8 @@ const Navbar = () => {
             <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-md border border-gray-100 shadow-xl shadow-brand-dark/5 rounded-[2rem] pointer-events-auto">
                 <div className="flex items-center justify-between h-20">
                     <div className="flex-shrink-0">
-                        <Link to="/" className="flex items-center gap-2">
-                            <img src="/farmmerce-20.png" alt="Farmmerce" className="h-10 w-auto object-contain" />
+                        <Link to="/" className="flex-items-center gap-2">
+                            <img src="/logo.png" alt="Farmmerce" className="h-10 w-auto object-contain" />
                         </Link>
                     </div>
 

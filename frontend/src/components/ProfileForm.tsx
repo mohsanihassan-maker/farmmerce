@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../config';
-import { User, Mail, Phone, MapPin, Save } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Save, Sprout, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import FarmerApplicationModal from './FarmerApplicationModal';
 
 export default function ProfileForm() {
     const { user } = useAuth();
@@ -17,6 +18,8 @@ export default function ProfileForm() {
     });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
+    const [showFarmerModal, setShowFarmerModal] = useState(false);
+    const [appStatus, setAppStatus] = useState<string | null>(null);
 
     useEffect(() => {
         if (user) {
@@ -33,6 +36,7 @@ export default function ProfileForm() {
                         location: data.profile?.location || '',
                         bio: data.profile?.bio || ''
                     });
+                    setAppStatus(data.profile?.applicationStatus || 'NONE');
                 })
                 .catch(err => console.error(err));
         }
@@ -206,6 +210,44 @@ export default function ProfileForm() {
                             </motion.div>
                         )}
 
+                        {user?.role === 'BUYER' && appStatus === 'NONE' && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mt-8 p-8 bg-brand-light/20 rounded-[2rem] border-2 border-dashed border-brand-light/30 relative overflow-hidden group"
+                            >
+                                <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-light/20 rounded-full blur-2xl group-hover:scale-110 transition-transform" />
+                                <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6">
+                                    <div className="w-16 h-16 bg-white rounded-2xl shadow-xl flex items-center justify-center text-brand-dark">
+                                        <Sprout size={32} />
+                                    </div>
+                                    <div className="flex-1 text-center sm:text-left">
+                                        <h4 className="text-xl font-black text-brand-dark tracking-tight">Ready to sell your harvest?</h4>
+                                        <p className="text-sm font-medium text-brand-dark/60 mt-1 italic">Apply to become a verified Farmmerce partner</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowFarmerModal(true)}
+                                        className="px-6 py-3 bg-brand-dark text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all flex items-center gap-2 shadow-lg"
+                                    >
+                                        Apply Now <ArrowRight size={14} />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {appStatus === 'PENDING_FARMER' && (
+                            <div className="mt-8 p-6 bg-indigo-50 rounded-[2rem] border border-indigo-100 flex items-center gap-4">
+                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-indigo-600 shadow-sm animate-pulse">
+                                    <Info size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-black text-indigo-900">Application Under Review</p>
+                                    <p className="text-xs font-medium text-indigo-700/60">Our team is vetting your details. We'll notify you soon!</p>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="pt-4">
                             <button
                                 type="submit"
@@ -219,6 +261,13 @@ export default function ProfileForm() {
                     </form>
                 </div>
             </div>
+
+            <FarmerApplicationModal 
+                isOpen={showFarmerModal}
+                onClose={() => setShowFarmerModal(false)}
+                userId={user?.id || 0}
+                onSuccess={() => setAppStatus('PENDING_FARMER')}
+            />
         </div>
     );
 }

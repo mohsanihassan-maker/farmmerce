@@ -17,40 +17,48 @@ const Hero = () => {
         window.addEventListener('mousemove', handleMouseMove);
         return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
+
     return (
         <div className="relative bg-[#013f31] min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-48">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 w-full flex flex-col items-center">
                 
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute inset-0 z-10 bg-gradient-to-b from-brand-dark/40 via-transparent to-transparent pointer-events-none"
+                />
+
                 <motion.h1
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-6xl md:text-[7rem] font-black text-white tracking-tighter mb-4 text-center leading-[0.85]"
+                    className="text-6xl md:text-[7.5rem] font-black text-white tracking-tighter mb-4 text-center leading-[0.8] drop-shadow-[0_10px_10px_rgba(0,0,0,0.3)] relative z-20"
                 >
-                    From farm<br/><span className="text-brand-light">to kitchen...</span>
+                    From farm<br/><span className="text-brand-light drop-shadow-[0_10px_10px_rgba(1,63,49,0.5)]">to kitchen...</span>
                 </motion.h1>
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-lg md:text-xl font-bold text-white/60 mb-10 text-center max-w-xl leading-snug"
+                    transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-lg md:text-2xl font-bold text-white mb-12 text-center max-w-xl leading-snug drop-shadow-md relative z-20"
                 >
-                    Fresh, transparent, and direct. We connect you to the best local harvests with zero middle-men.
+                    Fresh, transparent, and direct. We connect you to the best local harvests with <span className="text-brand-light">zero middle-men.</span>
                 </motion.p>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-full max-w-2xl bg-white rounded-full p-2 flex items-center shadow-2xl shadow-black/20 border border-white/10 relative z-30"
+                    transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    className="w-full max-w-2xl bg-white/95 backdrop-blur-md rounded-[2.5rem] p-2 flex items-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 relative z-30"
                 >
-                    <div className="w-10 h-10 flex items-center justify-center text-brand-dark/20 font-black text-xl ml-2">⊕</div>
+                    <div className="w-12 h-12 flex items-center justify-center text-brand-dark/20 font-black text-2xl ml-2">⊕</div>
                     <input 
                         type="text" 
                         placeholder="Enter your delivery address" 
-                        className="flex-1 bg-transparent border-none outline-none px-4 text-brand-dark font-bold placeholder:text-gray-300"
+                        className="flex-1 bg-transparent border-none outline-none px-4 text-brand-dark font-bold placeholder:text-gray-300 text-lg"
                     />
-                    <button className="bg-brand-dark text-white px-10 py-4 rounded-full font-black text-sm tracking-tight hover:bg-black transition-all shadow-lg active:scale-95">
+                    <button className="bg-brand-dark text-white px-12 py-5 rounded-[2rem] font-black text-base tracking-tight hover:bg-black transition-all shadow-lg active:scale-95">
                         Order now
                     </button>
                 </motion.div>

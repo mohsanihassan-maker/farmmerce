@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Lock, Mail, User, ArrowRight, Eye, EyeOff, Leaf, ShoppingBag, Sprout } from 'lucide-react';
+import { Lock, Mail, User, ArrowRight, Eye, EyeOff, Leaf, ShoppingBag } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { API_URL } from '../config';
 import { supabase } from '../supabase';
@@ -10,7 +10,7 @@ export default function Register() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('BUYER');
+    const [role] = useState('BUYER');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -65,11 +65,6 @@ export default function Register() {
             setLoading(false);
         }
     };
-
-    const roles = [
-        { value: 'BUYER', label: 'Buyer', desc: 'Shop fresh produce', icon: ShoppingBag },
-        { value: 'FARMER', label: 'Farmer', desc: 'Sell your harvest', icon: Sprout },
-    ];
 
     return (
         <div className="min-h-screen bg-[#FAF8F5] flex font-sans overflow-hidden">
@@ -144,31 +139,6 @@ export default function Register() {
                     <div className="mb-8">
                         <h2 className="text-4xl font-black text-brand-dark tracking-tighter leading-tight">Create account</h2>
                         <p className="mt-2 text-gray-400 font-medium">Start shopping fresh farm produce today</p>
-                    </div>
-
-                    {/* Role Selector */}
-                    <div className="mb-6">
-                        <label className="block text-xs font-black text-brand-dark/50 uppercase tracking-widest mb-3">
-                            I am a…
-                        </label>
-                        <div className="grid grid-cols-2 gap-3">
-                            {roles.map(({ value, label, desc, icon: Icon }) => (
-                                <button
-                                    key={value}
-                                    type="button"
-                                    onClick={() => setRole(value)}
-                                    className={`p-4 rounded-2xl border-2 text-left transition-all ${
-                                        role === value
-                                            ? 'border-brand-dark bg-brand-dark text-white shadow-xl shadow-brand-dark/15'
-                                            : 'border-gray-200 bg-white text-brand-dark hover:border-gray-300'
-                                    }`}
-                                >
-                                    <Icon size={18} className={role === value ? 'text-brand-light mb-2' : 'text-gray-400 mb-2'} />
-                                    <p className="font-black text-sm">{label}</p>
-                                    <p className={`text-[10px] font-medium mt-0.5 ${role === value ? 'text-white/60' : 'text-gray-400'}`}>{desc}</p>
-                                </button>
-                            ))}
-                        </div>
                     </div>
 
                     <form className="space-y-4" onSubmit={handleSubmit}>

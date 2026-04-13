@@ -42,7 +42,8 @@ model Profile {
   bankName      String?
   accountNumber String?
   accountName   String?
-  user          User    @relation(fields: [userId], references: [id])
+  applicationStatus String? @default("NONE")
+  user              User    @relation(fields: [userId], references: [id])
 }
 
 model Category {

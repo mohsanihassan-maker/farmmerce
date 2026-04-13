@@ -57,6 +57,7 @@ export default function Dashboard() {
     const [allBundles, setAllBundles] = useState<any[]>([]);
     const [panelEnabled, setPanelEnabled] = useState(false);
     const [selectedAdminUser, setSelectedAdminUser] = useState<any>(null);
+    const [pendingApplications, setPendingApplications] = useState<any[]>([]);
     const [bundleForm, setBundleForm] = useState<any>({ name: '', familySize: '', price: '', savings: '', color: 'from-blue-500 to-indigo-600', badge: '', imageUrl: '', items: '[]' });
     const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
     const navigate = useNavigate();
@@ -144,6 +145,12 @@ export default function Dashboard() {
             api.get('/admin/orders')
                 .then(res => res.json())
                 .then(data => setAllOrders(data))
+                .catch(err => console.error(err));
+        }
+        if (activeTab === 'admin-farmer-requests') {
+            api.get('/admin/applications')
+                .then(res => res.json())
+                .then(data => setPendingApplications(data))
                 .catch(err => console.error(err));
         }
 
@@ -1564,6 +1571,121 @@ export default function Dashboard() {
                             </div>
                         </div>
                     )}
+
+                    {activeTab === 'admin-farmer-requests' && (
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between px-2">
+                                <div>
+                                    <h3 className="text-2xl font-black text-brand-dark tracking-tight">Farmer Onboarding</h3>
+                                    <p className="text-xs font-medium text-gray-500 mt-1 uppercase tracking-widest">Vet new partnership applications</p>
+                                </div>
+                                <span className="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-200">
+                                    {pendingApplications.length} Pending
+                                </span>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-6">
+                                {pendingApplications.map((app: any) => (
+                                    <motion.div 
+                                        key={app.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/20 overflow-hidden flex flex-col md:flex-row"
+                                    >
+                                        <div className="p-8 md:w-1/3 bg-gray-50/50 border-r border-gray-100">
+                                            <div className="flex items-center gap-4 mb-6">
+                                                <div className="w-16 h-16 bg-brand-light/30 rounded-[1.5rem] flex items-center justify-center text-brand-dark font-black text-2xl">
+                                                    {app.name[0]}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-black text-brand-dark leading-none">{app.name}</h4>
+                                                    <p className="text-xs text-gray-400 mt-1">{app.email}</p>
+                                                    <p className="text-[10px] text-brand-dark font-black uppercase mt-2 px-2 py-0.5 bg-brand-light/20 rounded inline-block">Current: {app.role}</p>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-3">
+                                                <div className="flex items-center gap-2 text-gray-500 text-xs font-bold">
+                                                    <MapPin size={14} className="text-brand-mars" />
+                                                    {app.profile?.location || 'Location missing'}
+                                                </div>
+                                                <div className="flex items-center gap-2 text-gray-500 text-xs font-bold">
+                                                    <Clock size={14} className="text-indigo-400" />
+                                                    Joined {new Date(app.createdAt).toLocaleDateString()}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-8 flex-1 flex flex-col justify-between">
+                                            <div>
+                                                <div className="flex items-center gap-2 mb-4">
+                                                    <Sprout size={18} className="text-brand-green" />
+                                                    <h5 className="text-sm font-black text-brand-dark uppercase tracking-widest">Farm Details</h5>
+                                                </div>
+                                                <div className="bg-brand-light/5 p-6 rounded-3xl border border-brand-light/10 mb-6">
+                                                    <p className="text-lg font-black text-brand-dark mb-2">"{app.profile?.farmName || 'Unnamed Farm'}"</p>
+                                                    <p className="text-sm text-gray-600 leading-relaxed font-medium italic">
+                                                        {app.profile?.bio || 'No bio provided for this application.'}
+                                                    </p>
+                                                </div>
+                                                
+                                                <div className="grid grid-cols-2 gap-4 mb-8">
+                                                    <div className="px-4 py-3 bg-gray-50 rounded-2xl border border-gray-100">
+                                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Bank</p>
+                                                        <p className="text-xs font-bold text-brand-dark">{app.profile?.bankName || 'N/A'}</p>
+                                                    </div>
+                                                    <div className="px-4 py-3 bg-gray-50 rounded-2xl border border-gray-100">
+                                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Account</p>
+                                                        <p className="text-xs font-bold text-brand-dark">{app.profile?.accountNumber || 'N/A'}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-3">
+                                                <button 
+                                                    onClick={() => {
+                                                        if(confirm(`Approve ${app.name} as a Farmer?`)) {
+                                                            fetch(`${API_URL}/admin/applications/${app.id}/approve`, { method: 'POST' })
+                                                                .then(() => {
+                                                                    setPendingApplications(prev => prev.filter(a => a.id !== app.id));
+                                                                    alert('Farmer approved!');
+                                                                });
+                                                        }
+                                                    }}
+                                                    className="flex-1 py-4 bg-brand-dark text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-brand-dark/10 active:scale-95"
+                                                >
+                                                    Approve Partner
+                                                </button>
+                                                <button 
+                                                    onClick={() => {
+                                                        if(confirm(`Reject application for ${app.name}?`)) {
+                                                            fetch(`${API_URL}/admin/applications/${app.id}/reject`, { method: 'POST' })
+                                                                .then(() => {
+                                                                    setPendingApplications(prev => prev.filter(a => a.id !== app.id));
+                                                                    alert('Application rejected.');
+                                                                });
+                                                        }
+                                                    }}
+                                                    className="px-6 py-4 bg-red-50 text-red-500 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all active:scale-95"
+                                                >
+                                                    Reject
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+
+                                {pendingApplications.length === 0 && (
+                                    <div className="py-20 text-center bg-white rounded-[2.5rem] border-2 border-dashed border-gray-100">
+                                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                                            <CheckCircle size={32} />
+                                        </div>
+                                        <p className="text-sm font-black text-gray-400 uppercase tracking-widest">All caught up!</p>
+                                        <p className="text-xs font-medium text-gray-500 mt-1">No pending farmer applications at the moment.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                     </div>
                 </main>
 
@@ -1627,6 +1749,10 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
                 <button onClick={() => setActiveTab('admin-bundles')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-bundles' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
                     <Package className="mr-3 h-5 w-5" />
                     Food Bundles
+                </button>
+                <button onClick={() => setActiveTab('admin-farmer-requests')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-farmer-requests' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20 scale-105' : 'text-gray-500 hover:bg-indigo-50 hover:text-indigo-600'}`}>
+                    <Sprout className="mr-3 h-5 w-5" />
+                    Farmer Requests
                 </button>
             </div>
         </div>
