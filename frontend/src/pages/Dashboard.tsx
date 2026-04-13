@@ -23,6 +23,7 @@ import {
     MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Logo from '../components/Logo';
 import ProductForm from '../components/ProductForm';
 import ProfileForm from '../components/ProfileForm';
 import { useAuth } from '../context/AuthContext';
@@ -354,7 +355,7 @@ export default function Dashboard() {
                             className="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 md:hidden flex flex-col shadow-2xl"
                         >
                             <div className="h-20 flex items-center justify-between px-6 border-b border-gray-100">
-                                <img src="/farmmerce-20.png" alt="Farmmerce" className="h-8 w-auto object-contain" />
+                                <Logo variant="dark" className="h-8 w-auto" />
                                 <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-gray-400">
                                     <X className="w-6 h-6" />
                                 </button>
@@ -368,16 +369,21 @@ export default function Dashboard() {
             </AnimatePresence>
 
             {/* Desktop Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-100 hidden md:flex flex-col shadow-sm">
-                <div className="h-16 flex items-center px-6 border-b border-gray-100">
+            <aside className="w-64 bg-white border-r border-gray-100 hidden md:flex flex-col shadow-sm relative overflow-hidden">
+                {/* Brand Pattern Background */}
+                <div className="absolute inset-0 opacity-[0.02] pointer-events-none grayscale">
+                    <img src="/pattern.png" alt="" className="w-full h-full object-cover" />
+                </div>
+                
+                <div className="h-16 flex items-center px-6 border-b border-gray-100 relative z-10">
                     <Link to="/" className="flex items-center">
-                        <img src="/farmmerce-20.png" alt="Farmmerce" className="h-8 w-auto object-contain" />
+                        <Logo variant="dark" className="h-8 w-auto" />
                     </Link>
                 </div>
-                <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+                <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto relative z-10">
                     <SidebarContent activeTab={activeTab} setActiveTab={setActiveTab} viewMode={viewMode} setViewMode={setViewMode} user={user} />
                 </nav>
-                <div className="p-4 border-t border-gray-100">
+                <div className="p-4 border-t border-gray-100 relative z-10">
                     <UserInfo user={user} />
                 </div>
             </aside>

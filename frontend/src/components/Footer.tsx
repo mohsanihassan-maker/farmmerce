@@ -1,5 +1,6 @@
 import React from 'react';
 import { Twitter, Instagram, Linkedin, Heart } from 'lucide-react';
+import Logo from './Logo';
 
 const Footer = () => {
     return (
@@ -13,8 +14,8 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                     <div className="col-span-1 md:col-span-1">
                         <div className="flex items-center gap-3 mb-4">
-                            <img src="/mark.png" alt="Farmmerce Mark" className="h-8 w-8 object-contain" />
-                            <img src="/farmmerce-20.png" alt="Farmmerce" className="h-7 w-auto object-contain" />
+                            <Logo variant="light" type="mark" className="h-8 w-8" />
+                            <Logo variant="light" type="full" className="h-7 w-auto" />
                         </div>
                         <p className="text-gray-400 mb-6">
                             Reimagining the food supply chain in Africa. Fresh, fair, and transparent.

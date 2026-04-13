@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useNotifications } from '../context/NotificationContext';
+import Logo from './Logo';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -45,7 +46,7 @@ const Navbar = () => {
                 <div className="flex items-center justify-between h-20">
                     <div className="flex-shrink-0">
                         <Link to="/" className="flex items-center gap-2">
-                            <img src="/farmmerce-20.png" alt="Farmmerce" className="h-10 w-auto object-contain" />
+                            <Logo variant="dark" className="h-10 w-auto" />
                         </Link>
                     </div>
 
