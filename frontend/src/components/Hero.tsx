@@ -58,8 +58,26 @@ const Hero = () => {
                         placeholder="Enter your delivery address" 
                         className="flex-1 bg-transparent border-none outline-none px-4 text-brand-dark font-bold placeholder:text-gray-300 text-lg"
                     />
-                    <button className="bg-brand-dark text-white px-12 py-5 rounded-[2rem] font-black text-base tracking-tight hover:bg-black transition-all shadow-lg active:scale-95">
+                    <button 
+                        onClick={() => navigate('/market')}
+                        className="bg-brand-dark text-white px-12 py-5 rounded-[2rem] font-black text-base tracking-tight hover:bg-black transition-all shadow-lg active:scale-95 whitespace-nowrap"
+                    >
                         Order now
+                    </button>
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="mt-6 flex items-center gap-2 relative z-30"
+                >
+                    <p className="text-white/40 text-sm font-bold">Already a partner?</p>
+                    <button 
+                        onClick={() => navigate('/login')}
+                        className="text-white font-black text-sm hover:text-brand-light transition-colors underline underline-offset-4"
+                    >
+                        Sign in to Dashboard
                     </button>
                 </motion.div>
             </div>
