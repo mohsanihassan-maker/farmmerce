@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../config';
-import { User, Mail, Phone, MapPin, Save, Sprout, ArrowRight } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Save, Sprout, ArrowRight, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 import FarmerApplicationModal from './FarmerApplicationModal';
 

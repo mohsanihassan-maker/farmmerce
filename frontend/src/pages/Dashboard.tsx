@@ -19,7 +19,8 @@ import {
     Filter,
     Users,
     Sprout,
-    Clock
+    Clock,
+    MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductForm from '../components/ProductForm';
