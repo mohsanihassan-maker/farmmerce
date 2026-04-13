@@ -1,5 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import { createNotification } from './notifications';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -125,6 +126,14 @@ router.post('/', async (req, res) => {
             return settlement;
         });
 
+        // Notify farmer about the new settlement
+        await createNotification(
+            Number(farmerId),
+            '💸 Settlement Initiated',
+            `A payout of ₦${Number(netAmount).toLocaleString()} is being processed for your recent sales. Ref: ${reference}`,
+            'SUCCESS'
+        );
+
         res.json(result);
     } catch (error) {
         console.error(error);
@@ -146,6 +155,16 @@ router.patch('/:id/status', async (req, res) => {
                 settlementDate: settlementDate ? new Date(settlementDate) : undefined
             }
         });
+
+        if (status === 'COMPLETED') {
+            await createNotification(
+                updated.farmerId,
+                '✅ Payout Successful',
+                `Your settlement of ₦${Number(updated.netAmount).toLocaleString()} has been marked as completed. Ref: ${updated.reference}`,
+                'SUCCESS'
+            );
+        }
+
         res.json(updated);
     } catch (error) {
         console.error(error);

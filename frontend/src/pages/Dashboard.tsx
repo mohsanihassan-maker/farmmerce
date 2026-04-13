@@ -639,20 +639,50 @@ export default function Dashboard() {
                                             </div>
                                         </div>
 
-                                        <div className="border-t border-gray-100 pt-2">
-                                            {order.items.map((item: any) => (
-                                                <div key={item.id} className="flex justify-between text-sm py-1">
-                                                    <span>{item.quantity}x {item.product.name}</span>
-                                                    <span>₦{Number(item.price).toFixed(2)}</span>
-                                                </div>
-                                            ))}
+                                        <div className="space-y-2 border-t border-gray-100 pt-4">
+                                            {order.items.map((item: any) => {
+                                                const isMine = item.product.farmerId === user.id;
+                                                return (
+                                                    <div key={item.id} className={`flex justify-between items-center p-3 rounded-2xl border ${isMine ? 'bg-brand-light/5 border-brand-light/20' : 'bg-gray-50/30 border-gray-100'}`}>
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs ${isMine ? 'bg-brand-light text-brand-dark' : 'bg-gray-100 text-gray-400'}`}>
+                                                                {item.quantity}x
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-sm font-black text-brand-dark">{item.product.name}</p>
+                                                                {isMine && <span className="text-[9px] font-black text-brand-mars uppercase tracking-widest">My Product</span>}
+                                                            </div>
+                                                        </div>
+                                                        <span className="font-black text-brand-dark">₦{Number(item.price).toLocaleString()}</span>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
-                                        <div className="mt-2 text-right font-bold text-gray-900">
-                                            Total: ₦{Number(order.totalAmount).toFixed(2)}
+                                        <div className="mt-6 flex items-center justify-between bg-gray-50/50 rounded-2xl p-4">
+                                            <div>
+                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Order Total</p>
+                                                <p className="text-xl font-black text-brand-dark">₦{Number(order.totalAmount).toLocaleString()}</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                {order.status === 'CONFIRMED' && (
+                                                    <button 
+                                                        onClick={() => {
+                                                            fetch(`${API_URL}/orders/${order.id}/status`, {
+                                                                method: 'PUT',
+                                                                headers: { 'Content-Type': 'application/json' },
+                                                                body: JSON.stringify({ status: 'READY_FOR_PICKUP' })
+                                                            }).then(() => window.location.reload());
+                                                        }}
+                                                        className="px-6 py-2.5 bg-brand-mars text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg shadow-brand-mars/10"
+                                                    >
+                                                        Mark Ready
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </li>
                                 )) : (
-                                    <li className="px-6 py-4 text-center text-gray-500">No orders received yet.</li>
+                                    <li className="px-6 py-20 text-center text-gray-400 font-black uppercase tracking-[0.2em] text-xs">No orders received yet.</li>
                                 )}
                             </ul>
                         </div>
@@ -1304,27 +1334,39 @@ export default function Dashboard() {
                                 </div>
                                 <div className="divide-y divide-gray-100">
                                     {allSettlements.filter(s => s.farmerId === user.id).length > 0 ? allSettlements.filter(s => s.farmerId === user.id).map((s: any) => (
-                                        <div key={s.id} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-2xl bg-green-100 text-green-700 flex items-center justify-center font-black">S</div>
+                                        <div key={s.id} className="p-8 flex items-center justify-between hover:bg-gray-50/50 transition-colors group">
+                                            <div className="flex items-center gap-6">
+                                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-black text-xl transition-all group-hover:scale-110 ${s.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-brand-light/20 text-brand-dark'}`}>
+                                                    💸
+                                                </div>
                                                 <div>
-                                                    <p className="font-bold text-brand-dark">Settlement #{s.id}</p>
-                                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{s.reference}</p>
+                                                    <p className="font-black text-brand-dark flex items-center gap-2">
+                                                        Payout #{s.id}
+                                                        <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${s.status === 'COMPLETED' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}`}>
+                                                            {s.status}
+                                                        </span>
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Ref: {s.reference}</p>
+                                                    <p className="text-[10px] text-gray-500 font-medium mt-1 italic">Issued {new Date(s.createdAt).toLocaleDateString()}</p>
                                                 </div>
                                             </div>
-                                            <div className="text-center px-4">
-                                                <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${s.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-brand-light/30 text-brand-dark'}`}>
-                                                    {s.status}
-                                                </span>
-                                                <p className="text-[10px] text-gray-400 mt-1">{new Date(s.createdAt).toLocaleDateString()}</p>
-                                            </div>
                                             <div className="text-right">
-                                                <p className="text-lg font-black text-brand-dark">₦{Number(s.netAmount).toLocaleString()}</p>
-                                                <p className="text-[10px] text-gray-400">Gross: ₦{Number(s.amount).toLocaleString()}</p>
+                                                <p className="text-2xl font-black text-brand-dark">₦{Number(s.netAmount).toLocaleString()}</p>
+                                                <div className="flex items-center justify-end gap-2 mt-1">
+                                                    <span className="text-[10px] text-gray-400 font-bold">Gross: ₦{Number(s.amount).toLocaleString()}</span>
+                                                    <div className="w-1 h-1 bg-gray-200 rounded-full" />
+                                                    <span className="text-[10px] text-red-400 font-black opacity-60">Fee: -10%</span>
+                                                </div>
                                             </div>
                                         </div>
                                     )) : (
-                                        <div className="p-10 text-center text-gray-500">No settlement history found.</div>
+                                        <div className="p-20 text-center">
+                                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-200">
+                                                <Navigation size={32} />
+                                            </div>
+                                            <p className="text-xs font-black text-gray-400 uppercase tracking-widest">No payout history found.</p>
+                                            <p className="text-[10px] text-gray-500 mt-1">Your earnings will appear here once orders are delivered.</p>
+                                        </div>
                                     )}
                                 </div>
                             </div>
