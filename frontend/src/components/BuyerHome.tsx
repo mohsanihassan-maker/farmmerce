@@ -311,13 +311,13 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                             </div>
 
                             {featuredProducts.length === 0 ? (
-                                <div className="grid grid-cols-2 gap-3">
-                                    {[...Array(4)].map((_, i) => (
-                                        <div key={i} className="bg-white rounded-3xl h-48 animate-pulse" />
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                                    {[...Array(6)].map((_, i) => (
+                                        <div key={i} className="bg-white rounded-2xl h-48 animate-pulse" />
                                     ))}
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                                     {featuredProducts.map((product: any, i: number) => (
                                         <ProductCard key={product.id} product={product} index={i} onTap={() => setActiveTab('marketplace')} />
                                     ))}
@@ -441,13 +441,13 @@ function ProductCard({ product, index, onTap }: { product: any; index: number; o
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
             onClick={onTap}
-            className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl hover:shadow-brand-dark/5 border border-gray-100 cursor-pointer group active:scale-[0.98] transition-all duration-300 relative"
+            className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-brand-dark/5 border border-gray-100 cursor-pointer group active:scale-[0.98] transition-all duration-300 relative"
         >
-            <div className="h-28 bg-[#F4F1EE] relative overflow-hidden">
+            <div className="h-24 bg-[#F4F1EE] relative overflow-hidden">
                 {/* Brand Pattern Overlay */}
                 <div className="absolute inset-0 opacity-[0.03] grayscale pointer-events-none">
                     <img src="/pattern.png" alt="" className="w-full h-full object-cover" />
@@ -455,44 +455,36 @@ function ProductCard({ product, index, onTap }: { product: any; index: number; o
                 
                 {product.imageUrl ? (
                     <img src={product.imageUrl} alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out relative z-10" />
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out relative z-10" />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl relative z-10">
+                    <div className="w-full h-full flex items-center justify-center text-3xl relative z-10">
                         {product.name?.[0] === 'T' ? '🍅' : product.name?.[0] === 'O' ? '🧅' : '🥬'}
                     </div>
                 )}
                 
                 {/* Fancy Badge */}
-                <div className="absolute top-3 left-3 bg-brand-light/80 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-black text-brand-dark flex items-center gap-1.5 shadow-sm border border-white/50 z-20 uppercase tracking-tighter">
+                <div className="absolute top-2 left-2 bg-brand-light/90 backdrop-blur-md px-2 py-0.5 rounded-md text-[8px] font-black text-brand-dark flex items-center gap-1 shadow-sm border border-white/50 z-20 uppercase tracking-tighter">
                     <Sparkles size={10} className="text-brand-dark" /> Fresh
-                </div>
-
-                {/* Quick Add Overlay */}
-                <div className="absolute inset-0 bg-brand-dark/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-15 flex items-center justify-center">
-                    <span className="bg-white text-brand-dark px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                        Quick View
-                    </span>
                 </div>
             </div>
 
-            <div className="p-4 relative">
-                <div className="flex justify-between items-start mb-1">
+            <div className="p-3 relative">
+                <div className="flex justify-between items-start mb-2">
                     <div className="flex-1 overflow-hidden">
-                        <p className="text-[10px] text-brand-dark/40 font-black uppercase tracking-widest truncate">{product.farmer?.name || 'Local Farm'}</p>
-                        <h4 className="text-sm font-black text-brand-dark truncate leading-tight mt-0.5">{product.name}</h4>
+                        <p className="text-[9px] text-brand-dark/30 font-black uppercase tracking-widest truncate">{product.farmer?.name || 'Local Farm'}</p>
+                        <h4 className="text-xs font-black text-brand-dark truncate leading-tight mt-0.5">{product.name}</h4>
                     </div>
                 </div>
                 
-                <div className="flex items-center justify-between mt-3">
+                <div className="flex items-end justify-between mt-1">
                     <div className="flex flex-col">
-                        <span className="text-[10px] text-gray-400 font-bold uppercase leading-none mb-1">Price</span>
-                        <span className="text-base font-black text-brand-dark leading-none">₦{parseFloat(String(product.price)).toLocaleString()}</span>
+                        <span className="text-sm font-black text-brand-dark leading-none">₦{parseFloat(String(product.price)).toLocaleString()}</span>
                     </div>
                     <button
                         onClick={(e) => { e.stopPropagation(); addToCart(product); }}
-                        className="w-10 h-10 bg-brand-dark text-white rounded-2xl flex items-center justify-center shadow-lg hover:bg-brand-mars hover:scale-110 transition-all active:scale-95 group/btn"
+                        className="w-8 h-8 bg-brand-dark text-white rounded-xl flex items-center justify-center shadow-lg hover:bg-brand-mars transition-all active:scale-95 group/btn"
                     >
-                        <ShoppingCart size={18} className="group-hover/btn:rotate-12 transition-transform" />
+                        <ShoppingCart size={14} className="group-hover/btn:rotate-12 transition-transform" />
                     </button>
                 </div>
             </div>
