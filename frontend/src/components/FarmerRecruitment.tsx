@@ -100,7 +100,7 @@ const FarmerRecruitment = () => {
 
                         {/* Plant Decoration */}
                         <div className="absolute -top-10 -right-4 text-6xl opacity-20 rotate-12 pointer-events-none">🌿</div>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
         </section>
