@@ -42,21 +42,21 @@ const Navbar = () => {
 
     return (
         <nav className="fixed w-full z-50 top-4 px-4 sm:px-6 lg:px-8 pointer-events-none">
-            <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-md border border-gray-100 shadow-xl shadow-brand-dark/5 rounded-[2rem] pointer-events-auto">
+            <div className="max-w-6xl mx-auto bg-white/95 backdrop-blur-xl border border-gray-100 shadow-2xl shadow-brand-dark/10 rounded-full px-6 pointer-events-auto">
                 <div className="flex items-center justify-between h-20">
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 px-2">
                         <Link to="/" className="flex items-center gap-2">
-                            <Logo variant="dark" className="h-10 w-auto" />
+                            <Logo variant="dark" className="h-12 w-auto" />
                         </Link>
                     </div>
 
                     <div className="hidden md:block">
                         <div className="ml-10 flex items-baseline space-x-1">
-                            <Link to="/" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Home</Link>
-                            <Link to="/market" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">Market</Link>
-                            <Link to="/" className="text-gray-600 hover:text-brand-dark hover:bg-gray-50 px-4 py-2 rounded-full text-sm font-bold transition-all">About</Link>
+                            <Link to="/" className="text-brand-dark/90 hover:text-brand-dark hover:bg-brand-light/30 px-4 py-2 rounded-full text-sm font-black transition-all">Home</Link>
+                            <Link to="/market" className="text-brand-dark/90 hover:text-brand-dark hover:bg-brand-light/30 px-4 py-2 rounded-full text-sm font-black transition-all">Market</Link>
+                            <Link to="/" className="text-brand-dark/90 hover:text-brand-dark hover:bg-brand-light/30 px-4 py-2 rounded-full text-sm font-black transition-all">About</Link>
                             {isAuthenticated && (
-                                <Link to="/dashboard" className="text-brand-dark hover:bg-gray-50 border border-gray-100 px-4 py-2 rounded-full text-sm font-black transition-all">Dashboard ⊕</Link>
+                                <Link to="/dashboard" className="text-brand-dark hover:bg-brand-light/50 border border-brand-dark/10 px-4 py-2 rounded-full text-sm font-black transition-all shadow-sm">Dashboard ⊕</Link>
                             )}
                         </div>
                     </div>
