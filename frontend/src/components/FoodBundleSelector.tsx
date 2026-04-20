@@ -54,60 +54,66 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
     if (isCompact) {
         return (
             <div className="w-full px-4 sm:px-6">
-                <div className="flex items-center gap-2 mb-6">
-                    <div className="w-1.5 h-6 bg-brand-mars rounded-full" />
-                    <h2 className="text-xl font-black text-brand-dark tracking-tight leading-none">
-                        Featured <span className="text-brand-mars">Bundles</span>
-                    </h2>
+                <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-8 bg-brand-dark rounded-full" />
+                        <div>
+                            <h2 className="text-2xl font-black text-brand-dark tracking-tight leading-none">
+                                Premium <span className="text-brand-mars">Bundles</span>
+                            </h2>
+                            <p className="text-xs text-gray-400 font-medium mt-1">Curated for your family's health</p>
+                        </div>
+                    </div>
                 </div>
                 
                 <div 
                     ref={scrollRef}
-                    className="flex gap-4 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth snap-x snap-mandatory"
+                    className="flex gap-6 overflow-x-auto no-scrollbar pb-8 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth snap-x snap-mandatory"
                 >
-                    {bundles.length === 0 && <div className="text-gray-400 text-sm py-4">Loading bundles...</div>}
+                    {bundles.length === 0 && <div className="text-gray-400 text-sm py-4 italic">Preparing fresh bundles...</div>}
                     {bundles.map((b, i) => (
                         <motion.div
                             key={b.id}
-                            whileHover={{ y: -5 }}
-                            className="snap-center flex-shrink-0 w-[260px] bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden group hover:shadow-2xl hover:border-brand-mars/40 transition-all duration-300 relative"
+                            whileHover={{ y: -8 }}
+                            className="snap-center flex-shrink-0 w-[280px] bg-white rounded-[2.5rem] shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100/80 overflow-hidden group hover:shadow-[0_20px_50px_rgba(1,63,49,0.1)] hover:border-brand-dark/10 transition-all duration-500 relative"
                         >
-                            <div className="h-32 relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
-                                <img src={b.imageUrl} alt={b.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                                <div className={`absolute top-0 right-0 m-3 px-3 py-1 rounded-full text-[10px] font-black uppercase shadow-lg backdrop-blur-md border border-white/30 bg-gradient-to-r ${b.color} text-white`}>
-                                    Save {b.savings}
+                            <div className="h-40 relative overflow-hidden bg-gray-50">
+                                <img src={b.imageUrl} alt={b.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                <div className="absolute top-4 right-4 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl backdrop-blur-md border border-white/30 bg-brand-dark text-white">
+                                    {b.savings} OFF
                                 </div>
                             </div>
-                            <div className="p-5">
-                                <p className="text-[10px] font-black text-brand-dark/40 uppercase tracking-widest truncate flex items-center gap-1 mb-1">
-                                    <Users size={12} className="text-brand-mars" /> {b.familySize}
-                                </p>
-                                <h3 className="text-base font-black text-brand-dark leading-tight mb-3">{b.name}</h3>
+                            <div className="p-6">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="px-2 py-0.5 bg-brand-light/20 text-brand-dark/60 rounded-md text-[9px] font-black uppercase tracking-wider border border-brand-light/30">
+                                        {b.familySize}
+                                    </span>
+                                </div>
+                                <h3 className="text-lg font-black text-brand-dark leading-tight mb-4 group-hover:text-brand-mars transition-colors">{b.name}</h3>
                                 
-                                {/* "Order Options" summary limit to 2 items */}
-                                <div className="space-y-1.5 mb-5">
-                                    {b.items.slice(0, 2).map((item: string) => (
+                                <div className="space-y-2 mb-6">
+                                    {b.items.slice(0, 3).map((item: string) => (
                                        <div key={item} className="flex items-center gap-2 text-[11px] text-gray-500 font-medium">
-                                          <div className="w-3 h-3 rounded-full flex items-center justify-center shrink-0 bg-gray-100">
-                                              <Check size={8} style={{color: b.accentColor}} />
-                                          </div>
+                                          <div className="w-1.5 h-1.5 rounded-full shrink-0 bg-brand-light" />
                                           <span className="truncate">{item}</span>
                                        </div>
                                     ))}
-                                    <div className="text-[9px] text-brand-dark/40 font-bold ml-5 uppercase tracking-widest">+{b.items.length - 2} more items</div>
+                                    {b.items.length > 3 && (
+                                        <div className="text-[9px] text-gray-300 font-bold ml-3.5 uppercase tracking-widest">+{b.items.length - 3} more essentials</div>
+                                    )}
                                 </div>
                                 
-                                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                                <div className="flex items-center justify-between pt-5 border-t border-gray-50">
                                     <div>
-                                        <p className="text-[10px] font-black text-gray-300 line-through leading-none">₦{(b.price * 1.3).toLocaleString()}</p>
-                                        <p className="text-lg font-black text-brand-dark leading-none mt-1">₦{b.price.toLocaleString()}</p>
+                                        <p className="text-[10px] font-bold text-gray-300 line-through leading-none mb-1">₦{(b.price * 1.3).toLocaleString()}</p>
+                                        <p className="text-xl font-black text-brand-dark leading-none">₦{b.price.toLocaleString()}</p>
                                     </div>
                                     <button
                                         onClick={() => handleAddToCart(i)}
-                                        className="h-10 px-4 bg-brand-dark text-white rounded-xl shadow-lg hover:bg-brand-mars transition-all transform active:scale-95 flex items-center gap-2 group-hover:shadow-brand-mars/20"
+                                        className="w-11 h-11 bg-brand-dark text-white rounded-2xl shadow-lg hover:bg-brand-mars transition-all transform active:scale-90 flex items-center justify-center group/btn"
                                     >
-                                        <ShoppingCart size={14} className="text-brand-light" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Add</span>
+                                        <Plus size={20} className="group-hover/btn:rotate-90 transition-transform duration-300" />
                                     </button>
                                 </div>
                             </div>

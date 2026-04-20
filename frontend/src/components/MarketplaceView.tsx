@@ -203,13 +203,13 @@ export default function MarketplaceView() {
 
             {/* Product Grid */}
             {loading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {[...Array(6)].map((_, i) => (
-                        <div key={i} className="bg-white rounded-3xl h-64 animate-pulse" />
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                    {[...Array(8)].map((_, i) => (
+                        <div key={i} className="bg-white rounded-2xl h-48 animate-pulse" />
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 pb-20">
                     {products.length > 0 ? products.map((product: any) => (
                         <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
                     )) : (

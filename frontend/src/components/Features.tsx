@@ -5,44 +5,39 @@ import { motion } from 'framer-motion';
 const features = [
     {
         icon: <Sprout className="w-8 h-8 text-brand-dark" />,
-        title: "Fresh from the Source",
-        description: "Get produce harvested hours before delivery, not days. Direct from local farms to your table.",
+        title: "Nutrient Dense",
+        description: "Harvested hours before delivery to preserve vitamins and minerals. Peak freshness for your health.",
         color: "bg-brand-light"
     },
     {
-        icon: <Wallet className="w-8 h-8 text-brand-dark" />,
-        title: "Fair Prices",
-        description: "Save up to 30% by cutting out middlemen. Farmers earn more, you pay less.",
-        color: "bg-brand-peach"
-    },
-    {
-        icon: <Truck className="w-8 h-8 text-brand-dark" />,
-        title: "Swift Delivery",
-        description: "Reliable logistics ensure your food arrives fresh and on time, every time.",
-        color: "bg-brand-yellow"
-    },
-    {
         icon: <ShieldCheck className="w-8 h-8 text-brand-dark" />,
-        title: "Quality Assured",
-        description: "Every farmer is verified. Every product is traceable back to its origin.",
+        title: "Verified Traceability",
+        description: "Every item is traceable to its source. Know your farmer, know your food's journey.",
         color: "bg-brand-pink"
     },
     {
         icon: <ChefHat className="w-8 h-8 text-brand-dark" />,
-        title: "Smart Meal Planning",
-        description: "Generate personalized meal plans based on your budget and preferences.",
+        title: "Clean Eating",
+        description: "Zero-chemical standards. We only partner with farms that prioritize natural, healthy growing.",
+        color: "bg-brand-yellow"
+    },
+    {
+        icon: <Wallet className="w-8 h-8 text-brand-dark" />,
+        title: "Transparent Pricing",
+        description: "Save more by buying direct. Quality nutrition shouldn't come with a middleman markup.",
+        color: "bg-brand-peach"
+    },
+    {
+        icon: <Truck className="w-8 h-8 text-brand-dark" />,
+        title: "Swift Logistics",
+        description: "Our optimized routes ensure farm-to-table delivery within 48 hours of harvest.",
         color: "bg-brand-light"
     }
 ];
 
 const Features = () => {
     return (
-        <section id="how-it-works" className="py-24 bg-brand-dark/95 relative overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-[0.06] pointer-events-none">
-                <img src="/pattern.png" alt="" className="w-full h-full object-cover" />
-            </div>
-
+        <section id="how-it-works" className="py-24 bg-white relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div className="text-center mb-16">
                     <motion.div
@@ -51,9 +46,9 @@ const Features = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Why Farmmerce?</h2>
+                        <h2 className="text-3xl md:text-5xl font-black text-brand-dark mb-6">Invest in Your Health</h2>
                         <p className="text-gray-400 text-lg max-w-2xl mx-auto font-medium">
-                            We're building a food system that works for everyone. Better food for you, better business for farmers.
+                            We're redefining the food system with a focus on transparency, nutrition, and direct access to local harvests.
                         </p>
                     </motion.div>
                 </div>

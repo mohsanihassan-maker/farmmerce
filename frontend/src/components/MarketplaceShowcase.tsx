@@ -98,7 +98,7 @@ export default function MarketplaceShowcase() {
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true, margin: "-100px" }}
                     transition={{ staggerChildren: 0.1 }}
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10"
+                    className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8"
                 >
                     {products.map((product) => (
                         <motion.div

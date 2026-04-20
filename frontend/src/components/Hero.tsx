@@ -72,12 +72,12 @@ const Hero = () => {
                     transition={{ delay: 0.6 }}
                     className="mt-6 flex items-center gap-2 relative z-30"
                 >
-                    <p className="text-white/40 text-sm font-bold">Already a partner?</p>
+                    <p className="text-white/40 text-sm font-bold">Curious where your food comes from?</p>
                     <button 
-                        onClick={() => navigate('/login')}
+                        onClick={() => navigate('/trace')}
                         className="text-white font-black text-sm hover:text-brand-light transition-colors underline underline-offset-4"
                     >
-                        Sign in to Dashboard
+                        Learn about our Traceability
                     </button>
                 </motion.div>
             </div>
