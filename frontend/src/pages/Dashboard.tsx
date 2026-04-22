@@ -953,13 +953,10 @@ export default function Dashboard() {
                                                             value={u.role}
                                                             onChange={(e) => {
                                                                 const newRole = e.target.value;
-                                                                fetch(`${API_URL}/admin/users/${u.id}/role`, {
-                                                                    method: 'PUT',
-                                                                    headers: { 'Content-Type': 'application/json' },
-                                                                    body: JSON.stringify({ role: newRole })
-                                                                }).then(() => {
-                                                                    setAllUsers(prev => prev.map(usr => usr.id === u.id ? { ...usr, role: newRole } : usr));
-                                                                });
+                                                                api.put(`/admin/users/${u.id}/role`, { role: newRole })
+                                                                    .then(() => {
+                                                                        setAllUsers(prev => prev.map(usr => usr.id === u.id ? { ...usr, role: newRole } : usr));
+                                                                    });
                                                             }}
                                                             className="text-xs font-bold bg-white border-gray-200 rounded-xl focus:ring-brand-dark"
                                                         >
@@ -969,7 +966,7 @@ export default function Dashboard() {
                                                         </select>
                                                         <button
                                                             onClick={() => {
-                                                                fetch(`${API_URL}/users/${u.id}`)
+                                                                api.get(`/users/${u.id}`)
                                                                     .then(res => res.json())
                                                                     .then(data => setSelectedAdminUser(data))
                                                                     .catch(console.error);
@@ -1404,11 +1401,9 @@ export default function Dashboard() {
                                 <button
                                     onClick={() => {
                                         const newState = !panelEnabled;
-                                        fetch(`${API_URL}/group-deals/panel-enabled`, {
-                                            method: 'PATCH',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({ enabled: newState })
-                                        }).then(res => res.json()).then(data => setPanelEnabled(data.enabled));
+                                        api.patch('/group-deals/panel-enabled', { enabled: newState })
+                                            .then(res => res.json())
+                                            .then(data => setPanelEnabled(data.enabled));
                                     }}
                                     className={`px-6 py-3 rounded-2xl font-black text-sm transition-all active:scale-95 shadow-lg ${panelEnabled
                                         ? 'bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white'
@@ -1693,7 +1688,7 @@ export default function Dashboard() {
                                                 <button 
                                                     onClick={() => {
                                                         if(confirm(`Approve ${app.name} as a Farmer?`)) {
-                                                            fetch(`${API_URL}/admin/applications/${app.id}/approve`, { method: 'POST' })
+                                                            api.post(`/admin/applications/${app.id}/approve`, {})
                                                                 .then(() => {
                                                                     setPendingApplications(prev => prev.filter(a => a.id !== app.id));
                                                                     alert('Farmer approved!');
@@ -1707,7 +1702,7 @@ export default function Dashboard() {
                                                 <button 
                                                     onClick={() => {
                                                         if(confirm(`Reject application for ${app.name}?`)) {
-                                                            fetch(`${API_URL}/admin/applications/${app.id}/reject`, { method: 'POST' })
+                                                            api.post(`/admin/applications/${app.id}/reject`, {})
                                                                 .then(() => {
                                                                     setPendingApplications(prev => prev.filter(a => a.id !== app.id));
                                                                     alert('Application rejected.');

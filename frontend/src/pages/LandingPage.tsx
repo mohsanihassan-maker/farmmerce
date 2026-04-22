@@ -40,14 +40,7 @@ const LandingPage = () => {
                     <MarketplaceShowcase />
                 </motion.div>
 
-                <motion.div 
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: "-100px" }}
-                    variants={sectionVariants}
-                >
-                    <GroupBuyingSection />
-                </motion.div>
+                <GroupBuyingSection />
 
                 <motion.div 
                     initial="hidden"
