@@ -15,6 +15,15 @@
   --color-brand-purple: #81295c;
   --color-brand-red: #b51b0b;
   --color-brand-mars: #ff6f64;
+  --color-brand-green: #0f8b4f;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @layer base {

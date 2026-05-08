@@ -1,121 +1,147 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Leaf } from 'lucide-react';
+import { Search, Leaf, ArrowRight, ShoppingBag } from 'lucide-react';
+import { useState } from 'react';
+
+const QUICK_CATEGORIES = ['Vegetables', 'Fruits', 'Grains', 'Livestock', 'Eggs & Dairy'];
 
 const Hero = () => {
     const navigate = useNavigate();
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const [search, setSearch] = useState('');
 
-    useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            setMousePos({
-                x: (e.clientX / window.innerWidth - 0.5) * 30, // 30px max movement
-                y: (e.clientY / window.innerHeight - 0.5) * 30,
-            });
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, []);
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (search.trim()) {
+            navigate(`/market?search=${encodeURIComponent(search.trim())}`);
+        } else {
+            navigate('/market');
+        }
+    };
 
     return (
-        <div className="relative bg-[#013f31] min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-48">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 w-full flex flex-col items-center">
-                
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute inset-0 z-10 bg-gradient-to-b from-brand-dark/40 via-transparent to-transparent pointer-events-none"
-                />
-
-                <motion.h1
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-6xl md:text-[7.5rem] font-black text-white tracking-tighter mb-4 text-center leading-[0.8] drop-shadow-[0_10px_10px_rgba(0,0,0,0.3)] relative z-20"
-                >
-                    From farm<br/><span className="text-brand-light drop-shadow-[0_10px_10px_rgba(1,63,49,0.5)]">to kitchen...</span>
-                </motion.h1>
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-lg md:text-2xl font-bold text-white mb-12 text-center max-w-xl leading-snug drop-shadow-md relative z-20"
-                >
-                    Fresh, transparent, and direct. We connect you to the best local harvests with <span className="text-brand-light">zero middle-men.</span>
-                </motion.p>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-full max-w-2xl bg-white/95 backdrop-blur-md rounded-[2.5rem] p-2 flex items-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 relative z-30"
-                >
-                    <div className="w-12 h-12 flex items-center justify-center text-brand-dark/20 font-black text-2xl ml-2">⊕</div>
-                    <input 
-                        type="text" 
-                        placeholder="Enter your delivery address" 
-                        className="flex-1 bg-transparent border-none outline-none px-4 text-brand-dark font-bold placeholder:text-gray-300 text-lg"
-                    />
-                    <button 
-                        onClick={() => navigate('/market')}
-                        className="bg-brand-dark text-white px-12 py-5 rounded-[2rem] font-black text-base tracking-tight hover:bg-black transition-all shadow-lg active:scale-95 whitespace-nowrap"
-                    >
-                        Order now
-                    </button>
-                </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                    className="mt-6 flex items-center gap-2 relative z-30"
-                >
-                    <p className="text-white/40 text-sm font-bold">Curious where your food comes from?</p>
-                    <button 
-                        onClick={() => navigate('/trace')}
-                        className="text-white font-black text-sm hover:text-brand-light transition-colors underline underline-offset-4"
-                    >
-                        Learn about our Traceability
-                    </button>
-                </motion.div>
+        <div className="relative bg-[#013f31] overflow-hidden">
+            {/* Subtle pattern overlay */}
+            <div className="absolute inset-0 opacity-[0.06] pointer-events-none">
+                <img src="/pattern.png" alt="" className="w-full h-full object-cover" />
             </div>
 
-            {/* Visual Scene Overlay */}
-            <div className="absolute inset-0 z-10 pointer-events-none">
-                {/* Rolling Fields Background */}
-                <div className="absolute bottom-0 left-0 right-0 w-full">
-                    <img 
-                        src="/hero-fields.png" 
-                        className="w-full h-auto object-cover min-h-[400px] opacity-100" 
-                        alt="" 
-                    />
+            {/* Animated tractor - subtle background element */}
+            <motion.div
+                initial={{ x: "-10%", opacity: 0 }}
+                animate={{ x: "110%", opacity: 0.15 }}
+                transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                className="absolute bottom-0 left-0 pointer-events-none"
+            >
+                <img src="/tractor.png" className="w-20 h-auto" alt="" />
+            </motion.div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-28 pb-10">
+                <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                    {/* Left: Copy */}
+                    <div className="flex-1 text-center lg:text-left">
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-light/15 text-brand-light text-xs font-bold mb-4 border border-brand-light/20"
+                        >
+                            <Leaf size={11} />
+                            <span>100% Farm Direct · Zero Middlemen</span>
+                        </motion.div>
+
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.05 }}
+                            className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter leading-[0.9] mb-4"
+                        >
+                            Fresh from the farm,<br />
+                            <span className="text-brand-light">straight to you.</span>
+                        </motion.h1>
+
+                        <motion.p
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.1 }}
+                            className="text-white/60 text-base md:text-lg font-medium mb-6 max-w-lg mx-auto lg:mx-0"
+                        >
+                            Harvested today, delivered tomorrow. Shop verified local produce with full traceability.
+                        </motion.p>
+
+                        {/* Search Bar */}
+                        <motion.form
+                            onSubmit={handleSearch}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.15 }}
+                            className="flex items-center gap-2 bg-white rounded-2xl p-2 shadow-[0_10px_30px_rgba(0,0,0,0.3)] max-w-lg mx-auto lg:mx-0"
+                        >
+                            <Search size={16} className="text-gray-300 ml-2 shrink-0" />
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                placeholder="Search tomatoes, yam, eggs…"
+                                className="flex-1 bg-transparent border-none outline-none text-brand-dark font-semibold placeholder:text-gray-300 text-sm"
+                            />
+                            <button
+                                type="submit"
+                                className="bg-brand-dark text-white px-5 py-3 rounded-xl font-black text-xs tracking-tight hover:bg-black transition-all shadow-lg active:scale-95 whitespace-nowrap flex items-center gap-1.5"
+                            >
+                                <ShoppingBag size={13} />
+                                Shop Now
+                            </button>
+                        </motion.form>
+
+                        {/* Quick Category Pills */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.25 }}
+                            className="mt-4 flex flex-wrap gap-2 justify-center lg:justify-start"
+                        >
+                            {QUICK_CATEGORIES.map(cat => (
+                                <button
+                                    key={cat}
+                                    onClick={() => navigate(`/market?category=${encodeURIComponent(cat)}`)}
+                                    className="px-3 py-1.5 text-[11px] font-bold text-white/70 bg-white/10 rounded-lg border border-white/10 hover:bg-white/20 hover:text-white transition-all"
+                                >
+                                    {cat}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => navigate('/market')}
+                                className="px-3 py-1.5 text-[11px] font-bold text-brand-light bg-brand-light/10 rounded-lg border border-brand-light/20 hover:bg-brand-light/20 transition-all flex items-center gap-1"
+                            >
+                                All Products <ArrowRight size={10} />
+                            </button>
+                        </motion.div>
+                    </div>
+
+                    {/* Right: Stats / Trust */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.7, delay: 0.2 }}
+                        className="hidden lg:flex flex-col gap-4 shrink-0"
+                    >
+                        {[
+                            { value: '500+', label: 'Local Farmers', color: 'text-brand-light' },
+                            { value: '48h', label: 'Farm to Door', color: 'text-brand-yellow' },
+                            { value: '100%', label: 'Traceable', color: 'text-brand-mars' },
+                        ].map(stat => (
+                            <div key={stat.label} className="bg-white/8 backdrop-blur border border-white/10 rounded-2xl px-6 py-4 text-right">
+                                <p className={`text-3xl font-black ${stat.color}`}>{stat.value}</p>
+                                <p className="text-white/50 text-xs font-bold uppercase tracking-widest">{stat.label}</p>
+                            </div>
+                        ))}
+                    </motion.div>
                 </div>
-
-                {/* Animated Tractors - Deep Field */}
-                <motion.div
-                    initial={{ x: "-20%", opacity: 0 }}
-                    animate={{ x: "110%", opacity: 0.8 }}
-                    transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                    className="absolute bottom-32 left-0 scale-[0.4] grayscale-[0.2]"
-                >
-                    <img src="/tractor.png" className="w-32 h-auto" alt="" />
-                </motion.div>
-
-                {/* Animated Tractors - Closer Field */}
-                <motion.div
-                    initial={{ x: "120%", opacity: 0 }}
-                    animate={{ x: "-30%", opacity: 1 }}
-                    transition={{ duration: 25, repeat: Infinity, ease: "linear", delay: 5 }}
-                    className="absolute bottom-16 right-0 scale-75"
-                >
-                    <img src="/tractor.png" className="w-48 h-auto -scale-x-100" alt="" />
-                </motion.div>
-
-                {/* Gradient to blend image with dark green top */}
-                <div className="absolute inset-0 bg-gradient-to-b from-[#013f31] via-transparent to-transparent h-1/2" />
             </div>
+
+            {/* Bottom fade into page */}
+            <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
         </div>
     );
 };

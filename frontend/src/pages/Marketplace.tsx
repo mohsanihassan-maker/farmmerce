@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, Sprout, ChevronDown } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import Navbar from '../components/Navbar';
@@ -7,12 +8,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { API_URL } from '../config';
 
 export default function Marketplace() {
+    const [searchParams] = useSearchParams();
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const { addToCart } = useCart();
-    const [searchTerm, setSearchTerm] = useState('');
-    const [debouncedSearch, setDebouncedSearch] = useState('');
-    const [category, setCategory] = useState('All');
+    const [searchTerm, setSearchTerm] = useState(() => searchParams.get('search') || '');
+    const [debouncedSearch, setDebouncedSearch] = useState(() => searchParams.get('search') || '');
+    const [category, setCategory] = useState(() => searchParams.get('category') || 'All');
     const [categories, setCategories] = useState<string[]>(['All']);
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
