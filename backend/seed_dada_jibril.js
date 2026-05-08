@@ -32,14 +32,14 @@ async function main() {
         where: { userId: farmer.id },
         update: {
             farmName: 'Dada Organic Farm',
-            bio: 'Family-run organic farm in Kwara State specializing in fresh vegetables, grains, and poultry products.',
+            bio: 'Female-led, family-run organic farm in Kwara State specializing in fresh vegetables, grains, and poultry products. Founded by Dada Jibril.',
             location: 'Ilorin, Kwara State',
             applicationStatus: 'APPROVED',
         },
         create: {
             userId: farmer.id,
             farmName: 'Dada Organic Farm',
-            bio: 'Family-run organic farm in Kwara State specializing in fresh vegetables, grains, and poultry products.',
+            bio: 'Female-led, family-run organic farm in Kwara State specializing in fresh vegetables, grains, and poultry products. Founded by Dada Jibril.',
             location: 'Ilorin, Kwara State',
             phoneNumber: '+2348012345678',
             applicationStatus: 'APPROVED',
