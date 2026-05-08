@@ -45,7 +45,13 @@ export default function Login() {
             login(userData, authData.session.access_token);
             navigate('/dashboard');
         } catch (err: any) {
-            setError(err.message || 'Login failed. Please check your credentials.');
+            let errorMessage = err.message || 'Login failed. Please check your credentials.';
+            if (errorMessage === 'Failed to fetch') {
+                errorMessage = 'Unable to connect to the server. Please check your network connection and try again.';
+            } else if (errorMessage === 'Invalid login credentials') {
+                errorMessage = 'Incorrect email or password. Please double-check your credentials and try again.';
+            }
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
