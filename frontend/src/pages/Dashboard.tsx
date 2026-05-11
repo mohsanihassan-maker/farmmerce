@@ -112,13 +112,13 @@ export default function Dashboard() {
         if (activeTab === 'dashboard') {
             fetchStats();
         }
-        if (activeTab === 'orders') { // Incoming Orders
+        if (activeTab === 'orders' || (activeTab === 'dashboard' && viewMode === 'FARMER')) { // Incoming Orders
             fetchIncomingOrders();
         }
-        if (activeTab === 'my-orders') {
+        if (activeTab === 'my-orders' || (activeTab === 'dashboard' && viewMode === 'BUYER')) {
             fetchMyOrders();
         }
-        if (activeTab === 'products') {
+        if (activeTab === 'products' || (activeTab === 'dashboard' && viewMode === 'FARMER')) {
             fetch(`${API_URL}/products`)
                 .then(res => res.json())
                 .catch(err => console.error(err))
@@ -506,45 +506,127 @@ export default function Dashboard() {
                     )}
 
                     {activeTab === 'dashboard' && (
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                            <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-brand-dark">
-                                <dt className="text-sm font-black text-gray-400 uppercase tracking-widest truncate">{viewMode === 'FARMER' ? 'Total Revenue' : 'Total Spent'}</dt>
-                                <dd className="text-2xl font-black text-brand-dark mt-1">
-                                    ₦{stats ? (viewMode === 'FARMER' ? stats.totalRevenue : stats.totalSpent).toLocaleString() : '...'}
-                                </dd>
-                            </div>
-                            <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-brand-mars">
-                                <dt className="text-sm font-black text-gray-400 uppercase tracking-widest truncate">{viewMode === 'FARMER' ? 'Pending Orders' : 'Orders Placed'}</dt>
-                                <dd className="text-2xl font-black text-brand-dark mt-1">
-                                    {stats ? (viewMode === 'FARMER' ? stats.pendingOrders : stats.orderCount) : '...'}
-                                </dd>
-                            </div>
-                            <div className="bg-white overflow-hidden shadow rounded-lg p-5 border-l-4 border-brand-light">
-                                <dt className="text-sm font-black text-gray-400 uppercase tracking-widest truncate">CO2 Saved (Est.)</dt>
-                                <dd className="text-2xl font-black text-brand-dark mt-1">
-                                    {stats ? stats.co2Saved.toFixed(1) : '...'} <span className="text-xs font-black uppercase tracking-widest text-gray-400">kg</span>
-                                </dd>
-                            </div>
-                            {viewMode === 'FARMER' && stats?.lowStockCount > 0 && (
-                                <div className="bg-brand-red/5 overflow-hidden shadow rounded-lg p-5 border-l-4 border-brand-red">
-                                    <dt className="text-sm font-black text-brand-red uppercase tracking-widest truncate flex items-center gap-2">
-                                        <Bell className="w-4 h-4" />
-                                        Low Stock Alerts
-                                    </dt>
-                                    <dd className="text-2xl font-bold text-red-700">
-                                        {stats.lowStockCount}
+                        <div className="space-y-8">
+                            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                                <div className="bg-white overflow-hidden shadow rounded-[2rem] p-6 border border-gray-100 hover:shadow-lg transition-shadow">
+                                    <div className="flex items-center gap-4 mb-2">
+                                        <div className="w-10 h-10 bg-brand-light/20 rounded-xl flex items-center justify-center">
+                                            <ShoppingBag className="w-5 h-5 text-brand-dark" />
+                                        </div>
+                                        <dt className="text-xs font-black text-gray-400 uppercase tracking-widest">{viewMode === 'FARMER' ? 'Total Revenue' : 'Total Spent'}</dt>
+                                    </div>
+                                    <dd className="text-3xl font-black text-brand-dark mt-2">
+                                        ₦{stats ? (viewMode === 'FARMER' ? stats.totalRevenue : stats.totalSpent).toLocaleString() : '...'}
                                     </dd>
                                 </div>
-                            )}
-                            <Link to="/meal-planner" className="bg-brand-yellow/10 overflow-hidden shadow rounded-lg p-5 hover:bg-brand-yellow/20 transition-colors border border-brand-yellow/30 group">
-                                <dt className="flex items-center gap-2 text-sm font-medium text-brand-dark truncate">
-                                    <span className="p-1 bg-brand-yellow/20 rounded-full group-hover:bg-brand-yellow/40 transition-colors">
-                                        <ChefHat className="w-4 h-4" />
-                                    </span>
-                                    Weekly Meal Planner
-                                </dt>
-                                <dd className="mt-1 text-sm text-gray-600">Smart planning, less waste.</dd>
-                            </Link>
+                                <div className="bg-white overflow-hidden shadow rounded-[2rem] p-6 border border-gray-100 hover:shadow-lg transition-shadow">
+                                    <div className="flex items-center gap-4 mb-2">
+                                        <div className="w-10 h-10 bg-brand-mars/10 rounded-xl flex items-center justify-center">
+                                            <Package className="w-5 h-5 text-brand-mars" />
+                                        </div>
+                                        <dt className="text-xs font-black text-gray-400 uppercase tracking-widest">{viewMode === 'FARMER' ? 'Pending Orders' : 'Orders Placed'}</dt>
+                                    </div>
+                                    <dd className="text-3xl font-black text-brand-dark mt-2">
+                                        {stats ? (viewMode === 'FARMER' ? stats.pendingOrders : stats.orderCount) : '...'}
+                                    </dd>
+                                </div>
+                                <div className="bg-white overflow-hidden shadow rounded-[2rem] p-6 border border-gray-100 hover:shadow-lg transition-shadow">
+                                    <div className="flex items-center gap-4 mb-2">
+                                        <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                                            <Leaf className="w-5 h-5 text-green-600" />
+                                        </div>
+                                        <dt className="text-xs font-black text-gray-400 uppercase tracking-widest">CO2 Saved</dt>
+                                    </div>
+                                    <dd className="text-3xl font-black text-green-600 mt-2">
+                                        {stats ? stats.co2Saved.toFixed(1) : '...'} <span className="text-sm font-black uppercase tracking-widest text-gray-400">kg</span>
+                                    </dd>
+                                </div>
+                                {viewMode === 'FARMER' && stats?.lowStockCount > 0 && (
+                                    <div className="bg-red-50 overflow-hidden shadow rounded-[2rem] p-6 border border-red-100 hover:shadow-lg transition-shadow">
+                                        <div className="flex items-center gap-4 mb-2">
+                                            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                                                <Bell className="w-5 h-5 text-red-600" />
+                                            </div>
+                                            <dt className="text-xs font-black text-red-500 uppercase tracking-widest">Alerts</dt>
+                                        </div>
+                                        <dd className="text-3xl font-black text-red-600 mt-2">
+                                            {stats.lowStockCount} <span className="text-sm font-black text-red-400">Low Stock</span>
+                                        </dd>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Recent Activity & Products */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                {/* Recent Activity */}
+                                <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className="text-xl font-black text-brand-dark tracking-tight">Recent Activity</h3>
+                                        <button onClick={() => setActiveTab(viewMode === 'FARMER' ? 'orders' : 'my-orders')} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-brand-dark transition-colors">View All</button>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {orders.slice(0, 4).map((order: any) => (
+                                            <div key={order.id} className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm text-lg">📦</div>
+                                                    <div>
+                                                        <p className="font-bold text-brand-dark text-sm">Order #{order.id}</p>
+                                                        <p className="text-[10px] text-gray-400 font-bold mt-0.5">{new Date(order.createdAt).toLocaleDateString()}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="font-black text-brand-dark">₦{Number(order.totalAmount).toLocaleString()}</p>
+                                                    <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' : 'bg-brand-light/30 text-brand-dark'}`}>
+                                                        {order.status}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {orders.length === 0 && (
+                                            <div className="text-center py-8">
+                                                <p className="text-sm text-gray-400 font-medium">No recent activity found.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* My Products (Farmers Only) */}
+                                {viewMode === 'FARMER' && (
+                                    <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <h3 className="text-xl font-black text-brand-dark tracking-tight">Top Products</h3>
+                                            <button onClick={() => setActiveTab('products')} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-brand-dark transition-colors">Manage All</button>
+                                        </div>
+                                        <div className="space-y-4">
+                                            {myProducts.slice(0, 4).map((product: any) => (
+                                                <div key={product.id} className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 bg-brand-light/10 rounded-xl flex items-center justify-center overflow-hidden border border-brand-light/20">
+                                                            {product.imageUrl ? <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" /> : <Package className="w-5 h-5 text-brand-dark" />}
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-bold text-brand-dark text-sm">{product.name}</p>
+                                                            <p className="text-[10px] text-gray-400 font-bold mt-0.5">{product.unit}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="font-black text-brand-dark">₦{Number(product.price).toLocaleString()}</p>
+                                                        <button onClick={() => setSelectedQr(product)} className="text-[10px] mt-1 font-black uppercase tracking-widest text-brand-dark hover:text-brand-mars flex items-center gap-1 justify-end">
+                                                            <QrCode size={10} /> View QR
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {myProducts.length === 0 && (
+                                                <div className="text-center py-8">
+                                                    <p className="text-sm text-gray-400 font-medium">You haven't listed any products yet.</p>
+                                                    <button onClick={() => setActiveTab('products')} className="mt-2 text-xs font-bold text-brand-dark">Add Product</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
 
