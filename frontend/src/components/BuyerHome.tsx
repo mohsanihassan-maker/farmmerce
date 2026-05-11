@@ -23,6 +23,7 @@ import { API_URL } from '../config';
 import FoodBundleSelector from './FoodBundleSelector';
 import { supabase } from '../supabase';
 import MealPlannerEmbed from './MealPlannerEmbed';
+import ProductCard from './ProductCard';
 
 const QUICK_LINKS = [
     { label: 'Shop All',  icon: ShoppingBag, tab: 'marketplace',  bg: 'bg-brand-dark',   text: 'text-white',       accent: 'text-brand-light' },
@@ -57,7 +58,7 @@ const PROMO_BANNERS = [
 
 export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string) => void }) {
     const { user } = useAuth();
-    const { itemCount: cartCount } = useCart();
+    const { itemCount: cartCount, addToCart } = useCart();
     const [localTab, setLocalTab] = useState('home');
     const [allOrders, setAllOrders] = useState<any[]>([]);
     const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
@@ -142,6 +143,11 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
     const firstName = user?.name?.split(' ')[0] || 'there';
     const hour = new Date().getHours();
     const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+    const handleAddToCart = (productId: number) => {
+        const product = featuredProducts.find((p: any) => p.id === productId);
+        if (product) addToCart(product);
+    };
 
     const statusStyle: Record<string, string> = {
         PENDING: 'bg-brand-yellow/20 text-brand-yellowDark',
@@ -318,8 +324,8 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                                    {featuredProducts.map((product: any, i: number) => (
-                                        <ProductCard key={product.id} product={product} index={i} onTap={() => setActiveTab('marketplace')} />
+                                    {featuredProducts.map((product: any) => (
+                                        <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
                                     ))}
                                 </div>
                             )}
@@ -433,61 +439,5 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                 )}
             </div>
         </div>
-    );
-}
-
-function ProductCard({ product, index, onTap }: { product: any; index: number; onTap: () => void }) {
-    const { addToCart } = useCart();
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-            onClick={onTap}
-            className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-brand-dark/5 border border-gray-100 cursor-pointer group active:scale-[0.98] transition-all duration-300 relative"
-        >
-            <div className="h-24 bg-[#F4F1EE] relative overflow-hidden">
-                {/* Brand Pattern Overlay */}
-                <div className="absolute inset-0 opacity-[0.03] grayscale pointer-events-none">
-                    <img src="/pattern.png" alt="" className="w-full h-full object-cover" />
-                </div>
-                
-                {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out relative z-10" />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center text-3xl relative z-10">
-                        {product.name?.[0] === 'T' ? '🍅' : product.name?.[0] === 'O' ? '🧅' : '🥬'}
-                    </div>
-                )}
-                
-                {/* Fancy Badge */}
-                <div className="absolute top-2 left-2 bg-brand-light/90 backdrop-blur-md px-2 py-0.5 rounded-md text-[8px] font-black text-brand-dark flex items-center gap-1 shadow-sm border border-white/50 z-20 uppercase tracking-tighter">
-                    <Sparkles size={10} className="text-brand-dark" /> Fresh
-                </div>
-            </div>
-
-            <div className="p-3 relative">
-                <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1 overflow-hidden">
-                        <p className="text-[9px] text-brand-dark/30 font-black uppercase tracking-widest truncate">{product.farmer?.name || 'Local Farm'}</p>
-                        <h4 className="text-xs font-black text-brand-dark truncate leading-tight mt-0.5">{product.name}</h4>
-                    </div>
-                </div>
-                
-                <div className="flex items-end justify-between mt-1">
-                    <div className="flex flex-col">
-                        <span className="text-sm font-black text-brand-dark leading-none">₦{parseFloat(String(product.price)).toLocaleString()}</span>
-                    </div>
-                    <button
-                        onClick={(e) => { e.stopPropagation(); addToCart(product); }}
-                        className="w-8 h-8 bg-brand-dark text-white rounded-xl flex items-center justify-center shadow-lg hover:bg-brand-mars transition-all active:scale-95 group/btn"
-                    >
-                        <ShoppingCart size={14} className="group-hover/btn:rotate-12 transition-transform" />
-                    </button>
-                </div>
-            </div>
-        </motion.div>
     );
 }
