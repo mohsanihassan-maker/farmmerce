@@ -188,16 +188,17 @@ export default function Dashboard() {
                 .then(data => setAllBundles(data))
                 .catch(err => console.error(err));
         }
-        if (activeTab === 'group-deals') {
+        if (activeTab === 'group-deals' || activeTab === 'admin-bundles') {
             fetch(`${API_URL}/group-deals`)
                 .then(res => res.json())
                 .then(data => setAllDeals(data))
                 .catch(err => console.error(err));
 
-            // Fetch ALL products so admins can create deals for any product
+            // Fetch ALL products so admins can create deals or bundles
             fetch(`${API_URL}/products`)
                 .then(res => res.json())
                 .then(data => setMyProducts(data));
+        }
 
             // Fetch current panel toggle state
             fetch(`${API_URL}/group-deals/panel-enabled`)
@@ -1653,9 +1654,33 @@ export default function Dashboard() {
                                         </select>
                                     </div>
                                     <div className="p-4 bg-brand-light/10 rounded-2xl border border-brand-light/20">
-                                        <label className="text-[10px] font-black text-brand-dark uppercase tracking-widest mb-2 block">Items JSON Payload</label>
-                                        <textarea rows={2} value={bundleForm.items} onChange={e => setBundleForm({...bundleForm, items: e.target.value})} className="w-full p-4 bg-white/50 rounded-2xl border-none focus:ring-2 focus:ring-brand-dark text-xs font-mono font-bold" required />
-                                        <p className="text-[10px] text-gray-500 mt-1">Example: <code className="font-bold">[{'{"name":"Rice","qty":"2kg","keyword":"rice"}'}]</code></p>
+                                        <label className="text-[10px] font-black text-brand-dark uppercase tracking-widest mb-3 block">Select Products for Bundle</label>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-48 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200">
+                                            {myProducts.map(p => {
+                                                const currentArray = (() => { try { return JSON.parse(bundleForm.items || '[]'); } catch(e) { return []; } })();
+                                                const isSelected = currentArray.includes(p.name);
+                                                return (
+                                                <label key={p.id} className={`flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition-colors ${isSelected ? 'bg-brand-dark text-white border-brand-dark shadow-md' : 'bg-white border-gray-200 text-gray-700 hover:border-brand-dark/50'}`}>
+                                                    <input type="checkbox" className="hidden" 
+                                                        checked={isSelected}
+                                                        onChange={(e) => {
+                                                            let currentItems = [];
+                                                            try { currentItems = JSON.parse(bundleForm.items || '[]'); } catch(e) {}
+                                                            if (e.target.checked) {
+                                                                currentItems.push(p.name);
+                                                            } else {
+                                                                currentItems = currentItems.filter((i: any) => i !== p.name);
+                                                            }
+                                                            setBundleForm({...bundleForm, items: JSON.stringify(currentItems)});
+                                                        }}
+                                                    />
+                                                    <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${isSelected ? 'bg-brand-light border-brand-light text-brand-dark' : 'border-gray-300'}`}>
+                                                        {isSelected && <Check size={12} strokeWidth={4} />}
+                                                    </div>
+                                                    <span className="text-[11px] font-bold truncate">{p.name}</span>
+                                                </label>
+                                            )})}
+                                        </div>
                                     </div>
                                     <button type="submit" className="w-full py-5 bg-brand-dark text-white rounded-2xl font-black tracking-widest uppercase hover:bg-black transition-all shadow-xl shadow-brand-dark/20 text-sm">Create Platform Bundle</button>
                                 </form>

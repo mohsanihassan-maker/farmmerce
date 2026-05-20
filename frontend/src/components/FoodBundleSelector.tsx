@@ -92,16 +92,16 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
                                 </div>
                                 <h3 className="text-lg font-black text-brand-dark leading-tight mb-4 group-hover:text-brand-mars transition-colors">{b.name}</h3>
                                 
-                                <div className="space-y-2 mb-6">
-                                    {b.items.slice(0, 3).map((item: string) => (
-                                       <div key={item} className="flex items-center gap-2 text-[11px] text-gray-500 font-medium">
+                                <div className="space-y-2 mb-6 overflow-y-auto max-h-24 pr-2 custom-scrollbar">
+                                    {b.items.map((item: any) => {
+                                       const itemName = typeof item === 'string' ? item : item.name || JSON.stringify(item);
+                                       return (
+                                       <div key={itemName} className="flex items-center gap-2 text-[11px] text-gray-500 font-medium">
                                           <div className="w-1.5 h-1.5 rounded-full shrink-0 bg-brand-light" />
-                                          <span className="truncate">{item}</span>
+                                          <span className="truncate">{itemName}</span>
                                        </div>
-                                    ))}
-                                    {b.items.length > 3 && (
-                                        <div className="text-[9px] text-gray-300 font-bold ml-3.5 uppercase tracking-widest">+{b.items.length - 3} more essentials</div>
-                                    )}
+                                       );
+                                    })}
                                 </div>
                                 
                                 <div className="flex items-center justify-between pt-5 border-t border-gray-50">
@@ -212,21 +212,24 @@ export default function FoodBundleSelector({ isPublic = false, isCompact = false
 
                             <div className="space-y-3 mb-10">
                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 pl-1">Included in this bundle</p>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    {bundle.items.map((item: string, idx: number) => (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-y-auto max-h-48 pr-2 custom-scrollbar">
+                                    {bundle.items.map((item: any, idx: number) => {
+                                        const itemName = typeof item === 'string' ? item : item.name || JSON.stringify(item);
+                                        return (
                                         <motion.div
-                                            key={item}
+                                            key={itemName}
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.1 + idx * 0.05 }}
                                             className="flex items-center gap-3 bg-gray-50 p-3.5 rounded-2xl border border-gray-100/50 hover:bg-white hover:border-brand-dark/20 transition-all cursor-default"
                                         >
                                             <div className="w-6 h-6 bg-white rounded-lg flex items-center justify-center shadow-sm shrink-0">
-                                                <Check size={14} style={{ color: bundle.accentColor }} />
+                                                <Check size={14} style={{ color: bundle.accentColor || 'currentColor' }} />
                                             </div>
-                                            <span className="text-sm font-bold text-gray-700">{item}</span>
+                                            <span className="text-sm font-bold text-gray-700">{itemName}</span>
                                         </motion.div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
