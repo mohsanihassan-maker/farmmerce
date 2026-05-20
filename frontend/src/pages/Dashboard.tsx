@@ -511,7 +511,7 @@ export default function Dashboard() {
                             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                                 <div className="bg-white overflow-hidden shadow rounded-[2rem] p-6 border border-gray-100 hover:shadow-lg transition-shadow">
                                     <div className="flex items-center gap-4 mb-2">
-                                        <div className="w-10 h-10 bg-brand-light/20 rounded-xl flex items-center justify-center">
+                                        <div className="w-8 h-8 bg-brand-light/20 rounded-xl flex items-center justify-center">
                                             <ShoppingBag className="w-5 h-5 text-brand-dark" />
                                         </div>
                                         <dt className="text-xs font-black text-gray-400 uppercase tracking-widest">{viewMode === 'FARMER' ? 'Total Revenue' : 'Total Spent'}</dt>
@@ -522,7 +522,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="bg-white overflow-hidden shadow rounded-[2rem] p-6 border border-gray-100 hover:shadow-lg transition-shadow">
                                     <div className="flex items-center gap-4 mb-2">
-                                        <div className="w-10 h-10 bg-brand-mars/10 rounded-xl flex items-center justify-center">
+                                        <div className="w-8 h-8 bg-brand-mars/10 rounded-xl flex items-center justify-center">
                                             <Package className="w-5 h-5 text-brand-mars" />
                                         </div>
                                         <dt className="text-xs font-black text-gray-400 uppercase tracking-widest">{viewMode === 'FARMER' ? 'Pending Orders' : 'Orders Placed'}</dt>
@@ -533,7 +533,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="bg-white overflow-hidden shadow rounded-[2rem] p-6 border border-gray-100 hover:shadow-lg transition-shadow">
                                     <div className="flex items-center gap-4 mb-2">
-                                        <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                                        <div className="w-8 h-8 bg-green-100 rounded-xl flex items-center justify-center">
                                             <Leaf className="w-5 h-5 text-green-600" />
                                         </div>
                                         <dt className="text-xs font-black text-gray-400 uppercase tracking-widest">CO2 Saved</dt>
@@ -545,7 +545,7 @@ export default function Dashboard() {
                                 {viewMode === 'FARMER' && stats?.lowStockCount > 0 && (
                                     <div className="bg-red-50 overflow-hidden shadow rounded-[2rem] p-6 border border-red-100 hover:shadow-lg transition-shadow">
                                         <div className="flex items-center gap-4 mb-2">
-                                            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                                            <div className="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center">
                                                 <Bell className="w-5 h-5 text-red-600" />
                                             </div>
                                             <dt className="text-xs font-black text-red-500 uppercase tracking-widest">Alerts</dt>
@@ -1013,7 +1013,7 @@ export default function Dashboard() {
                                             <tr key={u.id} className="hover:bg-gray-50/50 transition-colors">
                                                 <td className="px-8 py-6">
                                                     <div className="flex items-center gap-4">
-                                                        <div className="w-10 h-10 bg-brand-light/20 rounded-xl flex items-center justify-center text-brand-dark font-black">
+                                                        <div className="w-8 h-8 bg-brand-light/20 rounded-xl flex items-center justify-center text-brand-dark font-black">
                                                             {u.name[0]}
                                                         </div>
                                                         <div>
@@ -1072,7 +1072,7 @@ export default function Dashboard() {
                         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-dark/50 backdrop-blur-sm">
                             <div className="bg-white rounded-[2.5rem] p-8 max-w-lg w-full shadow-2xl relative">
                                 <button onClick={() => setSelectedAdminUser(null)} className="absolute top-6 right-6 p-2 bg-gray-100/50 rounded-full hover:bg-gray-200 transition-colors">
-                                    <X size={20} />
+                                    <X size={18} />
                                 </button>
                                 <div className="flex items-center gap-4 mb-6">
                                     <div className="w-16 h-16 bg-brand-light/20 rounded-[1.5rem] flex items-center justify-center text-brand-dark font-black text-2xl">
@@ -1828,7 +1828,7 @@ export default function Dashboard() {
                         ].map(({ label, icon: Icon, tab }) => (
                             <button key={tab} onClick={() => setActiveTab(tab)}
                                 className={`flex flex-col items-center gap-1 transition-all ${activeTab === tab ? 'text-brand-dark' : 'text-gray-400'}`}>
-                                <Icon size={20} className={activeTab === tab ? 'scale-110' : ''} />
+                                <Icon size={18} className={activeTab === tab ? 'scale-110' : ''} />
                                 <span className={`text-[8px] font-black uppercase tracking-widest ${activeTab === tab ? 'opacity-100' : 'opacity-40'}`}>{label}</span>
                                 {activeTab === tab && <motion.div layoutId="bubble" className="absolute -top-1 w-1 h-1 bg-brand-dark rounded-full" />}
                             </button>
@@ -1845,40 +1845,40 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
         <div className="pt-6 pb-2">
             <p className="px-3 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Platform Admin</p>
             <div className="space-y-1">
-                <button onClick={() => setActiveTab('admin-stats')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-stats' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                    <LayoutDashboard className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('admin-stats')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-stats' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                    <LayoutDashboard className="mr-3 h-4 w-4" />
                     Overview
                 </button>
-                <button onClick={() => setActiveTab('admin-users')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-users' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                    <User className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('admin-users')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-users' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                    <User className="mr-3 h-4 w-4" />
                     Users
                 </button>
-                <button onClick={() => setActiveTab('admin-orders')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-orders' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                    <ShoppingBag className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('admin-orders')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-orders' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                    <ShoppingBag className="mr-3 h-4 w-4" />
                     All Orders
                 </button>
-                <button onClick={() => setActiveTab('admin-categories')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-categories' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                    <Filter className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('admin-categories')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-categories' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                    <Filter className="mr-3 h-4 w-4" />
                     Categories
                 </button>
-                <button onClick={() => setActiveTab('admin-recipes')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-recipes' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                    <ChefHat className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('admin-recipes')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-recipes' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                    <ChefHat className="mr-3 h-4 w-4" />
                     Recipes
                 </button>
-                <button onClick={() => setActiveTab('admin-settlements')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-settlements' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                    <Navigation className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('admin-settlements')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-settlements' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                    <Navigation className="mr-3 h-4 w-4" />
                     Settlements
                 </button>
-                <button onClick={() => setActiveTab('group-deals')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'group-deals' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                    <Users className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('group-deals')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'group-deals' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                    <Users className="mr-3 h-4 w-4" />
                     Group Deals
                 </button>
-                <button onClick={() => setActiveTab('admin-bundles')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-bundles' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                    <Package className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('admin-bundles')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-bundles' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                    <Package className="mr-3 h-4 w-4" />
                     Food Bundles
                 </button>
-                <button onClick={() => setActiveTab('admin-farmer-requests')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-farmer-requests' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20 scale-105' : 'text-gray-500 hover:bg-indigo-50 hover:text-indigo-600'}`}>
-                    <Sprout className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('admin-farmer-requests')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'admin-farmer-requests' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20 scale-105' : 'text-gray-500 hover:bg-indigo-50 hover:text-indigo-600'}`}>
+                    <Sprout className="mr-3 h-4 w-4" />
                     Farmer Requests
                 </button>
             </div>
@@ -1908,25 +1908,25 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
 
                 <p className="px-3 text-[9px] font-black text-gray-300 uppercase tracking-widest mb-2">Shop</p>
 
-                <button onClick={() => setActiveTab('buyer-home')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'buyer-home' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
-                    <LayoutDashboard className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('buyer-home')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'buyer-home' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
+                    <LayoutDashboard className="mr-3 h-4 w-4" />
                     Home
                 </button>
-                <button onClick={() => setActiveTab('marketplace')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'marketplace' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
-                    <ShoppingBag className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('marketplace')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'marketplace' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
+                    <ShoppingBag className="mr-3 h-4 w-4" />
                     Marketplace
                 </button>
-                <button onClick={() => setActiveTab('my-orders')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'my-orders' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
-                    <ShoppingCart className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('my-orders')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'my-orders' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
+                    <ShoppingCart className="mr-3 h-4 w-4" />
                     My Orders
                 </button>
-                <button onClick={() => setActiveTab('meal-planner')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'meal-planner' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
-                    <ChefHat className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('meal-planner')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full transition-all mb-1 ${activeTab === 'meal-planner' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
+                    <ChefHat className="mr-3 h-4 w-4" />
                     Meal Planner
                 </button>
                 <div className="pt-4 border-t border-gray-100 mt-4">
-                    <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full transition-all ${activeTab === 'profile' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
-                        <User className="mr-3 h-5 w-5" />
+                    <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full transition-all ${activeTab === 'profile' ? 'bg-brand-dark text-white shadow-xl scale-105' : 'text-gray-500 hover:bg-gray-100'}`}>
+                        <User className="mr-3 h-4 w-4" />
                         Profile
                     </button>
                 </div>
@@ -1938,7 +1938,7 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
     return (
         <>
             <Link to="/" className="w-full flex items-center px-3 py-3 text-sm font-bold rounded-2xl text-brand-dark bg-brand-light/20 hover:bg-brand-light/40 transition-all mb-4">
-                <Home className="mr-3 h-5 w-5" />
+                <Home className="mr-3 h-4 w-4" />
                 Back to Site
             </Link>
 
@@ -1950,47 +1950,47 @@ function SidebarContent({ activeTab, setActiveTab, viewMode, setViewMode, user }
                     }}
                     className="w-full flex items-center px-3 py-3 text-xs font-black rounded-2xl text-brand-dark bg-brand-light hover:bg-white transition-all mb-6 uppercase tracking-widest"
                 >
-                    <ShoppingCart className="mr-3 h-5 w-5" />
+                    <ShoppingCart className="mr-3 h-4 w-4" />
                     Buyer Mode
                 </button>
             )}
 
-            <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'dashboard' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                <LayoutDashboard className="mr-3 h-5 w-5" />
+            <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'dashboard' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                <LayoutDashboard className="mr-3 h-4 w-4" />
                 Dashboard
             </button>
-            <button onClick={() => setActiveTab('products')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'products' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                <Package className="mr-3 h-5 w-5" />
+            <button onClick={() => setActiveTab('products')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'products' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                <Package className="mr-3 h-4 w-4" />
                 My Products
             </button>
-            <button onClick={() => setActiveTab('orders')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'orders' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                <ShoppingBag className="mr-3 h-5 w-5" />
+            <button onClick={() => setActiveTab('orders')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'orders' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                <ShoppingBag className="mr-3 h-4 w-4" />
                 Incoming Orders
             </button>
             {user?.role === 'DELIVERY' && (
-                <button onClick={() => setActiveTab('logistics')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'logistics' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                    <Truck className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('logistics')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'logistics' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                    <Truck className="mr-3 h-4 w-4" />
                     Logistics
                 </button>
             )}
-            <button onClick={() => setActiveTab('my-orders')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'my-orders' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                <ShoppingCart className="mr-3 h-5 w-5" />
+            <button onClick={() => setActiveTab('my-orders')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'my-orders' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                <ShoppingCart className="mr-3 h-4 w-4" />
                 My Orders
             </button>
             {user?.role === 'FARMER' && (
-                <button onClick={() => setActiveTab('settlements')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'settlements' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                    <Navigation className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('settlements')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'settlements' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                    <Navigation className="mr-3 h-4 w-4" />
                     My Settlements
                 </button>
             )}
             {adminSection}
             <div className="pt-6">
-                <Link to="/meal-planner" className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 text-gray-500 hover:bg-gray-100 hover:text-brand-dark`}>
-                    <ChefHat className="mr-3 h-5 w-5" />
+                <Link to="/meal-planner" className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 text-gray-500 hover:bg-gray-100 hover:text-brand-dark`}>
+                    <ChefHat className="mr-3 h-4 w-4" />
                     Meal Planner
                 </Link>
-                <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-4 py-3.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'profile' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
-                    <User className="mr-3 h-5 w-5" />
+                <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center px-4 py-2.5 text-sm font-black tracking-tight rounded-full group transition-all mb-1 ${activeTab === 'profile' ? 'bg-[#0F8B4F] text-white shadow-xl shadow-[#0F8B4F]/20 scale-105' : 'text-gray-500 hover:bg-gray-100 hover:text-brand-dark'}`}>
+                    <User className="mr-3 h-4 w-4" />
                     Profile
                 </button>
             </div>
@@ -2002,7 +2002,7 @@ function UserInfo({ user }: { user: any }) {
     return (
         <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3 px-2">
-                <div className="w-10 h-10 rounded-2xl bg-brand-light/20 flex items-center justify-center text-brand-dark font-black">
+                <div className="w-8 h-8 rounded-2xl bg-brand-light/20 flex items-center justify-center text-brand-dark font-black">
                     {user?.name?.[0] || 'U'}
                 </div>
                 <div className="flex-1 overflow-hidden">
