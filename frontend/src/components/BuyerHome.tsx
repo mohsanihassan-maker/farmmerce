@@ -159,8 +159,9 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
     return (
         <div className="min-h-full bg-[#FAF8F5]">
             {/* ── HEADER ── */}
-            <div className="bg-white border-b border-gray-100 sticky top-0 z-20 px-4 py-4">
-                <div className="flex items-center justify-between gap-3">
+            <div className="bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-20 px-4 sm:px-6 lg:px-8 py-4">
+                <div className="max-w-5xl mx-auto">
+                    <div className="flex items-center justify-between gap-3">
                     <div>
                         <p className="text-xs text-gray-400 font-medium">{greeting} 👋</p>
                         <h1 className="text-xl font-black text-brand-dark leading-tight">{firstName}</h1>
@@ -193,9 +194,10 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                         ))}
                     </div>
                 </div>
+                </div>
             </div>
 
-            <div className="px-4 space-y-7 py-5 pb-28">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 py-8 pb-32">
                 {/* ── PROMO BANNER ── */}
                 <section>
                     <div className="relative overflow-hidden rounded-[2rem] h-40 shadow-xl">
@@ -236,7 +238,7 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
 
                 {/* ── QUICK LINKS ── */}
                 <section>
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-4 md:flex md:justify-start gap-3 md:gap-4">
                         {QUICK_LINKS.map((q) => (
                             <button
                                 key={q.label}
@@ -244,7 +246,7 @@ export default function BuyerHome({ setActiveTab }: { setActiveTab: (tab: string
                                     if (q.tab === 'marketplace') setActiveTab('marketplace');
                                     else setLocalTab(q.tab);
                                 }}
-                                className={`${q.bg} ${q.text} flex flex-col items-center justify-center gap-2 py-4 px-1 rounded-3xl transition-all active:scale-90 shadow-lg border border-white/10 group hover:-translate-y-1 hover:shadow-xl duration-300`}
+                                className={`${q.bg} ${q.text} flex flex-col items-center justify-center gap-2 py-3 px-2 sm:py-4 sm:px-4 md:px-8 md:py-5 rounded-2xl md:rounded-[2rem] transition-all active:scale-90 shadow-lg border border-white/10 group hover:-translate-y-1 hover:shadow-xl duration-300 md:flex-1`}
                             >
                                 <div className="p-2.5 bg-white/20 rounded-2xl shadow-inner group-hover:bg-white/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 relative">
                                     <q.icon size={26} className="drop-shadow-lg relative z-10 text-current" />
